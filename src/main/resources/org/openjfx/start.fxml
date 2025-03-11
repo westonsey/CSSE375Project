@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Text fx:id="title" layoutX="215.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Catan" textAlignment="CENTER">
+         <font>
+            <Font size="64.0" />
+         </font>
+      </Text>
+      <VBox fx:id="playerVbox" layoutX="150.0" layoutY="133.0" prefHeight="200.0" prefWidth="300.0" />
+      <Button fx:id="startBtn" layoutX="270.0" layoutY="342.0" mnemonicParsing="false" text="Start" />
+   </children>
+   
+</AnchorPane>

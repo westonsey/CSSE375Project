@@ -1,0 +1,228 @@
+@startuml
+
+package game {
+
++class GameHandler{
+-board: Board
+-players: List<Player>
+-currentTurnIndex: int
+-state: GameState
++GameHandler()
++calculateVP(player: Player): int
++calculateLongestRoad(): Player
++calculateLargestArmy(): Player
++rollDice(): int
++handleRoll(number): void
++steal(p1: Player, p2: Player): void
++handlePlayerTrade(p1: Player, p2: Player, amounts1: CountCollection<Resource>, amounts2: CountCollection<Resource>): void
++handleExchange(player: Player, removeAmounts: CountCollection<Resource>, addAmounts: CountCollection<Resource>): void
+}
+
+note "Players sorted by playing order" as N1
+N1 .. GameHandler::players
+
+enum GameState{
+SETUP
+PLAYING
+VICTORY
+}
+
+'+class cardCollection {
+'-amounts: HashMap<Resource, Integer>
+'+cardCollection()
+'+addResource(r: Resource, amount: int): void
+'+getResourceCount(r: Resource): int
+'}
+
++class Player{
+-unplayedDevCards: CountCollection<DevCardType>
+-playedDevCards: CountCollection<DevCardType>
+-resources: CountCollection<Resource>
++Player()
++getNumberOfResources(): int
++addResource(amounts: CountCollection<Resource>): void
++hasResource(amounts: CountCollection<Resource>): boolean
++removeResource(amounts: CountCollection<Resource>): void
++getRandomResource(): Resource
++playDevCard(card: DevCardType): void
++addDevCard(card: DevCardType): void
++getNumberOfPlayedDevCards(cardType: DevCardType): int
++calculateVPFromDevCards(): int
+}
+
+enum DevCardType{
+KNIGHT
+ROAD_BUILDING
+YEAR_OF_PLENTY
+MONOPOLY
+VICTORY_POINT
+}
+
+enum Resource{
+WOOD
+WHEAT
+ORE
+SHEEP
+BRICK
+}
+
+}
+
+package util {
+
++class CountCollection<T> {
+-amounts: HashMap<T, Integer>
++CountCollection()
++add(item: T, amount: int): void
++remove(item: T, amount: int): void
++getCount(t: T): int
+}
+
+}
+
+package board {
+
+package location {
+class HexLocation {
++row: int
++col: int
++HexLocation(row: int, col: int)
++getBorders(): List<BorderLocation>
++getVertices(): List<VertexLocation>
+}
+class VertexLocation {
++row: int
++col: int
++VertexLocation(row: int, col: int)
++getHexes(): List<HexLocation>
++getBorders(): List<BorderLocation>
+}
+class BorderLocation {
++row: int
++col: int
++BorderLocation(row: int, col: int)
++getVertices(): List<VertexLocation>
+}
+}
+
+class Board{
+-hexagons: List<Hexagon>
+-roads: List<Road>
+-ports: List<Port>
+-buildings: List<Building>
+-robberLocation: HexLocation
++Board()
++generate(rand: Random): void
++getLongestRoadLength(p: Player): int
++getVPFromBuildings(p: Player): int
++placeRoad(p: Player, loc: BorderLocation, force: boolean): void
++placeSettlement(p: Player, loc: VertexLocation, force: boolean): void
++upgradeSettlement(settlement: Settlement): void
++canPlaceRoad(p: Player, loc: BorderLocation): boolean
++canPlaceSettlement(p: Player, loc: VertexLocation): boolean
++canUpgradeSettlement(settlement: Settlement): boolean
++getHexAt(loc: HexLocation): Hexagon
++getBuildingsForPlayer(p: Player): List<Building>
++getRoadsForPlayer(p: Player): List<Road>
+}
+
+class Hexagon{
++location: HexLocation
++resource: Resource
++number: int
++isDesert: boolean
++Hexagon(loc: HexLocation, r: Resource, n: int, isDesert: boolean)
+}
+
+abstract Building{
+-resourceMultiplier: int
+-victoryPointValue: int
+-location: VertexLocation
+-buildCost: CountCollection<Resource>
+-player: Player
+-type: BuildingType
++Building(resourceMult: int, vpValue: int, location: VertexLocation, buildCost: CountCollection<Resource>, player: Player, type: BuildingType)
+}
+
+class Settlement extends Building{
++Settlement(location: VertexLocation, player: Player)
+}
+class City extends Building{
++City(location: VertexLocation, player: Player)
+}
+
+enum BuildingType{
+SETTLEMENT
+CITY
+}
+
+class Road{
+-location: BorderLocation
+-cost: CountCollection<Resource>
+-player: Player
++Road(location: BorderLocation, cost: CountCollection<Resource>, player: Player)
+}
+
+class Port{
+-loc1: VertexLocation
+-loc2: VertexLocation
+-type: PortType
++Port(loc1: VertexLocation, loc2: VertexLocation, type: PortType)
+}
+
+enum PortType{
+WOOD
+WHEAT
+ORE
+SHEEP
+BRICK
+THREE_FOR_ONE
+}
+
+}
+
+Road --> BorderLocation
+Road --> CountCollection
+Road --> "*" Resource
+Road --> Player
+
+Port --> "2" VertexLocation
+Port --> PortType
+
+Building --> VertexLocation
+Building --> CountCollection
+Building --> "*" Resource
+Building --> Player
+
+Hexagon --> HexLocation
+Hexagon --> Resource
+
+Board --> "*" Hexagon
+Board --> "*" Road
+Board --> "*" Port
+Board --> "*" Building
+Board --> HexLocation
+Board ..> Player
+Board ..> BorderLocation
+Board ..> Settlement
+Board ..> VertexLocation
+
+Player --> CountCollection
+Player --> "*" DevCardType
+Player --> "*" Resource
+
+GameHandler --> Board
+GameHandler --> "*" Player
+GameHandler --> GameState
+GameHandler ..> CountCollection
+GameHandler ..> Resource
+
+HexLocation ..> BorderLocation
+HexLocation ..> VertexLocation
+BorderLocation ..> VertexLocation
+VertexLocation ..> HexLocation
+VertexLocation ..> BorderLocation
+
+'cardCollection --> "*" Resource
+
+@enduml

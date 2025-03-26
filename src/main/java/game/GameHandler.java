@@ -68,13 +68,12 @@ public class GameHandler {
             board.generate(boardRandom);
         }
         players = new ArrayList<>();
-        cardTracker = new CardTracker(players);
+        cardTracker = new CardTracker();
         initRobber();
     }
 
     public void addPlayer(Player player) {
         players.add(player);
-        cardTracker.setPlayers(players);
     }
 
     public Player getCurrentDiscardingPlayer() {
@@ -88,7 +87,6 @@ public class GameHandler {
             newPlayers.add(p);
         }
         players = newPlayers;
-        cardTracker.setPlayers(players);
     }
 
     public int rollDice() {
@@ -99,46 +97,45 @@ public class GameHandler {
         return robber;
     }
 
-    public void purchaseDevelopmentCard(int playerNumber) {
+    public void purchaseDevelopmentCard(Player player) {
         if (turnPhase != TurnPhase.PLAYING_TURN) {
             throw new IllegalStateException("Cannot purchase development card in this phase!");
         }
         Random random = new Random();
-        this.cardTracker.PurchaseDevCard(playerNumber, random);
+        this.cardTracker.PurchaseDevCard(player, random);
     }
 
-    public void addDevelopmentCard(int playerNumber, DevCardType card){
-        this.cardTracker.AddDevCard(playerNumber, card);
+    public void addDevelopmentCard(Player player, DevCardType card){
+        this.cardTracker.AddDevCard(player, card);
     }
-    
-    // Might need change after integrating with GUI
-    public void playMonopolyCard(int playerNumber, Resource resource){
-        this.cardTracker.ConsumeDevCard(playerNumber, DevCardType.MONOPOLY);
+
+    public void playMonopolyCard(Player player, Resource resource){
+        player.playDevCard(DevCardType.MONOPOLY);
         for(int i = 0; i < players.size(); i++){
-            if(i != playerNumber - 1){
+            if (players.get(i) != player){
                 int currentResourceCount = players.get(i).getResourceCount(resource);
                 if(currentResourceCount != 0){
                     players.get(i).removeResource(resource, currentResourceCount);
-                    players.get(playerNumber - 1).addResource(resource, currentResourceCount);
+                    player.addResource(resource, currentResourceCount);
                 }
             }
         }
     }
 
-    public void playYearOfPlentyCard(int playerNumber, Resource resource1, Resource resource2){
-        this.cardTracker.ConsumeDevCard(playerNumber, DevCardType.YEAR_OF_PLENTY);
-        this.cardTracker.GainResourceFromBank(playerNumber, resource1, 1);
-        this.cardTracker.GainResourceFromBank(playerNumber, resource2, 1);
+    public void playYearOfPlentyCard(Player player, Resource resource1, Resource resource2){
+        player.playDevCard(DevCardType.YEAR_OF_PLENTY);
+        player.addResource(resource1, 1);
+        player.addResource(resource2, 1);
     }
 
-    public void playRoadBuildingCard(int playerNumber, BorderLocation loc1, BorderLocation loc2){
-        this.cardTracker.ConsumeDevCard(playerNumber, DevCardType.ROAD_BUILDING);
-        board.placeRoad(this.players.get(playerNumber - 1), loc1, false);
-        board.placeRoad(this.players.get(playerNumber - 1), loc2, false);
+    public void playRoadBuildingCard(Player player, BorderLocation loc1, BorderLocation loc2){
+        player.playDevCard(DevCardType.ROAD_BUILDING);
+        board.placeRoad(player, loc1, false);
+        board.placeRoad(player, loc2, false);
     }
 
-    public void playKnightCard(int playerNumber) {
-        this.cardTracker.ConsumeDevCard(playerNumber, DevCardType.KNIGHT);
+    public void playKnightCard(Player player) {
+        player.playDevCard(DevCardType.KNIGHT);
         this.turnPhase = TurnPhase.MOVING_ROBBER;
     }
 
@@ -712,7 +709,7 @@ public class GameHandler {
 
     public void tradeBetweenPlayers(Player player1, Player player2, CountCollection<Resource> fromResources,
                                     CountCollection<Resource> toResources) {
-        cardTracker.TradeResourceWithinPlayers(player1, player2, fromResources, toResources);
+        player1.TradeResource(player2, fromResources, toResources);
     }
 
     public void tradeWithBank(Player player, Resource toTrade, Resource toReceive) {

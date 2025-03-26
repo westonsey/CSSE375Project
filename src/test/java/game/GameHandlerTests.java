@@ -1360,12 +1360,6 @@ public class GameHandlerTests {
         EasyMock.replay(random);
 
         game.shufflePlayers(random);
-        Player[] ctPlayers = game.getCardTracker().getPlayers();
-
-        assertEquals(PlayerColors.YELLOW, ctPlayers[0].getColor());
-        assertEquals(PlayerColors.BLUE, ctPlayers[1].getColor());
-        assertEquals(PlayerColors.WHITE, ctPlayers[2].getColor());
-        assertEquals(PlayerColors.RED, ctPlayers[3].getColor());
 
         assertEquals(PlayerColors.YELLOW, game.playerByTurnIndex().getColor());
 
@@ -1468,7 +1462,7 @@ public class GameHandlerTests {
         player1.addResource(Resource.ORE, 1);
         game.addPlayer(player1);
 
-        game.purchaseDevelopmentCard(1);
+        game.purchaseDevelopmentCard(player1);
 
         assertEquals(1, player1.getTotalNumberOfUnplayedDevCards());
         assertEquals(0, player1.getTotalNumberOfResources());
@@ -1483,7 +1477,7 @@ public class GameHandlerTests {
         player1.addResource(Resource.ORE, 1);
         game.addPlayer(player1);
 
-        Exception ex = assertThrows(IllegalStateException.class, () -> game.purchaseDevelopmentCard(1));
+        Exception ex = assertThrows(IllegalStateException.class, () -> game.purchaseDevelopmentCard(player1));
 
         assertEquals("Cannot purchase development card in this phase!", ex.getMessage());
     }

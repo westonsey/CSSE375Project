@@ -73,4 +73,8 @@ public class StartController {
         }
     }
 
+    public Map<PlayerColors, Boolean> getPlayers(){
+        return readyMap;
+    }
+
 }

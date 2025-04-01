@@ -139,9 +139,7 @@ public class SidePanelController {
 
     private void updateStatusLabels() {
         String name = PlayerColorUtils.PLAYER_NAMES.get(game.playerByTurnIndex().getColor());
-        System.out.println("Player Name: " + name);
         playerText.setText(bundle.getString(name.toLowerCase(Locale.ROOT) + "Player"));
-        System.out.println("Player Text: " + playerText);
         String turnPhase = null;
         switch (game.getTurnPhase()) {
             case END_TURN:

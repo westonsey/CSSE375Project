@@ -338,8 +338,6 @@ public class GameHandler {
     }
 
     public Player playerByTurnIndex() {
-        System.out.println("Current Turn Index: " + currentPlayerTurnIndex);
-        System.out.println("Current Player at Index: " + players.get(currentPlayerTurnIndex).getColor());
         return players.get(currentPlayerTurnIndex);
     }
 

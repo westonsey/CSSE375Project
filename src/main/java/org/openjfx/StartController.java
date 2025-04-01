@@ -26,6 +26,8 @@ public class StartController {
     @FXML
     private ComboBox<String> languageOptions;
 
+    private int selected = 0;
+
     private ResourceBundle bundle;
     private Map<PlayerColors, Boolean> readyMap;
 
@@ -47,21 +49,28 @@ public class StartController {
         title.setText(bundle.getString("title"));
         startBtn.setText(bundle.getString("start"));
         startBtn.setDisable(true);
-        // Create buttons for each player
-        for (PlayerColors color : PlayerColors.values()) {
-            String name = PlayerColorUtils.PLAYER_NAMES.get(color);
-            Button button = new Button(bundle.getString(name.toLowerCase(Locale.ROOT) + "Ready"));
-            button.setOnMouseClicked(e -> {
-                readyMap.put(color, true);
-                button.setDisable(true);
-                if (readyMap.values().stream().allMatch(t -> t)) {
-                    startBtn.setDisable(false);
-                }
-            });
-            playerVbox.getChildren().add(button);
-            
+        for (PlayerColors color : PlayerColors.values()) { // Create buttons for each player
+            setBoxes(color);
         }
         playerVbox.setAlignment(Pos.BASELINE_CENTER);
+    }
+
+    private void setBoxes(PlayerColors color) {
+        String name = PlayerColorUtils.PLAYER_NAMES.get(color);
+        Button button = new Button(bundle.getString(name.toLowerCase(Locale.ROOT) + "Ready"));
+        button.setOnMouseClicked(e -> {
+            selected++;
+            readyMap.put(color, true);
+            button.setDisable(true);
+            checkMinPlayersSelected();
+        });
+        playerVbox.getChildren().add(button);
+    }
+
+    private void checkMinPlayersSelected() {
+        if (selected >= 3) {
+            startBtn.setDisable(false);
+        }
     }
 
 }

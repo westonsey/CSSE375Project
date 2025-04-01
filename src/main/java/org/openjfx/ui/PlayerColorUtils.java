@@ -11,14 +11,18 @@ public class PlayerColorUtils {
             PlayerColors.RED, Paint.valueOf("#c72d1c"),
             PlayerColors.BLUE, Paint.valueOf("#1f8bf0"),
             PlayerColors.YELLOW, Paint.valueOf("#cc8d3b"),
-            PlayerColors.WHITE, Paint.valueOf("#f5efe9")
+            PlayerColors.WHITE, Paint.valueOf("#f5efe9"),
+            PlayerColors.GREEN, Paint.valueOf("#52ad3b"),
+            PlayerColors.PINK, Paint.valueOf("#df7cdd")
     );
 
     public static final Map<PlayerColors, String> PLAYER_NAMES = Map.of(
             PlayerColors.RED, "Red",
             PlayerColors.BLUE, "Blue",
             PlayerColors.YELLOW, "Yellow",
-            PlayerColors.WHITE, "White"
+            PlayerColors.WHITE, "White",
+            PlayerColors.GREEN, "Green",
+            PlayerColors.PINK, "Pink"
     );
 
 }

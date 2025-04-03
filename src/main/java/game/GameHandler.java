@@ -1,7 +1,6 @@
 package game;
 
 import board.Board;
-import board.Building;
 import board.Hexagon;
 import board.PortType;
 import board.Road;
@@ -27,6 +26,8 @@ public class GameHandler {
     private TurnMovementDirection turnMovementDirection;
     private Board board;
     private Robber robber;
+    private RobberManager robberManager;
+    private ActionHandler actionHandler;
     private List<Player> players;
     private CardTracker cardTracker;
 
@@ -37,8 +38,6 @@ public class GameHandler {
     private int largestArmyPlayerIndex = INVALID_PLAYER_INDEX;
     private int longestRoad = 4;
     private int longestRoadPlayerIndex = INVALID_PLAYER_INDEX;
-  
-    private static final int DISCARD_RESOURCE_THRESHOLD = 7;
 
     public int currentPlayerTurnIndex;
     private int currentDiscardPlayerIndex;
@@ -70,6 +69,7 @@ public class GameHandler {
         players = new ArrayList<>();
         cardTracker = new CardTracker();
         initRobber();
+        actionHandler = new ActionHandler(board, this, cardTracker);
     }
 
     public void addPlayer(Player player) {
@@ -152,22 +152,8 @@ public class GameHandler {
     }
 
     public void moveRobber(HexLocation loc) {
-        checkTurnPhaseValidMovingRobber();
-        checkRobberMoveLocValid(loc);
-        robber.moveLocation(loc);
+        robberManager.moveRobber(loc, turnPhase);
         turnPhase = TurnPhase.STEALING_RESOURCE;
-    }
-
-    private void checkTurnPhaseValidMovingRobber(){
-        if (turnPhase != TurnPhase.MOVING_ROBBER) {
-            throw new IllegalArgumentException("Cannot move robber (invalid state)");
-        }
-    }
-
-    private void checkRobberMoveLocValid(HexLocation loc){
-        if (!loc.isValid() || loc.equals(robber.loc)) {
-            throw new IllegalArgumentException("Cannot move robber to (" + loc.getRow() + "," + loc.getCol() + ")");
-        }
     }
 
     private void checkTurnPhaseValidDoDiceRoll(){
@@ -345,7 +331,7 @@ public class GameHandler {
     public TurnPhase getTurnPhase() {
         return this.turnPhase;
     }
-    
+
     public void setTurnPhase(TurnPhase phase) {
         this.turnPhase = phase;
     }
@@ -363,40 +349,16 @@ public class GameHandler {
                                         ? TurnMovementDirection.REVERSE : TurnMovementDirection.FORWARD;
     }
 
-    private boolean canPlaceSettlementRequiresResources(Player p, VertexLocation loc, Boolean force, Boolean requiresResources){
-        if (requiresResources && (!p.hasResource(Resource.WOOD) || !p.hasResource(Resource.BRICK) ||
-                !p.hasResource(Resource.WHEAT) || !p.hasResource(Resource.SHEEP))) {
-            return false;
-        }
-        return board.canPlaceSettlement(p, loc, force);
-    }
-
-    private boolean canPlaceSettlementConditional(Player p, VertexLocation loc, Boolean force, Boolean requiresResources){
-        if (turnPhase == TurnPhase.PLACING_BUILDING || turnPhase == TurnPhase.PLAYING_TURN) {
-            return canPlaceSettlementRequiresResources(p, loc, force, requiresResources);
-        }
-        return false;
-    }
-
     public boolean canPlaceSettlement(Player p, VertexLocation loc) {
         boolean force = gameState == GameState.SETUP;
         boolean requiresResources = turnPhase == TurnPhase.PLAYING_TURN;
-        return canPlaceSettlementConditional(p, loc, force, requiresResources);
-    }
-
-    private boolean canPlaceRoadRequiresResources(Player p, BorderLocation loc, Boolean requiresResources){
-        if (requiresResources) {
-            if (!p.hasResource(Resource.WOOD) || !p.hasResource(Resource.BRICK)) {
-                return false;
-            }
-        }
-        return board.canPlaceRoad(p, loc, false);
+        return actionHandler.canPlaceSettlementConditional(p, loc, force, requiresResources, turnPhase);
     }
 
     public boolean canPlaceRoad(Player p, BorderLocation loc) {
         boolean requiresResources = turnPhase == TurnPhase.PLAYING_TURN;
         if (turnPhase == TurnPhase.PLACING_ROAD || turnPhase == TurnPhase.PLAYING_TURN) {
-            return canPlaceRoadRequiresResources(p, loc, requiresResources);
+            return actionHandler.canPlaceRoadRequiresResources(p, loc, requiresResources);
         }
         return false;
     }
@@ -409,135 +371,41 @@ public class GameHandler {
 
     public void placeSettlement(Player p, VertexLocation loc) {
         if (canPlaceSettlement(p, loc)) {
-            placeSettlementAllowed(p, loc);
+            board.placeSettlement(p, loc, gameState == GameState.SETUP);
+            actionHandler.placeSettlementAllowed(p, loc, turnPhase, turnMovementDirection);
+            if (turnPhase == TurnPhase.PLACING_BUILDING) {
+                turnPhase = TurnPhase.PLACING_ROAD;
+            }
         } else {
-            placeSettlementThrowException(loc);
+            actionHandler.placeSettlementThrowException(loc);
         }
-    }
-
-    private void placeSettlementThrowException(VertexLocation loc){
-        throw new IllegalArgumentException("Could not place settlement at (" +
-                loc.getRow() + ", " + loc.getCol() + ")");
-    }
-
-    private void placeSettlementRemoveResources(Player p){
-        p.removeResource(Resource.WOOD, 1);
-        p.removeResource(Resource.BRICK, 1);
-        p.removeResource(Resource.WHEAT, 1);
-        p.removeResource(Resource.SHEEP, 1);
-    }
-
-    private void placeSettlementAllowed(Player p, VertexLocation loc){
-        board.placeSettlement(p, loc, gameState == GameState.SETUP);
-        p.changeVictoryPoints(1);
-        placeSettlementAllowedConditional(p, loc);
-    }
-
-    private void placeSettlementAllowedConditional(Player p, VertexLocation loc){
-        if (turnPhase == TurnPhase.PLACING_BUILDING) {
-            placeSettlementAllowedConditionalMovementDirection(p, loc);
-        } else {
-            placeSettlementRemoveResources(p);
-        }
-    }
-
-    private void placeSettlementAllowedConditionalMovementDirection(Player p, VertexLocation loc){
-        if (turnMovementDirection == TurnMovementDirection.REVERSE) {
-            board.addResourceForGameSetup(p, loc);
-        }
-        turnPhase = TurnPhase.PLACING_ROAD;
     }
 
     public void placeRoad(Player p, BorderLocation loc) {
         if (canPlaceRoad(p, loc)) {
-            placeRoadAllowed(p, loc);
+            actionHandler.placeRoadAllowed(p, loc, turnPhase);
+            if (turnPhase == TurnPhase.PLACING_ROAD) {
+                turnPhase = TurnPhase.END_TURN;
+            }
+            p.setLongestRoad(findLongestRoad(p));
         } else {
-            placeRoadThrowException(loc);
+            actionHandler.placeRoadThrowException(loc);
         }
-    }
-
-    private void placeRoadAllowed(Player p, BorderLocation loc){
-        board.placeRoad(p, loc, false);
-        p.setLongestRoad(findLongestRoad(p));
-        placeRoadAllowedConditional(p, loc);
-    }
-
-    private void placeRoadAllowedConditional(Player p, BorderLocation loc){
-        if (turnPhase == TurnPhase.PLACING_ROAD) {
-            turnPhase = TurnPhase.END_TURN;
-        } else {
-            placeRoadAllowedRemoveResources(p);
-        }
-    }
-
-    private void placeRoadAllowedRemoveResources(Player p){
-        p.removeResource(Resource.WOOD, 1);
-        p.removeResource(Resource.BRICK, 1);
-    }
-
-    private void placeRoadThrowException(BorderLocation loc){
-        throw new IllegalArgumentException("Could not place road at (" +
-                loc.getRow() + ", " + loc.getCol() + ")");
     }
 
     public void upgradeSettlement(Settlement s) {
         if (canUpgradeSettlement(s)) {
-            upgradeSettlementAllowed(s);
+            actionHandler.upgradeSettlementAllowed(s);
         }else {
             throw new IllegalArgumentException("Cannot upgrade settlement!");
         }
     }
 
-    private void upgradeSettlementAllowed(Settlement s){
-        Player owner = s.getOwner();
-        board.upgradeSettlement(s);
-        upgradeSettlementAllowedResource(owner);
-    }
-
-    private void upgradeSettlementAllowedResource(Player owner){
-        owner.changeVictoryPoints(1);
-        owner.removeResource(Resource.ORE, 3);
-        owner.removeResource(Resource.WHEAT, 2);
-    }
-
     public void stealResource(Player thief, Player victim, Random rand) {
-        stealResourceThrowException(victim);
+        actionHandler.stealResourceThrowException(victim, turnPhase);
         List<Resource> resources = new ArrayList<>(List.of(Resource.values()));
-        stealResourceLoop(thief, victim, resources, rand);
-    }
-
-    private void stealResourceLoop(Player thief, Player victim, List<Resource> resources, Random rand) {
-        while (turnPhase == TurnPhase.STEALING_RESOURCE) {
-            int i = rand.nextInt(resources.size());
-            Resource resource = resources.get(i);
-            stealResourceLoopConditional(thief, victim, resource);
-        }
-    }
-
-    private void stealResourceLoopConditional(Player thief, Player victim, Resource resource){
-        if (victim.hasResource(resource)) {
-            victim.removeResource(resource, 1);
-            thief.addResource(resource, 1);
-            turnPhase = TurnPhase.PLAYING_TURN;
-        }
-    }
-
-    private void stealResourceThrowException(Player victim){
-        stealResourceThrowExceptionTurnPhase();
-        stealResourceThrowExceptionResource(victim);
-    }
-
-    private void stealResourceThrowExceptionTurnPhase(){
-        if (turnPhase != TurnPhase.STEALING_RESOURCE) {
-            throw new IllegalArgumentException("Cannot steal in this phase");
-        }
-
-    }
-
-    private void stealResourceThrowExceptionResource(Player victim){
-        if (victim.getTotalNumberOfResources() <= 0) {
-            throw new IllegalArgumentException("Cannot steal from player with no resources");
-        }
+        robberManager.stealResourceLoop(thief, victim, resources, rand, turnPhase);
+        turnPhase = TurnPhase.PLAYING_TURN;
     }
 
     public void skipSteal() {
@@ -548,53 +416,24 @@ public class GameHandler {
     }
 
     public List<Player> getPlayersToStealFrom(Player currentTurn) {
-        getPlayersToStealFromThrowException();
+        robberManager.getPlayersToStealFromThrowException(turnPhase);
         List<Player> adjacent = board.getAdjacentPlayers(robber.loc);
-        return getPlayersToStealFromLoop(currentTurn, adjacent);
-    }
-
-    private void getPlayersToStealFromThrowException(){
-        if (turnPhase != TurnPhase.STEALING_RESOURCE) {
-            throw new IllegalStateException("Cannot steal in this phase");
-        }
-    }
-
-    private List<Player> getPlayersToStealFromLoop(Player currentTurn, List<Player> adjacent){
-        for (int i = 0; i < adjacent.size(); i++) {
-            if (adjacent.get(i).equals(currentTurn) || adjacent.get(i).getTotalNumberOfResources() <= 0) {
-                adjacent.remove(i);
-                i--;
-            }
-        }
-        return adjacent;
+        return robberManager.getPlayersToStealFromLoop(currentTurn, adjacent);
     }
 
     public int getRequiredDiscardAmount() {
-        getRequiredDiscardAmountException();
+        actionHandler.getRequiredDiscardAmountException(turnPhase);
         Player player = players.get(currentDiscardPlayerIndex);
-        return getRequiredDiscardAmountConditional(player);
-    }
-
-    private void getRequiredDiscardAmountException(){
-        if (turnPhase != TurnPhase.DISCARDING_RESOURCES) {
-            throw new IllegalStateException("Cannot discard in this phase!");
-        }
-    }
-
-    private int getRequiredDiscardAmountConditional(Player player){
-        if (player.getTotalNumberOfResources() > DISCARD_RESOURCE_THRESHOLD) {
-            return player.getTotalNumberOfResources() / 2;
-        }
-        return 0;
+        return actionHandler.getRequiredDiscardAmountConditional(player);
     }
 
     public void discardResources(CountCollection<Resource> resources) {
         int required = getRequiredDiscardAmount();
-        discardResourcesNotEnoughException(resources, required);
+        actionHandler.discardResourcesNotEnoughException(resources, required);
         Player player = players.get(currentDiscardPlayerIndex);
         Iterator<Tuple<Resource, Integer>> resourceIterator = resources.iterator();
-        discardResourcesIterator(player, resources, resourceIterator);
-        discardResourcesRemoveResource(player, resources, resourceIterator);
+        actionHandler.discardResourcesIterator(player, resourceIterator);
+        actionHandler.discardResourcesRemoveResource(player, resources, resourceIterator);
         discardResourcesSetTurnPhase();
     }
 
@@ -606,36 +445,10 @@ public class GameHandler {
         }
     }
 
-    private void discardResourcesIterator(Player player, CountCollection<Resource> resources, Iterator<Tuple<Resource, Integer>> resourceIterator){
-        while (resourceIterator.hasNext()) {
-            Tuple<Resource, Integer> entry = resourceIterator.next();
-            discardResourcesIteratorThrowException(player, entry);
-        }
-    }
-
-    private void discardResourcesIteratorThrowException(Player player, Tuple<Resource, Integer> entry){
-        if (player.getResourceCount(entry.first) < entry.second) {
-            throw new IllegalArgumentException("Player does not have the resource they're discarding!");
-        }
-    }
-
-    private void discardResourcesRemoveResource(Player player, CountCollection<Resource> resources, Iterator<Tuple<Resource, Integer>> resourceIterator){
-        resourceIterator = resources.iterator();
-        while (resourceIterator.hasNext()) {
-            Tuple<Resource, Integer> entry = resourceIterator.next();
-            player.removeResource(entry.first, entry.second);
-        }
-    }
-
-    private void discardResourcesNotEnoughException(CountCollection<Resource> resources, int required){
-        if (resources.getTotalCount() != required) {
-            throw new IllegalArgumentException("Not the correct discard amount (should be " + required + ")");
-        }
-    }
-
     private void initRobber() {
         HexLocation desert = initRobberLoop();
         robber = new Robber(desert);
+        robberManager = new RobberManager(robber, board);
     }
 
     private HexLocation initRobberLoop(){
@@ -657,16 +470,8 @@ public class GameHandler {
 
     private void handleNormalRoll(int roll) {
         List<Hexagon> hexes = board.getHexesAtNumber(roll, new ArrayList<>());
-        handleNormalRollLoop(hexes);
+        actionHandler.handleNormalRollLoop(hexes);
         turnPhase = TurnPhase.PLAYING_TURN;
-    }
-
-    private void handleNormalRollLoop(List<Hexagon> hexes){
-        for (Hexagon h : hexes) {
-            if(!h.location.equals(getRobber().loc)) {
-                board.addPlayerResourcesFromHex(h);
-            }
-        }
     }
 
     private void handleRobberRoll() {
@@ -674,37 +479,10 @@ public class GameHandler {
         currentDiscardPlayerIndex = 0;
     }
 
-    private void detectRoadSegments(Player player, Road startRoad, Set<Road> visitedRoads, Set<Road> currentSegment) {
-        if (visitedRoads.contains(startRoad)) {
-            return;
-        }
-        visitedRoads.add(startRoad);
-        currentSegment.add(startRoad);
-        detectRoadSegmentsLoop(player, startRoad, visitedRoads, currentSegment);
-    }
-
-    private void detectRoadSegmentsLoop(Player player, Road startRoad, Set<Road> visitedRoads, Set<Road> currentSegment){
-        for (Road neighborRoad : board.getAdjacentPlayerRoads(player, startRoad)) {
-            detectRoadSegments(player, neighborRoad, visitedRoads, currentSegment);
-        }
-    }
-
     public int findLongestRoad(Player player) {
         Set<Road> visitedRoads = new HashSet<>();
         List<Road> playerRoads = board.getRoadsForPlayer(player);
-        return findLongestRoadLoop(visitedRoads, player, playerRoads);
-    }
-
-    private int findLongestRoadLoop(Set<Road> visitedRoads, Player player, List<Road> playerRoads){
-        int longestRoad = 0;
-        for (Road road : playerRoads) {
-            if (!visitedRoads.contains(road)) {
-                Set<Road> currentSegment = new HashSet<>();
-                detectRoadSegments(player, road, visitedRoads, currentSegment);
-                longestRoad = Math.max(currentSegment.size(), longestRoad);
-            }
-        }
-        return longestRoad;
+        return actionHandler.findLongestRoadLoop(visitedRoads, player, playerRoads);
     }
 
     public void tradeBetweenPlayers(Player player1, Player player2, CountCollection<Resource> fromResources,
@@ -714,56 +492,12 @@ public class GameHandler {
 
     public void tradeWithBank(Player player, Resource toTrade, Resource toReceive) {
         int amount = getTradeAmount(player, toTrade);
-        cardTracker.TradeResourceWithBank(player, toTrade, amount, toReceive, getOwnedPorts(player));
+        cardTracker.TradeResourceWithBank(player, toTrade, amount, toReceive, actionHandler.getOwnedPorts(player));
     }
 
     public int getTradeAmount(Player player, Resource resource) {
-        List<PortType> ports = getOwnedPorts(player);
-        return getTradeAmountHelper(player, resource, ports);
-    }
-
-    private int getTradeAmountHelper(Player player, Resource resource, List<PortType> ports){
-        if (ports.contains(portTypeForResource(resource))) {
-            return 2;
-        } else if (ports.contains(PortType.THREE_FOR_ONE)) {
-            return 3;
-        }
-        return 4;
-    }
-
-    private PortType portTypeForResource(Resource resource) {
-        switch (resource) {
-            case ORE:
-                return PortType.ORE;
-            case WOOD:
-                return PortType.WOOD;
-            case BRICK:
-                return PortType.BRICK;
-            case WHEAT:
-                return PortType.WHEAT;
-            default:
-                return PortType.SHEEP;
-        }
-    }
-
-    private List<PortType> getOwnedPorts(Player player) {
-        List<PortType> ports = new ArrayList<>();
-        List<Building> buildings = board.getBuildingsForPlayer(player);
-        getOwnedPortsLoop(player, buildings, ports);
-        return ports;
-    }
-
-    private void getOwnedPortsLoop(Player player, List<Building> buildings, List<PortType> ports){
-        for (Building b : buildings) {
-            PortType p = board.getPort(b).getPortType();
-            checkValidPortgetOwnedPorts(p, ports);
-        }
-    }
-
-    private void checkValidPortgetOwnedPorts(PortType p, List<PortType> ports){
-        if (p != null && !ports.contains(p)) {
-            ports.add(p);
-        }
+        List<PortType> ports = actionHandler.getOwnedPorts(player);
+        return actionHandler.getTradeAmountHelper(player, resource, ports);
     }
 
 }

@@ -1,5 +1,6 @@
 package org.openjfx;
 
+import game.PlayerColors;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +15,8 @@ public class MainApp extends Application {
 
     private Stage stage;
     private ResourceBundle bundle;
+
+    private Map<PlayerColors, Boolean> players;
 
     private static final String START_SCREEN_FXML = "start.fxml";
     private static final String GAME_SCREEN_FXML = "game.fxml";
@@ -71,10 +74,11 @@ public class MainApp extends Application {
                 loader.setController(controller);
                 Parent root = loader.load();
                 controller.setStartHandler(() -> switchScene(GAME_SCREEN_FXML));
+                players = controller.getPlayers();
                 return root;
             },
             GAME_SCREEN_FXML, loader -> {
-                GameController controller = new GameController(bundle, stage.getOwner());
+                GameController controller = new GameController(bundle, stage.getOwner(), players);
                 loader.setController(controller);
                 Parent root = loader.load();
                 controller.setGameEndHandler(() -> switchScene(END_SCREEN_FXML));

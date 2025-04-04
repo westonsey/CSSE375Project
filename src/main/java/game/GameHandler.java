@@ -239,7 +239,7 @@ public class GameHandler {
     }
 
     private void handleSetUpHandleSwitchPlayerTurnForwardEnd(){
-        this.currentPlayerTurnIndex = (players.size()-1);
+        this.currentPlayerTurnIndex = players.size()-1;
         this.turnMovementDirection = TurnMovementDirection.REVERSE;
         this.gameState = GameState.SETUP;
         this.turnPhase = TurnPhase.PLACING_BUILDING;

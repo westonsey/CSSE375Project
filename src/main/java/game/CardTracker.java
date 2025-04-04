@@ -9,14 +9,11 @@ import util.CountCollection;
 public class CardTracker{
 
     private CountCollection<DevCardType> unPlayedPile;
-    private Player[] players;
+    private static final int REQUIRED_ORE = 1;
+    private static final int REQUIRED_WHEAT = 1;
+    private static final int REQUIRED_SHEEP = 1;
 
-    public CardTracker(List<Player> players) {
-        this(players.toArray(new Player[0]));
-    }
-
-    public CardTracker(Player[] players){
-        this.players = players;
+    public CardTracker() {
         unPlayedPile = new CountCollection<>();
         unPlayedPile.add(DevCardType.KNIGHT, 14);
         unPlayedPile.add(DevCardType.ROAD_BUILDING, 2);
@@ -25,145 +22,98 @@ public class CardTracker{
         unPlayedPile.add(DevCardType.VICTORY_POINT, 5);
     }
 
-    public Player[] getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(List<Player> players) {
-        Player[] newPlayers = new Player[players.size()];
-        for (int i = 0; i < players.size(); i++) {
-            newPlayers[i] = players.get(i);
-        }
-        this.players = newPlayers;
-    }
-
     public CountCollection<DevCardType> getUnPlayedCards(){
         return unPlayedPile;
     }
 
-    public int TotalPlayedDevCards() {
-        int totalCount = 0;
-        for (Player player : players) {
-            totalCount += player.getTotalNumberOfPlayedDevCards();
-        }
-        return totalCount;
-    }
-
-    public int TotalUnplayedDevCards() {
-        int totalCount = 0;
-        for (Player player : players) {
-            totalCount += player.getTotalNumberOfUnplayedDevCards();
-        }
-        return totalCount;
-    }
-
-    public int TotalUnplayedDevCardsInGame() {
-        int totalCount = 0;
-        for (Player player : players) {
-            totalCount += player.getTotalNumberOfUnplayedDevCards();
-        }
-        totalCount += unPlayedPile.getTotalCount();
-        return totalCount;
-    }
-
-    public DevCardType getRandomDevCard(List<DevCardType> values, Random random){
+    private DevCardType getRandomDevCard(List<DevCardType> values, Random random){
         return values.get(random.nextInt(values.size()));
     }
 
-    public void PurchaseDevCard(int playerNumber, Random random){
-        Player p = players[playerNumber - 1];
-        if (p.hasResource(Resource.ORE) && p.hasResource(Resource.WHEAT) 
-            && p.hasResource(Resource.SHEEP)){
+    private DevCardType drawDevCard(Random random) {
+        List<DevCardType> availableCards = unPlayedPile.getValuesList();
 
-                List<DevCardType> values = unPlayedPile.getValuesList();
-                if(values.isEmpty()){
-                    throw new IllegalArgumentException("No more development cards left to buy");
-                }
-                DevCardType card = getRandomDevCard(values, random);
-                AddDevCard(playerNumber, card);
+        if (availableCards.isEmpty()) {
+            throw new IllegalArgumentException("No more development cards left to buy");
+        }
 
-                p.removeResource(Resource.ORE, 1);
-                p.removeResource(Resource.WHEAT, 1);
-                p.removeResource(Resource.SHEEP, 1);   
-        } else {
+        return getRandomDevCard(availableCards, random);
+    }
+
+    private void removeRequiredResources(Player player) {
+        player.removeResource(Resource.ORE, REQUIRED_ORE);
+        player.removeResource(Resource.WHEAT, REQUIRED_WHEAT);
+        player.removeResource(Resource.SHEEP, REQUIRED_SHEEP);
+    }
+
+    public void PurchaseDevCard(Player player, Random random){
+        validatePlayerResources(player);
+
+        DevCardType card = drawDevCard(random);
+
+        processDevCardPurchase(player, card);
+    }
+
+    private void validatePlayerResources(Player player) {
+        if (!player.hasResource(Resource.ORE) ||
+                !player.hasResource(Resource.WHEAT) ||
+                !player.hasResource(Resource.SHEEP)) {
+
             throw new IllegalArgumentException("Could not purchase development card");
         }
     }
 
-    public void AddDevCard(int playerNumber, DevCardType devCard) {
+    public void AddDevCard(Player player, DevCardType devCard) {
         unPlayedPile.remove(devCard, 1);
-        players[playerNumber - 1].addDevCard(devCard);
+        player.addDevCard(devCard);
     }
 
-    public void ConsumeDevCard(int playerNumber, DevCardType devCard) {
-        players[playerNumber - 1].playDevCard(devCard);
+    private void processDevCardPurchase(Player player, DevCardType card) {
+        removeRequiredResources(player);
+        AddDevCard(player, card);
     }
 
-    public int TotalNumberOfResourcesHeld() {
-        int totalCount = 0;
-        for (Player player : players) {
-            totalCount += player.getTotalNumberOfResources();
-        }
-        return totalCount;
-    }
-
-    public int NumberOfResourceHeldByPlayer(int playerNumber, Resource resource) {
-        return players[playerNumber - 1].getResourceCount(resource);
-    }
-
-    public void GainResourceFromBank(int playerNumber, Resource resource, int amount) {
-        players[playerNumber - 1].addResource(resource, amount);
-    }
-
-    public void ConsumeResource(int playerNumber, Resource resource, int amount) {
-        players[playerNumber - 1].removeResource(resource, amount);
-    }
-
-    public void TradeResourceWithinPlayers(int playerNumber, int otherPlayerNumber,
-                                           CountCollection<Resource> resources, CountCollection<Resource> otherResources) {
-        TradeResourceWithinPlayers(players[playerNumber - 1], players[otherPlayerNumber - 1],
-                resources, otherResources);
-    }
-
-    public void TradeResourceWithinPlayers(Player player1, Player player2,
-                                           CountCollection<Resource> resources, CountCollection<Resource> otherResources) {
-        player1.TradeResource(player2, resources, otherResources);
-    }
-
-    public void TradeResourceWithBank(int playerNumber, Resource resource, int numberOfResources,
-                                      Resource resourceFromBank, List<PortType> ownedPorts) {
-        TradeResourceWithBank(players[playerNumber - 1], resource, numberOfResources, resourceFromBank, ownedPorts);
-    }
-
-    public void TradeResourceWithBank(Player player, Resource resource, int numberOfResources,
-            Resource resourceFromBank, List<PortType> ownedPorts) {
-
+    private void validateTradeAmount(int numberOfResources, Resource resource) {
         if (numberOfResources < 2 || numberOfResources > 4) {
             throw new IllegalArgumentException("Cannot trade with " + numberOfResources + " of Resource " +
                     resource.name());
         }
+    }
 
+    private int getExchangeRate(Resource resource, int numberOfResources, List<PortType> ownedPorts) {
         if (numberOfResources == 4) {
-            player.removeResource(resource, 4);
-            player.addResource(resourceFromBank, 1);
-        } else {
-            if (numberOfResources == 3 && ownedPorts.contains(PortType.THREE_FOR_ONE)) {
-                player.removeResource(resource, 3);
-                player.addResource(resourceFromBank, 1);
-            } else if (resource == Resource.WHEAT && ownedPorts.contains(PortType.WHEAT) ||
-                    resource == Resource.ORE && ownedPorts.contains(PortType.ORE) ||
-                    resource == Resource.SHEEP && ownedPorts.contains(PortType.SHEEP) ||
-                    resource == Resource.WOOD && ownedPorts.contains(PortType.WOOD) ||
-                    resource == Resource.BRICK && ownedPorts.contains(PortType.BRICK)) {
-
-                player.removeResource(resource, 2);
-
-                player.addResource(resourceFromBank, 1);
-            }else {
-                throw new IllegalArgumentException("Cannot trade with " + numberOfResources + " of Resource " +
-                        resource.name());
-            }
-
+            return 4; // Default exchange rate
         }
+        if (numberOfResources == 3 && ownedPorts.contains(PortType.THREE_FOR_ONE)) {
+            return 3;
+        }
+        if (hasMatchingPort(resource, ownedPorts)) {
+            return 2; // Specialized port allows 2:1 trade
+        }
+        throw new IllegalArgumentException("Cannot trade with " + numberOfResources + " of Resource " + resource.name());
+    }
+
+    private boolean hasMatchingPort(Resource resource, List<PortType> ownedPorts) {
+        return (resource == Resource.WHEAT && ownedPorts.contains(PortType.WHEAT)) ||
+                (resource == Resource.ORE && ownedPorts.contains(PortType.ORE)) ||
+                (resource == Resource.SHEEP && ownedPorts.contains(PortType.SHEEP)) ||
+                (resource == Resource.WOOD && ownedPorts.contains(PortType.WOOD)) ||
+                (resource == Resource.BRICK && ownedPorts.contains(PortType.BRICK));
+    }
+
+    private void processTrade(Player player, Resource resource, int numberOfResources,
+                              Resource resourceFromBank, int exchangeRate) {
+
+        player.removeResource(resource, exchangeRate);
+        player.addResource(resourceFromBank, 1);
+    }
+
+    public void TradeResourceWithBank(Player player, Resource resource, int numberOfResources,
+            Resource resourceFromBank, List<PortType> ownedPorts) {
+        validateTradeAmount(numberOfResources, resource);
+
+        int exchangeRate = getExchangeRate(resource, numberOfResources, ownedPorts);
+
+        processTrade(player, resource, numberOfResources, resourceFromBank, exchangeRate);
     }
 }

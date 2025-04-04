@@ -225,7 +225,7 @@ public class SidePanelController {
         if(dialog.isCanceled()){
             return;
         }
-        game.purchaseDevelopmentCard(game.currentPlayerTurnIndex + 1);
+        game.purchaseDevelopmentCard(player);
         updateDisplay();
     }
 
@@ -239,12 +239,12 @@ public class SidePanelController {
         }
         switch(card.get()){
             case KNIGHT:
-            game.playKnightCard(game.currentPlayerTurnIndex + 1);
+            game.playKnightCard(player);
             break;
             case MONOPOLY:
             MonopolyDialog dialog2 = new MonopolyDialog(window, resourceInfo, bundle);
             Resource monopolyResource = dialog2.getMonopolyResource();
-            game.playMonopolyCard(game.currentPlayerTurnIndex + 1, monopolyResource);
+            game.playMonopolyCard(player, monopolyResource);
             break;
             case ROAD_BUILDING:
             player.addResource(Resource.WOOD, 2);
@@ -266,7 +266,7 @@ public class SidePanelController {
             case YEAR_OF_PLENTY:
             YearOfPlentyDialog dialog3 = new YearOfPlentyDialog(window, resourceInfo, bundle);
             ArrayList<Resource> list = dialog3.getResources();
-            game.playYearOfPlentyCard(game.currentPlayerTurnIndex + 1, list.get(0), list.get(1));
+            game.playYearOfPlentyCard(player, list.get(0), list.get(1));
             break;
         }
         updateDisplay();

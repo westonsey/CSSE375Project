@@ -1,5 +1,7 @@
 package board;
 
-public enum BuildingType {
-    SETTLEMENT, CITY;
+public interface BuildingType {
+    int determineResourceGain(ResourceGainContext context);
+
+    BuildingCode getBuildingCode();
 }

@@ -25,6 +25,10 @@ public abstract class Building {
     public BuildingType getType() {
         return type;
     }
+
+    public BuildingCode getCode() {
+        return type.getBuildingCode();
+    }
 }
 
 

@@ -2,7 +2,7 @@ package integration;
 
 import board.Board;
 import board.Building;
-import board.BuildingType;
+import board.BuildingCode;
 import board.Settlement;
 import board.location.VertexLocation;
 import game.GameHandler;
@@ -47,7 +47,7 @@ public class PlayerPurchasingCityTests {
     public void settlementIsRemovedAtLocationSrowScol(Integer row, Integer col) {
         VertexLocation vl = new VertexLocation(row, col);
         for(Building b : this.board.getBuildingsForPlayer(this.player)){
-            assertEquals(BuildingType.CITY, this.board.getBuildingsForPlayer(this.player).get(0).getType());
+            assertEquals(BuildingCode.CITY, this.board.getBuildingsForPlayer(this.player).get(0).getCode());
         }
     }
 
@@ -55,7 +55,7 @@ public class PlayerPurchasingCityTests {
     public void cityIsPlacedAtLocationSrowScol(Integer row, Integer col) {
         VertexLocation vl = new VertexLocation(row, col);
         for(Building b : this.board.getBuildingsForPlayer(this.player)){
-            assertEquals(BuildingType.CITY, this.board.getBuildingsForPlayer(this.player).get(0).getType());
+            assertEquals(BuildingCode.CITY, this.board.getBuildingsForPlayer(this.player).get(0).getCode());
         }
     }
 

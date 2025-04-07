@@ -1,12 +1,12 @@
 package org.openjfx.ui;
 
-import board.Board;
-import board.Building;
-import board.BuildingType;
-import board.Hexagon;
 import board.Port;
+import board.BuildingCode;
+import board.Board;
 import board.PortType;
+import board.Building;
 import board.Settlement;
+import board.Hexagon;
 import board.location.BorderLocation;
 import board.location.HexLocation;
 import board.location.VertexLocation;
@@ -191,7 +191,7 @@ public class BoardController {
     private Settlement getSettlement(VertexLocation loc) {
         List<Building> buildings = board.getBuildingsForPlayer(game.playerByTurnIndex());
         for (int i = 0; i < buildings.size(); i++) {
-            if (buildings.get(i).getType() == BuildingType.SETTLEMENT &&
+            if (buildings.get(i).getCode() == BuildingCode.SETTLEMENT &&
                     buildings.get(i).getLocation().equals(loc)) {
                 return (Settlement) buildings.get(i);
             }

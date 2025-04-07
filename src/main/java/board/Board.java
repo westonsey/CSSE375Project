@@ -220,7 +220,7 @@ public class Board {
         for (int i = 0; i < buildings.size(); i++) {
             Building bu = buildings.get(i);
             if (b.getOwner() == bu.getOwner() && b.getLocation().equals(bu.getLocation()) &&
-                    b.getType() == bu.getType()) {
+                    b.getCode() == bu.getCode()) {
                 return i;
             }
         }
@@ -395,12 +395,10 @@ public class Board {
     public void addPlayerResourcesFromHex(Hexagon hex) {
         List<VertexLocation> vertListForHex= hex.getVertices();
         List<Building> buildingLst = addPlayerResourcesFromHexGetBuildings(vertListForHex);
-        for(Building b : buildingLst){
-            if(b.getType() == BuildingType.CITY){
-                b.getOwner().addResource(hex.resource, 2);
-            }else {
-                b.getOwner().addResource(hex.resource, 1);
-            }
+        for(Building b : buildingLst) {
+            ResourceGainContext context = new ResourceGainContext(hex.resource);
+            int resourceCountToGive = b.getType().determineResourceGain(context);
+            b.getOwner().addResource(hex.resource, resourceCountToGive);
         }
     }
 

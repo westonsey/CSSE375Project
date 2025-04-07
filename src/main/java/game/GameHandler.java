@@ -207,7 +207,7 @@ public class GameHandler {
     }
 
     private void handleSetUpHandleSwitchPlayerTurnForward(){
-        if(this.currentPlayerTurnIndex < 3 ) {
+        if(this.currentPlayerTurnIndex < (players.size()-1) ) {
             handleSetUpHandleSwitchPlayerTurnForwardNotEnd();
         }else{
             handleSetUpHandleSwitchPlayerTurnForwardEnd();
@@ -222,14 +222,14 @@ public class GameHandler {
     }
 
     private void handleSetUpHandleSwitchPlayerTurnForwardEnd(){
-        this.currentPlayerTurnIndex = 3;
+        this.currentPlayerTurnIndex = players.size()-1;
         this.turnMovementDirection = TurnMovementDirection.REVERSE;
         this.gameState = GameState.SETUP;
         this.turnPhase = TurnPhase.PLACING_BUILDING;
     }
 
     private void handleNormalPlayHandleSwitchPlayerTurn(){
-        if(this.currentPlayerTurnIndex < 3) {
+        if(this.currentPlayerTurnIndex < (players.size()-1)) {
             handleNormalPlayHandleSwitchPlayerTurnNotEnd();
         }else{
             handleNormalPlayHandleSwitchPlayerTurnEnd();

@@ -500,14 +500,17 @@ public class GameController {
     private BoardController boardController;
     private SidePanelController sidePanelController;
 
-    public GameController(ResourceBundle bundle, Window window) {
+    public GameController(ResourceBundle bundle, Window window, Map<PlayerColors, Boolean> players) {
         this.bundle = bundle;
         this.window = window;
         game = new GameHandler(new Random(), new Random());
-        game.addPlayer(new Player(PlayerColors.RED));
-        game.addPlayer(new Player(PlayerColors.BLUE));
-        game.addPlayer(new Player(PlayerColors.YELLOW));
-        game.addPlayer(new Player(PlayerColors.WHITE));
+
+        players.forEach((color, readyValue) -> {
+            if(readyValue) {
+                game.addPlayer(new Player(color));
+            }
+        });
+
 
         board = game.getBoard();
         boardController = new BoardController(game, board);

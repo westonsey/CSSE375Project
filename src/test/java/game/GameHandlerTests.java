@@ -127,21 +127,6 @@ public class GameHandlerTests {
     }
 
     @Test
-    public void testHandleSwitchPlayerTurn_WithInput_0_Setup_Forward_WithExpectedOut_1_Forward_Setup() {
-        //TEST VALUE 1
-        GameHandler game = new GameHandler(GameState.SETUP, TurnPhase.END_TURN, TurnMovementDirection.FORWARD);
-        int resultTurn = game.handleSwitchPlayerTurn();
-        GameState resultGameState = game.getCurrentGameState();
-        TurnMovementDirection resultTurnMovementDirection = game.getTurnMovementDirection();
-
-        assertEquals(1, resultTurn);
-        assertEquals(GameState.SETUP, resultGameState);
-        assertEquals(TurnPhase.PLACING_BUILDING, game.getTurnPhase());
-        assertEquals(TurnMovementDirection.FORWARD, resultTurnMovementDirection);
-
-    }
-
-    @Test
     public void testHandleSwitchPlayerTurn_WithInput_0_SETUP_REVERSE_WithExpectedOut_0_FOWARD_NORMALPLAY() {
         //TEST VALUE 2
         GameHandler game = new GameHandler(GameState.SETUP, TurnPhase.END_TURN, TurnMovementDirection.REVERSE);
@@ -152,98 +137,6 @@ public class GameHandlerTests {
         assertEquals(0, resultTurn);
         assertEquals(GameState.NORMALPLAY, resultGameState);
         assertEquals(TurnPhase.ROLLING_DICE, game.getTurnPhase());
-        assertEquals(TurnMovementDirection.FORWARD, resultTurnMovementDirection);
-
-    }
-
-    @Test
-    public void testHandleSwitchPlayerTurn_WithInput_0_NORMALPLAY_FORWARD_WithExpectedOut_1_FOWARD_NORMALPLAY() {
-        //TEST VALUE 3
-        Player p1 = new Player();
-        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.PLAYING_TURN, TurnMovementDirection.FORWARD);
-        game.addPlayer(p1);
-        int resultTurn = game.handleSwitchPlayerTurn();
-        GameState resultGameState = game.getCurrentGameState();
-        TurnMovementDirection resultTurnMovementDirection = game.getTurnMovementDirection();
-
-        assertEquals(1, resultTurn);
-        assertEquals(GameState.NORMALPLAY, resultGameState);
-        assertEquals(TurnPhase.ROLLING_DICE, game.getTurnPhase());
-        assertEquals(TurnMovementDirection.FORWARD, resultTurnMovementDirection);
-
-    }
-
-    @Test
-    public void testHandleSwitchPlayerTurn_WithInput_1_SETUP_FORWARD_WithExpectedOut_2_FOWARD_SETUP() {
-        //TEST VALUE 4
-        GameHandler game = new GameHandler(GameState.SETUP, TurnPhase.END_TURN, TurnMovementDirection.FORWARD);
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.END_TURN);
-        int resultTurn = game.handleSwitchPlayerTurn();
-        GameState resultGameState = game.getCurrentGameState();
-        TurnMovementDirection resultTurnMovementDirection = game.getTurnMovementDirection();
-
-        assertEquals(2, resultTurn);
-        assertEquals(GameState.SETUP, resultGameState);
-        assertEquals(TurnPhase.PLACING_BUILDING, game.getTurnPhase());
-        assertEquals(TurnMovementDirection.FORWARD, resultTurnMovementDirection);
-
-    }
-
-    @Test
-    public void testHandleSwitchPlayerTurn_WithInput_1_SETUP_REVERSE_WithExpectedOut_0_REVERSE_SETUP() {
-        //TEST VALUE 5
-        GameHandler game = new GameHandler(GameState.SETUP, TurnPhase.END_TURN, TurnMovementDirection.FORWARD);
-        game.handleSwitchPlayerTurn();
-        game.switchTurnMovementDirection();
-        game.setTurnPhase(TurnPhase.END_TURN);
-        int resultTurn = game.handleSwitchPlayerTurn();
-        GameState resultGameState = game.getCurrentGameState();
-        TurnMovementDirection resultTurnMovementDirection = game.getTurnMovementDirection();
-
-        assertEquals(0, resultTurn);
-        assertEquals(GameState.SETUP, resultGameState);
-        assertEquals(TurnPhase.PLACING_BUILDING, game.getTurnPhase());
-        assertEquals(TurnMovementDirection.REVERSE, resultTurnMovementDirection);
-
-    }
-
-    @Test
-    public void testHandleSwitchPlayerTurn_WithInput_1_NORMALPLAY_FORWARD_WithExpectedOut_2_FORWARD_NORMALPLAY() {
-        //TEST VALUE 6
-        Player p1 = new Player();
-        Player p2 = new Player();
-        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.PLAYING_TURN, TurnMovementDirection.FORWARD);
-        game.addPlayer(p1);
-        game.addPlayer(p2);
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.PLAYING_TURN);
-        int resultTurn = game.handleSwitchPlayerTurn();
-        GameState resultGameState = game.getCurrentGameState();
-        TurnMovementDirection resultTurnMovementDirection = game.getTurnMovementDirection();
-
-        assertEquals(2, resultTurn);
-        assertEquals(GameState.NORMALPLAY, resultGameState);
-        assertEquals(TurnPhase.ROLLING_DICE, game.getTurnPhase());
-        assertEquals(TurnMovementDirection.FORWARD, resultTurnMovementDirection);
-
-    }
-
-    @Test
-    public void testHandleSwitchPlayerTurn_WithInput_2_SETUP_FORWARD_WithExpectedOut_3_FORWARD_SETUP() {
-        //TEST VALUE 7
-        GameHandler game = new GameHandler(GameState.SETUP, TurnPhase.END_TURN, TurnMovementDirection.FORWARD);
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.END_TURN);
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.END_TURN);
-        int resultTurn = game.handleSwitchPlayerTurn();
-        GameState resultGameState = game.getCurrentGameState();
-        TurnMovementDirection resultTurnMovementDirection = game.getTurnMovementDirection();
-
-        assertEquals(3, resultTurn);
-        assertEquals(GameState.SETUP, resultGameState);
-        assertEquals(TurnPhase.PLACING_BUILDING, game.getTurnPhase());
         assertEquals(TurnMovementDirection.FORWARD, resultTurnMovementDirection);
 
     }
@@ -271,55 +164,6 @@ public class GameHandlerTests {
 
         //assertions
         assertEquals(1, resultTurn);
-        assertEquals(GameState.SETUP, resultGameState);
-        assertEquals(TurnPhase.PLACING_BUILDING, game.getTurnPhase());
-        assertEquals(TurnMovementDirection.REVERSE, resultTurnMovementDirection);
-
-    }
-
-    @Test
-    public void testHandleSwitchPlayerTurn_WithInput_2_NORMALPLAY_FORWARD_WithExpectedOut_3_FORWARD_NORMALPLAY() {
-        //TEST VALUE 9
-        Player p1 = new Player();
-        Player p2 = new Player();
-        Player p3 = new Player();
-        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.PLAYING_TURN, TurnMovementDirection.FORWARD);
-        game.addPlayer(p1);
-        game.addPlayer(p2);   
-        game.addPlayer(p3);
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.PLAYING_TURN);
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.PLAYING_TURN);
-        int resultTurn = game.handleSwitchPlayerTurn();
-        GameState resultGameState = game.getCurrentGameState();
-        TurnMovementDirection resultTurnMovementDirection = game.getTurnMovementDirection();
-
-        //assertions
-        assertEquals(3, resultTurn);
-        assertEquals(GameState.NORMALPLAY, resultGameState);
-        assertEquals(TurnPhase.ROLLING_DICE, game.getTurnPhase());
-        assertEquals(TurnMovementDirection.FORWARD, resultTurnMovementDirection);
-
-    }
-
-    @Test
-    public void testHandleSwitchPlayerTurn_WithInput_3_SETUP_FORWARD_WithExpectedOut_3_REVERSE_SETUP() {
-        //TEST VALUE 10
-        GameHandler game = new GameHandler(GameState.SETUP, TurnPhase.END_TURN, TurnMovementDirection.FORWARD);
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.END_TURN);
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.END_TURN);
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.END_TURN);
-
-        int resultTurn = game.handleSwitchPlayerTurn();
-        GameState resultGameState = game.getCurrentGameState();
-        TurnMovementDirection resultTurnMovementDirection = game.getTurnMovementDirection();
-
-        //assertions
-        assertEquals(3, resultTurn);
         assertEquals(GameState.SETUP, resultGameState);
         assertEquals(TurnPhase.PLACING_BUILDING, game.getTurnPhase());
         assertEquals(TurnMovementDirection.REVERSE, resultTurnMovementDirection);

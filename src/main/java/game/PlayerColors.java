@@ -4,5 +4,7 @@ public enum PlayerColors {
     RED,
     BLUE,
     YELLOW,
-    WHITE
+    WHITE,
+    PINK,
+    GREEN;
 }

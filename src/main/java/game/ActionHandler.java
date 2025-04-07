@@ -243,10 +243,10 @@ public class ActionHandler {
 		}
 	}
 
-	void handleNormalRollLoop(List<Hexagon> hexes){
+	void handleNormalRollLoop(List<Hexagon> hexes, int roll1, int roll2){
 		for (Hexagon h : hexes) {
 			if(!h.location.equals(gameStateManager.getRobber().loc)) {
-				board.addPlayerResourcesFromHex(h);
+				board.addPlayerResourcesFromHex(h, roll1, roll2);
 			}
 		}
 	}

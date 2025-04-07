@@ -812,7 +812,7 @@ public class BoardTests {
         List<Hexagon> hexLst = board.getHexList();
         Player mockPlayer = EasyMock.createMock(Player.class);
         EasyMock.expect(mockPlayer.getResourceCount(hexLst.get(0).resource)).andReturn(0);
-        board.addPlayerResourcesFromHex(hexLst.get(0));
+        board.addPlayerResourcesFromHex(hexLst.get(0), 5, 2);
         assertEquals(0, mockPlayer.getResourceCount(hexLst.get(0).resource));
     }
 
@@ -822,7 +822,7 @@ public class BoardTests {
         List<Hexagon> hexLst = board.getHexList();
         Player player1 = new Player();
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
-        board.addPlayerResourcesFromHex(hexLst.get(0));
+        board.addPlayerResourcesFromHex(hexLst.get(0), 5, 2);
         assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
     }
 
@@ -833,7 +833,7 @@ public class BoardTests {
         Player player1 = new Player();
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
         board.upgradeSettlement((Settlement)board.buildings.get(0));
-        board.addPlayerResourcesFromHex(hexLst.get(0));
+        board.addPlayerResourcesFromHex(hexLst.get(0), 5, 2);
         assertEquals(2, player1.getResourceCount(hexLst.get(0).resource));
     }
 
@@ -844,7 +844,7 @@ public class BoardTests {
         Player player1 = new Player();
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(2), true);
-        board.addPlayerResourcesFromHex(hexLst.get(0));
+        board.addPlayerResourcesFromHex(hexLst.get(0), 5, 2);
 
         assertEquals(2, player1.getResourceCount(hexLst.get(0).resource));
     }
@@ -857,7 +857,7 @@ public class BoardTests {
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(2), true);
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(4), true);
-        board.addPlayerResourcesFromHex(hexLst.get(0));
+        board.addPlayerResourcesFromHex(hexLst.get(0), 5, 2);
 
         assertEquals(3, player1.getResourceCount(hexLst.get(0).resource));
     }

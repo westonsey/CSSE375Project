@@ -392,11 +392,11 @@ public class Board {
         return this.hexagons;
     }
 
-    public void addPlayerResourcesFromHex(Hexagon hex) {
+    public void addPlayerResourcesFromHex(Hexagon hex, int roll1, int roll2) {
         List<VertexLocation> vertListForHex= hex.getVertices();
         List<Building> buildingLst = addPlayerResourcesFromHexGetBuildings(vertListForHex);
         for(Building b : buildingLst) {
-            ResourceGainContext context = new ResourceGainContext(hex.resource);
+            ResourceGainContext context = new ResourceGainContext(hex.resource, roll1, roll2);
             int resourceCountToGive = b.getType().determineResourceGain(context);
             b.getOwner().addResource(hex.resource, resourceCountToGive);
         }

@@ -166,7 +166,7 @@ public class GameHandler {
         checkTurnPhaseValidDoDiceRoll();
         int roll1 = rollDice();
         int roll2 = rollDice();
-        handleRoll(roll1 + roll2);
+        handleRoll(roll1, roll2);
         return new Tuple<>(roll1, roll2);
     }
 
@@ -460,17 +460,17 @@ public class GameHandler {
         return null;
     }
 
-    private void handleRoll(int roll) {
-        if (roll == ROBBER_ROLL) {
+    private void handleRoll(int roll1, int roll2) {
+        if (roll1 + roll2 == ROBBER_ROLL) {
             handleRobberRoll();
         } else {
-            handleNormalRoll(roll);
+            handleNormalRoll(roll1, roll2);
         }
     }
 
-    private void handleNormalRoll(int roll) {
-        List<Hexagon> hexes = board.getHexesAtNumber(roll, new ArrayList<>());
-        actionHandler.handleNormalRollLoop(hexes);
+    private void handleNormalRoll(int roll1, int roll2) {
+        List<Hexagon> hexes = board.getHexesAtNumber(roll1 + roll2, new ArrayList<>());
+        actionHandler.handleNormalRollLoop(hexes, roll1, roll2);
         turnPhase = TurnPhase.PLAYING_TURN;
     }
 

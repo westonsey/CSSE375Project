@@ -3,6 +3,7 @@ package board;
 import board.location.BorderLocation;
 import board.location.HexLocation;
 import board.location.VertexLocation;
+import game.ResourceGainContext;
 import org.easymock.EasyMock;
 import game.Player;
 import game.Resource;
@@ -812,7 +813,8 @@ public class BoardTests {
         List<Hexagon> hexLst = board.getHexList();
         Player mockPlayer = EasyMock.createMock(Player.class);
         EasyMock.expect(mockPlayer.getResourceCount(hexLst.get(0).resource)).andReturn(0);
-        board.addPlayerResourcesFromHex(hexLst.get(0), 5, 2);
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 5, 2, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
         assertEquals(0, mockPlayer.getResourceCount(hexLst.get(0).resource));
     }
 
@@ -822,8 +824,20 @@ public class BoardTests {
         List<Hexagon> hexLst = board.getHexList();
         Player player1 = new Player();
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
-        board.addPlayerResourcesFromHex(hexLst.get(0), 5, 2);
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 5, 2, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
         assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1BuildingsHex_AndRobber_AddNoResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 5, 2, true);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(0, player1.getResourceCount(hexLst.get(0).resource));
     }
 
     @Test
@@ -833,7 +847,8 @@ public class BoardTests {
         Player player1 = new Player();
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
         board.upgradeSettlement((Settlement)board.buildings.get(0));
-        board.addPlayerResourcesFromHex(hexLst.get(0), 5, 2);
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 5, 2, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
         assertEquals(2, player1.getResourceCount(hexLst.get(0).resource));
     }
 
@@ -844,7 +859,8 @@ public class BoardTests {
         Player player1 = new Player();
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(2), true);
-        board.addPlayerResourcesFromHex(hexLst.get(0), 5, 2);
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 5, 2, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
 
         assertEquals(2, player1.getResourceCount(hexLst.get(0).resource));
     }
@@ -857,7 +873,8 @@ public class BoardTests {
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(2), true);
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(4), true);
-        board.addPlayerResourcesFromHex(hexLst.get(0), 5, 2);
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 5, 2, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
 
         assertEquals(3, player1.getResourceCount(hexLst.get(0).resource));
     }

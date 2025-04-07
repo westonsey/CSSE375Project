@@ -1,8 +1,13 @@
 package board;
 
+import game.ResourceGainContext;
+
 public class SettlementBuildingType implements BuildingType {
     @Override
     public int determineResourceGain(ResourceGainContext context) {
+        if (context.hasRobber()) {
+            return 0;
+        }
         return 1;
     }
 

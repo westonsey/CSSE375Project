@@ -5,6 +5,8 @@ import board.location.HexLocation;
 import board.location.VertexLocation;
 import game.Player;
 import game.Resource;
+import game.ResourceGainContext;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -392,13 +394,14 @@ public class Board {
         return this.hexagons;
     }
 
-    public void addPlayerResourcesFromHex(Hexagon hex, int roll1, int roll2) {
+    public void addPlayerResourcesFromHex(Hexagon hex, ResourceGainContext context) {
         List<VertexLocation> vertListForHex= hex.getVertices();
         List<Building> buildingLst = addPlayerResourcesFromHexGetBuildings(vertListForHex);
         for(Building b : buildingLst) {
-            ResourceGainContext context = new ResourceGainContext(hex.resource, roll1, roll2);
             int resourceCountToGive = b.getType().determineResourceGain(context);
-            b.getOwner().addResource(hex.resource, resourceCountToGive);
+            if (resourceCountToGive > 0) {
+                b.getOwner().addResource(hex.resource, resourceCountToGive);
+            }
         }
     }
 

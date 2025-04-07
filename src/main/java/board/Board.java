@@ -380,15 +380,6 @@ public class Board {
         }
         return new Port(null, null, null);
     }
-  
-    public List<Hexagon> getHexesAtNumber(int number, List<Hexagon> hexLst){
-        for (Hexagon hex : this.hexagons){
-            if (hex.number == number) {
-                hexLst.add(hex);
-            }
-        }
-        return hexLst;
-    }
 
     public List<Hexagon> getHexList(){
         return this.hexagons;

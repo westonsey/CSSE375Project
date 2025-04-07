@@ -469,7 +469,7 @@ public class GameHandler {
     }
 
     private void handleNormalRoll(int roll1, int roll2) {
-        List<Hexagon> hexes = board.getHexesAtNumber(roll1 + roll2, new ArrayList<>());
+        List<Hexagon> hexes = board.getHexList();
         actionHandler.handleNormalRollLoop(hexes, roll1, roll2);
         turnPhase = TurnPhase.PLAYING_TURN;
     }

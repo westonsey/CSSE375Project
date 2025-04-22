@@ -27,6 +27,8 @@ public class GameHandler {
     private CardTracker cardTracker;
     private VictoryPointManager victoryPointManager;
     private PlayerTurnManager playerTurnManager;
+    private BuildingManager buildingManager;
+    private TradeManager tradeManager;
 
     private static final int ROBBER_ROLL = 7;
     private static final int INVALID_PLAYER_INDEX = -1;
@@ -65,6 +67,8 @@ public class GameHandler {
         actionHandler = new ActionHandler(board, this, cardTracker);
         playerTurnManager = new PlayerTurnManager(inputGameState, turnPhase, inputTurnMovementDirection, 
                                                 players, board, actionHandler, randInt, robberManager);
+        buildingManager = new BuildingManager(board, actionHandler, playerTurnManager);
+        tradeManager = new TradeManager(actionHandler, cardTracker);
     }
 
     public void setVictoryPointManager() {
@@ -130,8 +134,10 @@ public class GameHandler {
 
     public void playRoadBuildingCard(Player player, BorderLocation loc1, BorderLocation loc2) {
         player.playDevCard(DevCardType.ROAD_BUILDING);
-        board.placeRoad(player, loc1, false);
-        board.placeRoad(player, loc2, false);
+        // Use ActionHandler directly to bypass resource requirements
+        actionHandler.placeRoadAllowed(player, loc1, playerTurnManager.getTurnPhase());
+        actionHandler.placeRoadAllowed(player, loc2, playerTurnManager.getTurnPhase());
+        player.setLongestRoad(findLongestRoad(player));
     }
 
     public void playKnightCard(Player player) {
@@ -162,11 +168,8 @@ public class GameHandler {
         return playerTurnManager.doDiceRoll();
     }
 
-    // These methods have been moved to PlayerTurnManager
-
     public int handleSwitchPlayerTurn() {
         int newIndex = playerTurnManager.handleSwitchPlayerTurn();
-        // Update local state to match PlayerTurnManager
         this.gameState = playerTurnManager.getGameState();
         this.turnPhase = playerTurnManager.getTurnPhase();
         this.turnMovementDirection = playerTurnManager.getTurnMovementDirection();
@@ -178,7 +181,7 @@ public class GameHandler {
         this.victoryPointManager.handleVictoryPoints(playerTurnManager.getCurrentPlayerTurnIndex(), this.players);
         GameState newState = victoryPointManager.getGameState();
         playerTurnManager.setGameState(newState);
-        this.gameState = newState; // Keep local copy in sync
+        this.gameState = newState;
     }
 
     public Player playerByTurnIndex() {
@@ -195,7 +198,7 @@ public class GameHandler {
 
     public void setTurnPhase(TurnPhase phase) {
         playerTurnManager.setTurnPhase(phase);
-        this.turnPhase = phase; // Keep local copy in sync
+        this.turnPhase = phase;
     }
 
     public Board getBoard() {
@@ -212,58 +215,29 @@ public class GameHandler {
     }
 
     public boolean canPlaceSettlement(Player p, VertexLocation loc) {
-        boolean force = playerTurnManager.getGameState() == GameState.SETUP;
-        boolean requiresResources = playerTurnManager.getTurnPhase() == TurnPhase.PLAYING_TURN;
-        return actionHandler.canPlaceSettlementConditional(p, loc, force, requiresResources, playerTurnManager.getTurnPhase());
+        return buildingManager.canPlaceSettlement(p, loc);
     }
 
     public boolean canPlaceRoad(Player p, BorderLocation loc) {
-        boolean requiresResources = playerTurnManager.getTurnPhase() == TurnPhase.PLAYING_TURN;
-        TurnPhase currentPhase = playerTurnManager.getTurnPhase();
-        if (currentPhase == TurnPhase.PLACING_ROAD || currentPhase == TurnPhase.PLAYING_TURN) {
-            return actionHandler.canPlaceRoadRequiresResources(p, loc, requiresResources);
-        }
-        return false;
+        return buildingManager.canPlaceRoad(p, loc);
     }
 
     public boolean canUpgradeSettlement(Settlement s) {
-        Player owner = s.getOwner();
-        return board.canUpgradeSettlement(s) && playerTurnManager.getTurnPhase() == TurnPhase.PLAYING_TURN &&
-                owner.getResourceCount(Resource.ORE) >= 3 && owner.getResourceCount(Resource.WHEAT) >= 2;
+        return buildingManager.canUpgradeSettlement(s);
     }
 
     public void placeSettlement(Player p, VertexLocation loc) {
-        if (canPlaceSettlement(p, loc)) {
-            board.placeSettlement(p, loc, playerTurnManager.getGameState() == GameState.SETUP);
-            actionHandler.placeSettlementAllowed(p, loc, playerTurnManager.getTurnPhase(), playerTurnManager.getTurnMovementDirection());
-            if (playerTurnManager.getTurnPhase() == TurnPhase.PLACING_BUILDING) {
-                playerTurnManager.setTurnPhase(TurnPhase.PLACING_ROAD);
-                this.turnPhase = TurnPhase.PLACING_ROAD; // Keep local copy in sync
-            }
-        } else {
-            actionHandler.placeSettlementThrowException(loc);
-        }
+        buildingManager.placeSettlement(p, loc);
+        this.turnPhase = playerTurnManager.getTurnPhase(); // Keep local copy in sync
     }
 
     public void placeRoad(Player p, BorderLocation loc) {
-        if (canPlaceRoad(p, loc)) {
-            actionHandler.placeRoadAllowed(p, loc, playerTurnManager.getTurnPhase());
-            if (playerTurnManager.getTurnPhase() == TurnPhase.PLACING_ROAD) {
-                playerTurnManager.setTurnPhase(TurnPhase.END_TURN);
-                this.turnPhase = TurnPhase.END_TURN; // Keep local copy in sync
-            }
-            p.setLongestRoad(findLongestRoad(p));
-        } else {
-            actionHandler.placeRoadThrowException(loc);
-        }
+        buildingManager.placeRoad(p, loc);
+        this.turnPhase = playerTurnManager.getTurnPhase(); // Keep local copy in sync
     }
 
     public void upgradeSettlement(Settlement s) {
-        if (canUpgradeSettlement(s)) {
-            actionHandler.upgradeSettlementAllowed(s);
-        } else {
-            throw new IllegalArgumentException("Cannot upgrade settlement!");
-        }
+        buildingManager.upgradeSettlement(s);
     }
 
     public void stealResource(Player thief, Player victim, Random rand) {
@@ -302,7 +276,6 @@ public class GameHandler {
         actionHandler.discardResourcesIterator(player, resourceIterator);
         actionHandler.discardResourcesRemoveResource(player, resources, resourceIterator);
         playerTurnManager.incrementDiscardPlayerIndex(players);
-        // Local state will be updated through the PlayerTurnManager
         this.turnPhase = playerTurnManager.getTurnPhase();
     }
 
@@ -321,27 +294,21 @@ public class GameHandler {
         return null;
     }
 
-    // These methods are now handled by PlayerTurnManager
-
     public int findLongestRoad(Player player) {
-        Set<Road> visitedRoads = new HashSet<>();
-        List<Road> playerRoads = board.getRoadsForPlayer(player);
-        return actionHandler.findLongestRoadLoop(visitedRoads, player, playerRoads);
+        return buildingManager.findLongestRoad(player);
     }
 
     public void tradeBetweenPlayers(Player player1, Player player2, CountCollection<Resource> fromResources,
             CountCollection<Resource> toResources) {
-        player1.TradeResource(player2, fromResources, toResources);
+        tradeManager.tradeBetweenPlayers(player1, player2, fromResources, toResources);
     }
 
     public void tradeWithBank(Player player, Resource toTrade, Resource toReceive) {
-        int amount = getTradeAmount(player, toTrade);
-        cardTracker.TradeResourceWithBank(player, toTrade, amount, toReceive, actionHandler.getOwnedPorts(player));
+        tradeManager.tradeWithBank(player, toTrade, toReceive);
     }
 
     public int getTradeAmount(Player player, Resource resource) {
-        List<PortType> ports = actionHandler.getOwnedPorts(player);
-        return actionHandler.getTradeAmountHelper(player, resource, ports);
+        return tradeManager.getTradeAmount(player, resource);
     }
 
 }

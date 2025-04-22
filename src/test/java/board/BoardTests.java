@@ -638,7 +638,7 @@ public class BoardTests {
     }
 
     @Test
-    public void addPlayerResourcesFromHex_With1CityHex_Add1ResourceToPlayer() {
+    public void addPlayerResourcesFromHex_With1CityHex_Add2ResourceToPlayer() {
         Board board = generateDefaultBoard();
         List<Hexagon> hexLst = board.getHexList();
         Player player1 = new Player();
@@ -674,6 +674,66 @@ public class BoardTests {
         board.addPlayerResourcesFromHex(hexLst.get(0), context);
 
         assertEquals(3, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1TempleHex_Add1ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new TempleBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1FortHex_Add1ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new FortBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1FortAndRobber_Add1ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new FortBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, true);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1ObservatoryHex_WithRollNotValid_Add0ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new ObservatoryBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(0, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1ObservatoryHex_WithRoll12_Add0ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new ObservatoryBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 6, 6, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
     }
 
     @Test

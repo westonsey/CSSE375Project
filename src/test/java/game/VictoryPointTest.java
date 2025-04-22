@@ -2,6 +2,7 @@ package game;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import board.BuildingCode;
 import org.junit.jupiter.api.Test;
 
 import board.Settlement;
@@ -83,6 +84,63 @@ public class VictoryPointTest {
         handler.getBoard().placeRoad(player1, new BorderLocation(0, 3), true);
         handler.placeSettlement(player1, loc);
         Settlement settlement = new Settlement(loc, player1);
+        handler.upgradeSettlement(settlement);
+
+        assertEquals(2, player1.getVictoryPoints());
+    }
+
+    @Test
+    public void TestPlayerVictoryPoints_upgradeOneSettlementToTemple_Expect3(){
+        Player player1 = new Player();
+        player1.addResource(Resource.WOOD, 1);
+        player1.addResource(Resource.BRICK, 1);
+        player1.addResource(Resource.WHEAT, 3);
+        player1.addResource(Resource.SHEEP, 2);
+        player1.addResource(Resource.ORE, 2);
+        VertexLocation loc = new VertexLocation(0, 2);
+        GameHandler handler = new GameHandler(GameState.NORMALPLAY, TurnPhase.PLAYING_TURN, TurnMovementDirection.FORWARD);
+        handler.getBoard().placeRoad(player1, new BorderLocation(0, 3), true);
+        handler.placeSettlement(player1, loc);
+        Settlement settlement = new Settlement(loc, player1);
+        handler.setCurrentlySelectedUpgrade(BuildingCode.TEMPLE);
+        handler.upgradeSettlement(settlement);
+
+        assertEquals(3, player1.getVictoryPoints());
+    }
+
+    @Test
+    public void TestPlayerVictoryPoints_upgradeOneSettlementToFort_Expect1(){
+        Player player1 = new Player();
+        player1.addResource(Resource.WOOD, 1);
+        player1.addResource(Resource.BRICK, 2);
+        player1.addResource(Resource.WHEAT, 1);
+        player1.addResource(Resource.SHEEP, 1);
+        player1.addResource(Resource.ORE, 1);
+        VertexLocation loc = new VertexLocation(0, 2);
+        GameHandler handler = new GameHandler(GameState.NORMALPLAY, TurnPhase.PLAYING_TURN, TurnMovementDirection.FORWARD);
+        handler.getBoard().placeRoad(player1, new BorderLocation(0, 3), true);
+        handler.placeSettlement(player1, loc);
+        Settlement settlement = new Settlement(loc, player1);
+        handler.setCurrentlySelectedUpgrade(BuildingCode.FORT);
+        handler.upgradeSettlement(settlement);
+
+        assertEquals(1, player1.getVictoryPoints());
+    }
+
+    @Test
+    public void TestPlayerVictoryPoints_upgradeOneSettlementToObservatory_Expect2(){
+        Player player1 = new Player();
+        player1.addResource(Resource.WOOD, 2);
+        player1.addResource(Resource.BRICK, 2);
+        player1.addResource(Resource.WHEAT, 1);
+        player1.addResource(Resource.SHEEP, 1);
+        player1.addResource(Resource.ORE, 1);
+        VertexLocation loc = new VertexLocation(0, 2);
+        GameHandler handler = new GameHandler(GameState.NORMALPLAY, TurnPhase.PLAYING_TURN, TurnMovementDirection.FORWARD);
+        handler.getBoard().placeRoad(player1, new BorderLocation(0, 3), true);
+        handler.placeSettlement(player1, loc);
+        Settlement settlement = new Settlement(loc, player1);
+        handler.setCurrentlySelectedUpgrade(BuildingCode.OBSERVATORY);
         handler.upgradeSettlement(settlement);
 
         assertEquals(2, player1.getVictoryPoints());

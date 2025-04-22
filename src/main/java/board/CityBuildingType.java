@@ -40,4 +40,9 @@ public class CityBuildingType implements BuildingType {
     public String getName() {
         return "city";
     }
+
+    @Override
+    public int getVictoryPoints() {
+        return 2;
+    }
 }

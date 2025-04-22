@@ -73,7 +73,8 @@ public class ActionHandler {
 	}
 
 	private void upgradeSettlementAllowedResource(Player owner, BuildingType upgrade){
-		owner.changeVictoryPoints(1);
+		// subtract off the one victory point that the initial settlement already gave
+		owner.changeVictoryPoints(upgrade.getVictoryPoints() - 1);
 		owner.removeResources(upgrade.getRequiredResources());
 	}
 

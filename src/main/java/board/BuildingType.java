@@ -16,4 +16,6 @@ public interface BuildingType {
     CountCollection<Resource> getRequiredResources();
 
     String getName();
+
+    int getVictoryPoints();
 }

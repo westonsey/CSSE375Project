@@ -42,4 +42,9 @@ public class SettlementBuildingType implements BuildingType {
     public String getName() {
         return "settlement";
     }
+
+    @Override
+    public int getVictoryPoints() {
+        return 1;
+    }
 }

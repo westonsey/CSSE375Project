@@ -643,7 +643,7 @@ public class BoardTests {
         List<Hexagon> hexLst = board.getHexList();
         Player player1 = new Player();
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
-        board.upgradeSettlement((Settlement)board.buildings.get(0));
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new CityBuildingType());
         ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
         board.addPlayerResourcesFromHex(hexLst.get(0), context);
         assertEquals(2, player1.getResourceCount(hexLst.get(0).resource));
@@ -724,7 +724,7 @@ public class BoardTests {
         Player player1 = new Player();
         Settlement s = new Settlement(new VertexLocation(1, 1), player1);
         board.placeSettlement(player1, new VertexLocation(1, 1), true);
-        board.upgradeSettlement(s); // Upgrade once to get it to a city
+        board.upgradeSettlement(s, new CityBuildingType()); // Upgrade once to get it to a city
         boolean result = board.canUpgradeSettlement(s);
         assertFalse(result);
     }
@@ -735,7 +735,7 @@ public class BoardTests {
         Player player1 = new Player();
         Settlement s = new Settlement(new VertexLocation(1, 1), player1);
         board.placeSettlement(player1, new VertexLocation(1, 1), true);
-        board.upgradeSettlement(s);
+        board.upgradeSettlement(s, new CityBuildingType());
 
         List<Building> buildings = board.getBuildingsForPlayer(player1);
         assertEquals(1, buildings.size());
@@ -748,7 +748,7 @@ public class BoardTests {
         Board board = generateDefaultBoard();
         Player player1 = new Player();
         Settlement s = new Settlement(new VertexLocation(1, 1), player1);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> board.upgradeSettlement(s));
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> board.upgradeSettlement(s, new CityBuildingType()));
         assertEquals("No settlement found at (1, 1) to upgrade", ex.getMessage());
     }
 

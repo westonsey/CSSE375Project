@@ -6,6 +6,7 @@ import board.Settlement;
 import board.PortType;
 import board.Road;
 import board.Hexagon;
+import board.BuildingType;
 import board.location.BorderLocation;
 import board.location.VertexLocation;
 import util.CountCollection;
@@ -65,9 +66,9 @@ public class ActionHandler {
 				loc.getRow() + ", " + loc.getCol() + ")");
 	}
 
-	void upgradeSettlementAllowed(Settlement s){
+	void upgradeSettlementAllowed(Settlement s, BuildingType upgrade){
 		Player owner = s.getOwner();
-		board.upgradeSettlement(s);
+		board.upgradeSettlement(s, upgrade);
 		upgradeSettlementAllowedResource(owner);
 	}
 

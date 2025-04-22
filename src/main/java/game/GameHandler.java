@@ -5,6 +5,9 @@ import board.Hexagon;
 import board.PortType;
 import board.Road;
 import board.Settlement;
+import board.BuildingTypeFactory;
+import board.BuildingType;
+import board.BuildingCode;
 import board.location.BorderLocation;
 import board.location.HexLocation;
 import board.location.VertexLocation;
@@ -42,21 +45,25 @@ public class GameHandler {
     public int currentPlayerTurnIndex;
     private int currentDiscardPlayerIndex;
 
+    private BuildingTypeFactory buildingTypeFactory;
+    private BuildingType currentlySelectedUpgrade;
+
     public GameHandler(Random randInt, Random boardRandom) {
         this(randInt, boardRandom, GameState.SETUP, TurnPhase.PLACING_BUILDING, TurnMovementDirection.FORWARD,
-                new Board(), true);
+                new Board(), true, new BuildingTypeFactory());
     }
 
     public GameHandler(GameState inputGameState, TurnPhase turnPhase, TurnMovementDirection inputTurnMovementDirection) {
-        this(new Random(), new Random(), inputGameState, turnPhase, inputTurnMovementDirection, new Board(), true);
+        this(new Random(), new Random(), inputGameState, turnPhase, inputTurnMovementDirection, new Board(), true, new BuildingTypeFactory());
     }
 
     public GameHandler(Board board, Random randInt, GameState gameState, TurnPhase turnPhase) {
-        this(randInt, new Random(), gameState, turnPhase, TurnMovementDirection.FORWARD, board, false);
+        this(randInt, new Random(), gameState, turnPhase, TurnMovementDirection.FORWARD, board, false, new BuildingTypeFactory());
     }
 
     private GameHandler(Random randInt, Random boardRandom, GameState inputGameState, TurnPhase turnPhase,
-                        TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate) {
+                        TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate,
+                        BuildingTypeFactory buildingTypeFactory) {
         this.board = board;
         this.currentPlayerTurnIndex = 0;
         this.gameState = inputGameState;
@@ -70,6 +77,7 @@ public class GameHandler {
         cardTracker = new CardTracker();
         initRobber();
         actionHandler = new ActionHandler(board, this, cardTracker);
+        this.buildingTypeFactory = buildingTypeFactory;
     }
 
     public void addPlayer(Player player) {
@@ -395,7 +403,7 @@ public class GameHandler {
 
     public void upgradeSettlement(Settlement s) {
         if (canUpgradeSettlement(s)) {
-            actionHandler.upgradeSettlementAllowed(s);
+            actionHandler.upgradeSettlementAllowed(s, currentlySelectedUpgrade);
         }else {
             throw new IllegalArgumentException("Cannot upgrade settlement!");
         }
@@ -458,6 +466,10 @@ public class GameHandler {
             }
         }
         return null;
+    }
+
+    public void setCurrentlySelectedUpgrade(BuildingCode code) {
+        currentlySelectedUpgrade = buildingTypeFactory.build(code);
     }
 
     private void handleRoll(int roll1, int roll2) {

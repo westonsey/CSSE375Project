@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <GridPane prefHeight="750.0" prefWidth="1400.0">
             <columnConstraints>
@@ -24,7 +24,7 @@
             <children>
                 <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="750.0" prefWidth="1400.0" style="-fx-background-color: #2c57d1;">
                     <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#788a9a" height="700.0" layoutX="824.0" layoutY="100.0" stroke="BLACK" strokeType="INSIDE" width="361.0" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#788a9a" height="757.0" layoutX="824.0" layoutY="100.0" stroke="BLACK" strokeType="INSIDE" width="361.0" />
                         <Polygon fx:id="hex2_1" fill="#26ff1f" layoutX="353.0" layoutY="556.0" points="40.0, 0.0, 20.0, 34.641, -20.0, 34.641, -40.0, 0.0, -20.0, -34.641, 20.0, -34.641" rotate="90.0" scaleX="1.5" scaleY="1.5" scaleZ="1.5" stroke="BLACK" strokeType="INSIDE" />
                         <Polygon fx:id="hex1_1" fill="#b98a3f" layoutX="410.0" layoutY="458.0" points="40.0, 0.0, 20.0, 34.641, -20.0, 34.641, -40.0, 0.0, -20.0, -34.641, 20.0, -34.641" rotate="90.0" scaleX="1.5" scaleY="1.5" scaleZ="1.5" stroke="BLACK" strokeType="INSIDE" />
                         <Polygon fx:id="hex0_3" fill="#ff5b1f" layoutX="580.0" layoutY="360.0" points="40.0, 0.0, 20.0, 34.641, -20.0, 34.641, -40.0, 0.0, -20.0, -34.641, 20.0, -34.641" rotate="90.0" scaleX="1.5" scaleY="1.5" scaleZ="1.5" stroke="BLACK" strokeType="INSIDE" />
@@ -366,6 +366,12 @@
                   <Rectangle fx:id="year_of_plentyImage" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="50.0" layoutX="1030.0" layoutY="476.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="50.0" />
                   <Button fx:id="purchaseDevCardBtn" layoutX="952.0" layoutY="755.0" mnemonicParsing="false" text="Buy Development Card" />
                   <Button fx:id="playDevCardBtn" layoutX="1099.0" layoutY="755.0" mnemonicParsing="false" text="Play Card" />
+
+                  <Text fx:id="selectedBuildingLbl" fill="WHITE" layoutX="843.0" layoutY="802.0" text="Selected Building Upgrade:" />
+                  <Button fx:id="cityBtn" layoutX="842.0" layoutY="813.0" mnemonicParsing="false" text="City" />
+                  <Button fx:id="fortBtn" layoutX="881.0" layoutY="813.0" mnemonicParsing="false" text="Fort" />
+                  <Button fx:id="templeBtn" layoutX="924.0" layoutY="813.0" mnemonicParsing="false" text="Temple" />
+                  <Button fx:id="observatoryBtn" layoutX="982.0" layoutY="813.0" mnemonicParsing="false" text="Observatory" />
 
                     </children>
                 </AnchorPane>

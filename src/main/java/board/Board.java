@@ -203,7 +203,7 @@ public class Board {
         }
     }
 
-    public void upgradeSettlement(Settlement s) {
+    public void upgradeSettlement(Settlement s, BuildingType upgrade) {
         if (canUpgradeSettlement(s)) {
             Player p = s.getOwner();
             int index = getIndexOfBuilding(s);

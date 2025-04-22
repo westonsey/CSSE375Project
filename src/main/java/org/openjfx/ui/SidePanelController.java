@@ -1,5 +1,6 @@
 package org.openjfx.ui;
 
+import board.BuildingCode;
 import game.DevCardType;
 import game.GameHandler;
 import game.GameState;
@@ -57,6 +58,9 @@ public class SidePanelController {
     private Rectangle dice1;
     private Rectangle dice2;
 
+    private Text selectedBuildingLbl;
+    private BuildingCode selectedUpgrade = BuildingCode.CITY;
+
     private ResourceInfo resourceInfo;
     private DevelopmentCardInfo devCardInfo;
     private BoardController boardController;
@@ -84,11 +88,12 @@ public class SidePanelController {
         this.window = window;
     }
 
-    public void initialize(BoardController boardController, ResourceInfo resourceInfo, 
+    public void initialize(BoardController boardController, ResourceInfo resourceInfo,
                            DevelopmentCardInfo devCardInfo,
                            Text playerText, Text phaseText,
                            Button rollDiceBtn, Button endTurnBtn, Button tradeBtn, Button bankTradeBtn, Button purchaseDevCardBtn, Button playDevCardBtn,
-                           Rectangle dice1, Rectangle dice2) {
+                           Rectangle dice1, Rectangle dice2,
+                           Text selectedBuildingLbl, Button cityBtn, Button fortBtn, Button templeBtn, Button observatoryBtn) {
         diceImgs[0] = new Image(getClass().getResource(PATH_PREFIX + DICE_1_PATH).toString());
         diceImgs[1] = new Image(getClass().getResource(PATH_PREFIX + DICE_2_PATH).toString());
         diceImgs[2] = new Image(getClass().getResource(PATH_PREFIX + DICE_3_PATH).toString());
@@ -108,6 +113,16 @@ public class SidePanelController {
         this.purchaseDevCardBtn = purchaseDevCardBtn;
         this.playDevCardBtn = playDevCardBtn;
 
+        this.selectedBuildingLbl = selectedBuildingLbl;
+        cityBtn.setText(bundle.getString("city"));
+        fortBtn.setText(bundle.getString("fort"));
+        templeBtn.setText(bundle.getString("temple"));
+        observatoryBtn.setText(bundle.getString("observatory"));
+        cityBtn.setOnMouseClicked(e -> setSelectedUpgrade(BuildingCode.CITY));
+        fortBtn.setOnMouseClicked(e -> setSelectedUpgrade(BuildingCode.FORT));
+        templeBtn.setOnMouseClicked(e -> setSelectedUpgrade(BuildingCode.TEMPLE));
+        observatoryBtn.setOnMouseClicked(e -> setSelectedUpgrade(BuildingCode.OBSERVATORY));
+
         this.resourceInfo = resourceInfo;
         this.devCardInfo = devCardInfo;
 
@@ -125,6 +140,8 @@ public class SidePanelController {
         bankTradeBtn.setOnMouseClicked(e -> doBankTrade());
         purchaseDevCardBtn.setOnMouseClicked(e -> doDevCardPurchase());
         playDevCardBtn.setOnMouseClicked(e -> playDevCard());
+
+        updateDisplay();
     }
 
     public void setOnGameEndHandler(Action handler) {
@@ -132,6 +149,7 @@ public class SidePanelController {
     }
 
     public void updateDisplay() {
+        selectedBuildingLbl.setText(bundle.getString("selectedBuilding") + ": " + bundle.getString(selectedUpgrade.toString().toLowerCase()));
         resourceController.updateResourceLabels();
         devCardController.updateDevCardLabels();
         updateStatusLabels();
@@ -191,6 +209,12 @@ public class SidePanelController {
             }
         }
         updateStatusLabels();
+    }
+
+    private void setSelectedUpgrade(BuildingCode building) {
+        selectedUpgrade = building;
+        game.setCurrentlySelectedUpgrade(building);
+        updateDisplay();
     }
 
     public void endTurn() {

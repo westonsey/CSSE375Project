@@ -470,6 +470,17 @@ public class GameController {
     @FXML
     private Circle robberCircle;
 
+    @FXML
+    private Text selectedBuildingLbl;
+    @FXML
+    private Button cityBtn;
+    @FXML
+    private Button fortBtn;
+    @FXML
+    private Button templeBtn;
+    @FXML
+    private Button observatoryBtn;
+
     // </editor-fold>
 
     // <editor-fold desc="Images">
@@ -586,7 +597,8 @@ public class GameController {
                 boardController,
                 resourceInfo,
                 devCardInfo,
-                playerText, phaseText, rollDiceBtn, endTurnBtn, tradeBtn, bankTradeBtn, purchaseDevCardBtn, playDevCardBtn, dice1, dice2
+                playerText, phaseText, rollDiceBtn, endTurnBtn, tradeBtn, bankTradeBtn, purchaseDevCardBtn, playDevCardBtn, dice1, dice2,
+                selectedBuildingLbl, cityBtn, fortBtn, templeBtn, observatoryBtn
         );
         sidePanelController.updateDisplay();
         sidePanelController.startTurn();

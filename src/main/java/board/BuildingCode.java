@@ -1,5 +1,9 @@
 package board;
 
 public enum BuildingCode {
-    SETTLEMENT, CITY;
+    SETTLEMENT,
+    CITY,
+    FORT,
+    TEMPLE,
+    OBSERVATORY,
 }

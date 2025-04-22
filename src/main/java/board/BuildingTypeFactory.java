@@ -8,11 +8,11 @@ public class BuildingTypeFactory {
             case CITY:
                 return new CityBuildingType();
             case FORT:
-                return null;
+                return new FortBuildingType();
             case TEMPLE:
-                return null;
+                return new TempleBuildingType();
             case OBSERVATORY:
-                return null;
+                return new ObservatoryBuildingType();
         }
         return null;
     }

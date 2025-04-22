@@ -14,4 +14,6 @@ public interface BuildingType {
     Building createBuilding(VertexLocation loc, Player owner);
 
     CountCollection<Resource> getRequiredResources();
+
+    String getName();
 }

@@ -15,6 +15,7 @@ import game.Player;
 import game.Resource;
 import game.TurnPhase;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -115,6 +116,11 @@ public class BoardController {
         return PlayerColorUtils.PLAYER_PAINTS.get(player.getColor());
     }
 
+    private Color getColorForCurrentPlayer() {
+        Player player = game.playerByTurnIndex();
+        return PlayerColorUtils.PLAYER_COLORS.get(player.getColor());
+    }
+
     public void initializeBorder(BorderLocation loc) {
         UIRoad uiRoad = uiRoadMap.get(loc);
         uiRoad.initialize(
@@ -138,7 +144,9 @@ public class BoardController {
                 this::getPaintForCurrentPlayer,
                 () -> onVertexClick(loc),
                 () -> game.canPlaceSettlement(game.playerByTurnIndex(), loc),
-                () -> canUpgrade(loc)
+                () -> canUpgrade(loc),
+                () -> game.getSelectedUpgrade(),
+                this::getColorForCurrentPlayer
         );
     }
 

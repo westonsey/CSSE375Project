@@ -35,4 +35,9 @@ public class CityBuildingType implements BuildingType {
         result.add(Resource.WHEAT, 2);
         return result;
     }
+
+    @Override
+    public String getName() {
+        return "city";
+    }
 }

@@ -37,4 +37,9 @@ public class SettlementBuildingType implements BuildingType {
         result.add(Resource.SHEEP, 1);
         return result;
     }
+
+    @Override
+    public String getName() {
+        return "settlement";
+    }
 }

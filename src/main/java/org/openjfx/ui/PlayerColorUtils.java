@@ -1,6 +1,7 @@
 package org.openjfx.ui;
 
 import game.PlayerColors;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
 import java.util.Map;
@@ -23,6 +24,15 @@ public class PlayerColorUtils {
             PlayerColors.WHITE, "White",
             PlayerColors.GREEN, "Green",
             PlayerColors.PINK, "Pink"
+    );
+
+    public static final Map<PlayerColors, Color> PLAYER_COLORS = Map.of(
+            PlayerColors.RED, Color.valueOf("#c72d1c"),
+            PlayerColors.BLUE, Color.valueOf("#1f8bf0"),
+            PlayerColors.YELLOW, Color.valueOf("#cc8d3b"),
+            PlayerColors.WHITE, Color.valueOf("#f5efe9"),
+            PlayerColors.GREEN, Color.valueOf("#52ad3b"),
+            PlayerColors.PINK, Color.valueOf("#df7cdd")
     );
 
 }

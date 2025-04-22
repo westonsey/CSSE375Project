@@ -411,6 +411,10 @@ public class GameHandler {
         }
     }
 
+    public BuildingType getSelectedUpgrade() {
+        return currentlySelectedUpgrade;
+    }
+
     public void stealResource(Player thief, Player victim, Random rand) {
         actionHandler.stealResourceThrowException(victim, turnPhase);
         List<Resource> resources = new ArrayList<>(List.of(Resource.values()));

@@ -9,7 +9,13 @@ import util.CountCollection;
 public class TempleBuildingType implements BuildingType {
     @Override
     public int determineResourceGain(ResourceGainContext context) {
-        return 0;
+        if (context.hasRobber()) {
+            return 0;
+        }
+        if (context.getTotalRoll() != context.getHexValue()) {
+            return 0;
+        }
+        return 1;
     }
 
     @Override

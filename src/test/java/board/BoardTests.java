@@ -725,7 +725,7 @@ public class BoardTests {
     }
 
     @Test
-    public void addPlayerResourcesFromHex_With1ObservatoryHex_WithRoll12_Add0ResourceToPlayer() {
+    public void addPlayerResourcesFromHex_With1ObservatoryHex_WithRoll12_Add1ResourceToPlayer() {
         Board board = generateDefaultBoard();
         List<Hexagon> hexLst = board.getHexList();
         Player player1 = new Player();

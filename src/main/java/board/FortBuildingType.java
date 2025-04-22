@@ -9,7 +9,10 @@ import util.CountCollection;
 public class FortBuildingType implements BuildingType {
     @Override
     public int determineResourceGain(ResourceGainContext context) {
-        return 0;
+        if (context.getTotalRoll() != context.getHexValue()) {
+            return 0;
+        }
+        return 1;
     }
 
     @Override

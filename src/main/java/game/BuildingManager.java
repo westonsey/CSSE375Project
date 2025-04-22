@@ -5,7 +5,6 @@ import board.Road;
 import board.Settlement;
 import board.location.BorderLocation;
 import board.location.VertexLocation;
-import util.Tuple;
 
 import java.util.HashSet;
 import java.util.List;

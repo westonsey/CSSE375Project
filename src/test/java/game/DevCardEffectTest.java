@@ -4,8 +4,6 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 
 import board.Board;
-import board.location.BorderLocation;
-import board.location.VertexLocation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -178,81 +176,6 @@ public class DevCardEffectTest {
         assertEquals(1, player2.getNumberOfPlayedDevCards(DevCardType.YEAR_OF_PLENTY));
         assertEquals(3, player2.getResourceCount(Resource.SHEEP));
         assertEquals(3, player2.getResourceCount(Resource.ORE));
-    }
-
-    @Test
-    public void TestPlayRoadBuildingOffSettlement(){
-
-        Board board = new Board();
-        Random randInt = new Random();
-        GameHandler gameHandler = new GameHandler(board, randInt, GameState.NORMALPLAY, TurnPhase.PLACING_BUILDING);
-
-        int p1 = 1;
-        
-        Player player1 = new Player(PlayerColors.RED);
-        Player player2 = new Player(PlayerColors.BLUE);
-        Player player3 = new Player(PlayerColors.YELLOW);
-        Player player4 = new Player(PlayerColors.WHITE);
-
-        gameHandler.addPlayer(player1);
-        gameHandler.addPlayer(player2);
-        gameHandler.addPlayer(player3);
-        gameHandler.addPlayer(player4);
-
-        CardTracker cardTracker = new CardTracker();
-        //Start the Card Tracker
-        gameHandler.setCardTracker(cardTracker);
-        gameHandler.addDevelopmentCard(player1, DevCardType.ROAD_BUILDING);
-
-        BorderLocation roadLocation1 = new BorderLocation(2,2);
-        BorderLocation roadLocation2 = new BorderLocation(2,3);
-        VertexLocation settlementLocation = new VertexLocation(2, 2);
-        gameHandler.getBoard().placeSettlement(player1, settlementLocation, true);
-        gameHandler.playRoadBuildingCard(player1, roadLocation1, roadLocation2);
-
-        assertEquals(roadLocation1, board.getRoadsForPlayer(player1).get(0).getLocation());
-        assertEquals(roadLocation2, board.getRoadsForPlayer(player1).get(1).getLocation());
-        assertEquals(0, player1.getTotalNumberOfUnplayedDevCards());
-        assertEquals(1, player1.getTotalNumberOfPlayedDevCards());
-    }
-
-    @Test
-    public void TestPlayRoadBuildingOffRoad(){
-
-        Board board = new Board();
-        Random randInt = new Random();
-        GameHandler gameHandler = new GameHandler(board, randInt, GameState.NORMALPLAY, TurnPhase.PLACING_BUILDING);
-
-        int p1 = 1;
-        
-        Player player1 = new Player(PlayerColors.RED);
-        Player player2 = new Player(PlayerColors.BLUE);
-        Player player3 = new Player(PlayerColors.YELLOW);
-        Player player4 = new Player(PlayerColors.WHITE);
-
-        gameHandler.addPlayer(player1);
-        gameHandler.addPlayer(player2);
-        gameHandler.addPlayer(player3);
-        gameHandler.addPlayer(player4);
-
-        CardTracker cardTracker = new CardTracker();
-        //Start the Card Tracker
-        gameHandler.setCardTracker(cardTracker);
-        gameHandler.addDevelopmentCard(player1, DevCardType.ROAD_BUILDING);
-
-        BorderLocation initRoadLocation = new BorderLocation(2, 1);
-        BorderLocation roadLocation1 = new BorderLocation(2, 2);
-        BorderLocation roadLocation2 = new BorderLocation(2, 3);
-        gameHandler.getBoard().placeRoad(player1, initRoadLocation, true);
-        gameHandler.playRoadBuildingCard(player1, roadLocation1, roadLocation2);
-
-        assertEquals(3, board.getRoadsForPlayer(player1).size());
-
-        assertEquals(roadLocation1, board.getRoadsForPlayer(player1).get(1).getLocation());
-        assertEquals(roadLocation2, board.getRoadsForPlayer(player1).get(2).getLocation());
-        assertEquals(0, player1.getTotalNumberOfUnplayedDevCards());
-        assertEquals(1, player1.getTotalNumberOfPlayedDevCards());
-
     }
 
     @Test

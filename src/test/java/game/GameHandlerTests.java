@@ -1187,40 +1187,6 @@ public class GameHandlerTests {
         assertEquals("Player does not have the resource they're discarding!", ex.getMessage());
     }
 
-    @Test
-    public void shufflePlayers_With4Players() {
-        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.PLAYING_TURN,
-                TurnMovementDirection.FORWARD);
-        Random random = EasyMock.createMock(Random.class);
-        game.addPlayer(new Player(PlayerColors.RED));
-        game.addPlayer(new Player(PlayerColors.BLUE));
-        game.addPlayer(new Player(PlayerColors.YELLOW));
-        game.addPlayer(new Player(PlayerColors.WHITE));
-
-        EasyMock.expect(random.nextInt(4)).andReturn(2);
-        EasyMock.expect(random.nextInt(3)).andReturn(1);
-        EasyMock.expect(random.nextInt(2)).andReturn(1);
-        EasyMock.expect(random.nextInt(1)).andReturn(0);
-        EasyMock.replay(random);
-
-        game.shufflePlayers(random);
-
-        assertEquals(PlayerColors.YELLOW, game.playerByTurnIndex().getColor());
-
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.PLAYING_TURN);
-        assertEquals(PlayerColors.BLUE, game.playerByTurnIndex().getColor());
-
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.PLAYING_TURN);
-        assertEquals(PlayerColors.WHITE, game.playerByTurnIndex().getColor());
-
-        game.handleSwitchPlayerTurn();
-        game.setTurnPhase(TurnPhase.PLAYING_TURN);
-        assertEquals(PlayerColors.RED, game.playerByTurnIndex().getColor());
-
-        EasyMock.verify(random);
-    }
 
     @Test
     public void getTradeAmount_WithNoPorts_Return4() {

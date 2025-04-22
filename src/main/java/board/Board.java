@@ -205,13 +205,12 @@ public class Board {
 
     public void upgradeSettlement(Settlement s, BuildingType upgrade) {
         if (canUpgradeSettlement(s)) {
-            Player p = s.getOwner();
             int index = getIndexOfBuilding(s);
             Building existing = buildings.get(index);
             buildings.remove(index);
-            City city = new City(new VertexLocation(existing.getLocation().getRow(), existing.getLocation().getCol()),
+            Building building = upgrade.createBuilding(new VertexLocation(existing.getLocation().getRow(), existing.getLocation().getCol()),
                     existing.getOwner());
-            buildings.add(city);
+            buildings.add(building);
         } else {
             throw new IllegalArgumentException("No settlement found at (" + s.getLocation().getRow() +
                     ", " + s.getLocation().getCol() + ") to upgrade");

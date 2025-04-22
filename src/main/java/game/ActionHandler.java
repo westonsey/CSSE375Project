@@ -69,13 +69,12 @@ public class ActionHandler {
 	void upgradeSettlementAllowed(Settlement s, BuildingType upgrade){
 		Player owner = s.getOwner();
 		board.upgradeSettlement(s, upgrade);
-		upgradeSettlementAllowedResource(owner);
+		upgradeSettlementAllowedResource(owner, upgrade);
 	}
 
-	private void upgradeSettlementAllowedResource(Player owner){
+	private void upgradeSettlementAllowedResource(Player owner, BuildingType upgrade){
 		owner.changeVictoryPoints(1);
-		owner.removeResource(Resource.ORE, 3);
-		owner.removeResource(Resource.WHEAT, 2);
+		owner.removeResources(upgrade.getRequiredResources());
 	}
 
 	void stealResourceThrowException(Player victim, TurnPhase turnPhase) {

@@ -8,6 +8,7 @@ import board.Settlement;
 import board.BuildingTypeFactory;
 import board.BuildingType;
 import board.BuildingCode;
+import board.CityBuildingType;
 import board.location.BorderLocation;
 import board.location.HexLocation;
 import board.location.VertexLocation;
@@ -78,6 +79,7 @@ public class GameHandler {
         initRobber();
         actionHandler = new ActionHandler(board, this, cardTracker);
         this.buildingTypeFactory = buildingTypeFactory;
+        this.currentlySelectedUpgrade = new CityBuildingType();
     }
 
     public void addPlayer(Player player) {
@@ -373,8 +375,8 @@ public class GameHandler {
 
     public boolean canUpgradeSettlement(Settlement s) {
         Player owner = s.getOwner();
-        return board.canUpgradeSettlement(s) && turnPhase == TurnPhase.PLAYING_TURN &&
-                owner.getResourceCount(Resource.ORE) >= 3 && owner.getResourceCount(Resource.WHEAT) >= 2;
+        boolean hasResources = owner.hasResources(currentlySelectedUpgrade.getRequiredResources());
+        return board.canUpgradeSettlement(s) && turnPhase == TurnPhase.PLAYING_TURN && hasResources;
     }
 
     public void placeSettlement(Player p, VertexLocation loc) {

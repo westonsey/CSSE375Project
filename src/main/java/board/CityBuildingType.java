@@ -1,6 +1,10 @@
 package board;
 
+import board.location.VertexLocation;
+import game.Player;
+import game.Resource;
 import game.ResourceGainContext;
+import util.CountCollection;
 
 public class CityBuildingType implements BuildingType {
     @Override
@@ -17,5 +21,18 @@ public class CityBuildingType implements BuildingType {
     @Override
     public BuildingCode getBuildingCode() {
         return BuildingCode.CITY;
+    }
+
+    @Override
+    public Building createBuilding(VertexLocation loc, Player owner) {
+        return new City(loc, owner);
+    }
+
+    @Override
+    public CountCollection<Resource> getRequiredResources() {
+        CountCollection<Resource> result = new CountCollection<>();
+        result.add(Resource.ORE, 3);
+        result.add(Resource.WHEAT, 2);
+        return result;
     }
 }

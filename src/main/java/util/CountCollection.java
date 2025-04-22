@@ -8,10 +8,10 @@ import java.util.Map;
 
 public class CountCollection<T> {
 
-    private HashMap<T, Integer> cardCollection;
+    private HashMap<T, Integer> counts;
 
     public CountCollection() {
-        cardCollection = new HashMap<>();
+        counts = new HashMap<>();
     }
 
     public void add(T item, int amount) {
@@ -20,12 +20,12 @@ public class CountCollection<T> {
         }
 
         int currentCount = 0;
-        if (cardCollection.containsKey(item)) {
-            currentCount = cardCollection.get(item);
+        if (counts.containsKey(item)) {
+            currentCount = counts.get(item);
         }
         try {
             int sum = Math.addExact(currentCount, amount);
-            cardCollection.put(item, sum);
+            counts.put(item, sum);
         } catch (ArithmeticException e) {
             throw new IllegalArgumentException("Count cannot go over Integer.MAX_VALUE");
         }
@@ -39,28 +39,43 @@ public class CountCollection<T> {
             throw new IllegalArgumentException("Cannot remove \""+ item + "\" from empty collection");
         }
         int currentCount = 0;
-        if (cardCollection.containsKey(item)) {
-            currentCount = cardCollection.get(item);
+        if (counts.containsKey(item)) {
+            currentCount = counts.get(item);
         }
         if (amount > currentCount) {
             throw new IllegalArgumentException("Cannot remove \"" +item + "\" because there is less than " + amount);
         }
         currentCount -= amount;
-        cardCollection.put(item, currentCount);
+        counts.put(item, currentCount);
+    }
+
+    public void remove(CountCollection<T> counts) {
+        for (T item : counts.counts.keySet()) {
+            remove(item, counts.getCount(item));
+        }
     }
     
     public int getCount(T item) {
-        if (cardCollection.containsKey(item)) {
-            return cardCollection.get(item);
+        if (counts.containsKey(item)) {
+            return counts.get(item);
         } else {
             return 0;
         }
     }
 
+    public boolean includes(CountCollection<T> other) {
+        for (T item : other.counts.keySet()) {
+            if (getCount(item) < other.getCount(item)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public List<T> getValuesList(){
         List<T> result = new ArrayList<>();
-        for(T key : cardCollection.keySet()){
-            for(int i = 0; i < cardCollection.get(key); i++){
+        for(T key : counts.keySet()){
+            for(int i = 0; i < counts.get(key); i++){
                 result.add(key);
             }
         }
@@ -70,8 +85,8 @@ public class CountCollection<T> {
 
     public int getTotalCount(){
         int totalCount = 0;
-        for(T card : cardCollection.keySet()){
-            totalCount += cardCollection.get(card);
+        for(T card : counts.keySet()){
+            totalCount += counts.get(card);
         }
         return totalCount;
     }
@@ -79,15 +94,15 @@ public class CountCollection<T> {
     public Iterator<Tuple<T, Integer>> iterator() {
         // Prune non-positive entries first so they don't sneak into the iterator
         List<T> toRemove = new ArrayList<>();
-        for (T t : cardCollection.keySet()) {
-            if (cardCollection.get(t) <= 0) {
+        for (T t : counts.keySet()) {
+            if (counts.get(t) <= 0) {
                 toRemove.add(t);
             }
         }
         for (T t : toRemove) {
-            cardCollection.remove(t);
+            counts.remove(t);
         }
-        Iterator<Map.Entry<T, Integer>> mapIterator = cardCollection.entrySet().iterator();
+        Iterator<Map.Entry<T, Integer>> mapIterator = counts.entrySet().iterator();
         return new Iterator<Tuple<T, Integer>>() {
             @Override
             public boolean hasNext() {

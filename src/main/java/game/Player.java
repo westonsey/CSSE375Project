@@ -76,12 +76,20 @@ public class Player {
         availableResources.remove(resource, amount);
     }
 
+    public void removeResources(CountCollection<Resource> resources) {
+        availableResources.remove(resources);
+    }
+
     public int getResourceCount(Resource resource){
         return availableResources.getCount(resource);
     }
 
     public boolean hasResource(Resource resource) {
         return availableResources.getCount(resource) != 0;
+    }
+
+    public boolean hasResources(CountCollection<Resource> resources) {
+        return availableResources.includes(resources);
     }
    
     public void playDevCard(DevCardType card) {

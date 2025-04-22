@@ -511,7 +511,7 @@ public class GameController {
             }
         });
 
-
+        game.setVictoryPointManager();
         board = game.getBoard();
         boardController = new BoardController(game, board);
         sidePanelController = new SidePanelController(game, boardController, bundle, window);

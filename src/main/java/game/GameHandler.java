@@ -11,12 +11,7 @@ import board.location.VertexLocation;
 import util.CountCollection;
 import util.Tuple;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class GameHandler {
 
@@ -30,14 +25,10 @@ public class GameHandler {
     private ActionHandler actionHandler;
     private List<Player> players;
     private CardTracker cardTracker;
+    private VictoryPointManager victoryPointManager;
 
     private static final int ROBBER_ROLL = 7;
     private static final int INVALID_PLAYER_INDEX = -1;
-
-    private int largestArmy = 2;
-    private int largestArmyPlayerIndex = INVALID_PLAYER_INDEX;
-    private int longestRoad = 4;
-    private int longestRoadPlayerIndex = INVALID_PLAYER_INDEX;
 
     public int currentPlayerTurnIndex;
     private int currentDiscardPlayerIndex;
@@ -47,7 +38,8 @@ public class GameHandler {
                 new Board(), true);
     }
 
-    public GameHandler(GameState inputGameState, TurnPhase turnPhase, TurnMovementDirection inputTurnMovementDirection) {
+    public GameHandler(GameState inputGameState, TurnPhase turnPhase,
+            TurnMovementDirection inputTurnMovementDirection) {
         this(new Random(), new Random(), inputGameState, turnPhase, inputTurnMovementDirection, new Board(), true);
     }
 
@@ -56,7 +48,7 @@ public class GameHandler {
     }
 
     private GameHandler(Random randInt, Random boardRandom, GameState inputGameState, TurnPhase turnPhase,
-                        TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate) {
+            TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate) {
         this.board = board;
         this.currentPlayerTurnIndex = 0;
         this.gameState = inputGameState;
@@ -70,6 +62,11 @@ public class GameHandler {
         cardTracker = new CardTracker();
         initRobber();
         actionHandler = new ActionHandler(board, this, cardTracker);
+    }
+
+    public void setVictoryPointManager(){
+        System.out.println("Player len: " + players.size());
+        this.victoryPointManager = new VictoryPointManager(players);
     }
 
     public void addPlayer(Player player) {
@@ -90,7 +87,7 @@ public class GameHandler {
     }
 
     public int rollDice() {
-        return randForDice.nextInt(6)+1;
+        return randForDice.nextInt(6) + 1;
     }
 
     public Robber getRobber() {
@@ -105,16 +102,16 @@ public class GameHandler {
         this.cardTracker.PurchaseDevCard(player, random);
     }
 
-    public void addDevelopmentCard(Player player, DevCardType card){
+    public void addDevelopmentCard(Player player, DevCardType card) {
         this.cardTracker.AddDevCard(player, card);
     }
 
-    public void playMonopolyCard(Player player, Resource resource){
+    public void playMonopolyCard(Player player, Resource resource) {
         player.playDevCard(DevCardType.MONOPOLY);
-        for(int i = 0; i < players.size(); i++){
-            if (players.get(i) != player){
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i) != player) {
                 int currentResourceCount = players.get(i).getResourceCount(resource);
-                if(currentResourceCount != 0){
+                if (currentResourceCount != 0) {
                     players.get(i).removeResource(resource, currentResourceCount);
                     player.addResource(resource, currentResourceCount);
                 }
@@ -122,13 +119,13 @@ public class GameHandler {
         }
     }
 
-    public void playYearOfPlentyCard(Player player, Resource resource1, Resource resource2){
+    public void playYearOfPlentyCard(Player player, Resource resource1, Resource resource2) {
         player.playDevCard(DevCardType.YEAR_OF_PLENTY);
         player.addResource(resource1, 1);
         player.addResource(resource2, 1);
     }
 
-    public void playRoadBuildingCard(Player player, BorderLocation loc1, BorderLocation loc2){
+    public void playRoadBuildingCard(Player player, BorderLocation loc1, BorderLocation loc2) {
         player.playDevCard(DevCardType.ROAD_BUILDING);
         board.placeRoad(player, loc1, false);
         board.placeRoad(player, loc2, false);
@@ -139,15 +136,15 @@ public class GameHandler {
         this.turnPhase = TurnPhase.MOVING_ROBBER;
     }
 
-    public CardTracker getCardTracker(){
+    public CardTracker getCardTracker() {
         return this.cardTracker;
     }
 
-    public List<Player> getPlayers(){
+    public List<Player> getPlayers() {
         return this.players;
     }
 
-    public void setCardTracker(CardTracker cardTracker){
+    public void setCardTracker(CardTracker cardTracker) {
         this.cardTracker = cardTracker;
     }
 
@@ -156,7 +153,7 @@ public class GameHandler {
         turnPhase = TurnPhase.STEALING_RESOURCE;
     }
 
-    private void checkTurnPhaseValidDoDiceRoll(){
+    private void checkTurnPhaseValidDoDiceRoll() {
         if (turnPhase != TurnPhase.ROLLING_DICE) {
             throw new IllegalStateException("Cannot roll dice in this phase!");
         }
@@ -170,100 +167,100 @@ public class GameHandler {
         return new Tuple<>(roll1, roll2);
     }
 
-    private void checkTurnPhaseHandleSwitchPlayerTurn(){
+    private void checkTurnPhaseHandleSwitchPlayerTurn() {
         if (turnPhase != TurnPhase.END_TURN && turnPhase != TurnPhase.PLAYING_TURN) {
             throw new IllegalStateException("Cannot change turn in this phase!");
         }
     }
 
-    private void handleSetUpHandleSwitchPlayerTurn(){
-        if(getTurnMovementDirection().equals(TurnMovementDirection.FORWARD)){
+    private void handleSetUpHandleSwitchPlayerTurn() {
+        if (getTurnMovementDirection().equals(TurnMovementDirection.FORWARD)) {
             handleSetUpHandleSwitchPlayerTurnForward();
-        }else if(getTurnMovementDirection().equals(TurnMovementDirection.REVERSE)){
+        } else if (getTurnMovementDirection().equals(TurnMovementDirection.REVERSE)) {
             handleSetUpHandleSwitchPlayerTurnReverse();
         }
     }
 
-    private void handleSetUpHandleSwitchPlayerTurnReverse(){
-        if(this.currentPlayerTurnIndex > 0 ) {
+    private void handleSetUpHandleSwitchPlayerTurnReverse() {
+        if (this.currentPlayerTurnIndex > 0) {
             handleSetUpHandleSwitchPlayerTurnReverseNotEnd();
-        }else{
+        } else {
             handleSetUpHandleSwitchPlayerTurnReverseEnd();
         }
     }
 
-    private void handleSetUpHandleSwitchPlayerTurnReverseNotEnd(){
+    private void handleSetUpHandleSwitchPlayerTurnReverseNotEnd() {
         this.currentPlayerTurnIndex--;
         this.turnMovementDirection = TurnMovementDirection.REVERSE;
         this.gameState = GameState.SETUP;
         this.turnPhase = TurnPhase.PLACING_BUILDING;
     }
 
-    private void handleSetUpHandleSwitchPlayerTurnReverseEnd(){
+    private void handleSetUpHandleSwitchPlayerTurnReverseEnd() {
         this.currentPlayerTurnIndex = 0;
         this.turnMovementDirection = TurnMovementDirection.FORWARD;
         this.gameState = GameState.NORMALPLAY;
         this.turnPhase = TurnPhase.ROLLING_DICE;
     }
 
-    private void handleSetUpHandleSwitchPlayerTurnForward(){
-        if(this.currentPlayerTurnIndex < (players.size()-1) ) {
+    private void handleSetUpHandleSwitchPlayerTurnForward() {
+        if (this.currentPlayerTurnIndex < (players.size() - 1)) {
             handleSetUpHandleSwitchPlayerTurnForwardNotEnd();
-        }else{
+        } else {
             handleSetUpHandleSwitchPlayerTurnForwardEnd();
         }
     }
 
-    private void handleSetUpHandleSwitchPlayerTurnForwardNotEnd(){
+    private void handleSetUpHandleSwitchPlayerTurnForwardNotEnd() {
         this.currentPlayerTurnIndex++;
         this.turnMovementDirection = TurnMovementDirection.FORWARD;
         this.gameState = GameState.SETUP;
         this.turnPhase = TurnPhase.PLACING_BUILDING;
     }
 
-    private void handleSetUpHandleSwitchPlayerTurnForwardEnd(){
-        this.currentPlayerTurnIndex = players.size()-1;
+    private void handleSetUpHandleSwitchPlayerTurnForwardEnd() {
+        this.currentPlayerTurnIndex = players.size() - 1;
         this.turnMovementDirection = TurnMovementDirection.REVERSE;
         this.gameState = GameState.SETUP;
         this.turnPhase = TurnPhase.PLACING_BUILDING;
     }
 
-    private void handleNormalPlayHandleSwitchPlayerTurn(){
-        if(this.currentPlayerTurnIndex < (players.size()-1)) {
+    private void handleNormalPlayHandleSwitchPlayerTurn() {
+        if (this.currentPlayerTurnIndex < (players.size() - 1)) {
             handleNormalPlayHandleSwitchPlayerTurnNotEnd();
-        }else{
+        } else {
             handleNormalPlayHandleSwitchPlayerTurnEnd();
         }
     }
 
-    private void handleNormalPlayHandleSwitchPlayerTurnUpdateStates(){
+    private void handleNormalPlayHandleSwitchPlayerTurnUpdateStates() {
         this.gameState = GameState.NORMALPLAY;
         this.turnPhase = TurnPhase.ROLLING_DICE;
     }
 
-    private void handleNormalPlayHandleSwitchPlayerTurnNotEnd(){
+    private void handleNormalPlayHandleSwitchPlayerTurnNotEnd() {
         this.currentPlayerTurnIndex++;
         this.turnMovementDirection = TurnMovementDirection.FORWARD;
         handleNormalPlayHandleSwitchPlayerTurnUpdateStates();
     }
 
-    private void handleNormalPlayHandleSwitchPlayerTurnEnd(){
+    private void handleNormalPlayHandleSwitchPlayerTurnEnd() {
         this.currentPlayerTurnIndex = 0;
         this.turnMovementDirection = TurnMovementDirection.FORWARD;
         handleNormalPlayHandleSwitchPlayerTurnUpdateStates();
     }
 
-    private int handleSwitchPlayerTurnCheckGameState(){
-        if(getCurrentGameState().equals(GameState.SETUP)){
+    private int handleSwitchPlayerTurnCheckGameState() {
+        if (getCurrentGameState().equals(GameState.SETUP)) {
             handleSetUpHandleSwitchPlayerTurn();
-        }else {
+        } else {
             handleSwitchPlayerTurnCheckGameStateNormalPlay();
         }
         return this.currentPlayerTurnIndex;
     }
 
-    private void handleSwitchPlayerTurnCheckGameStateNormalPlay(){
-        if(getCurrentGameState().equals(GameState.NORMALPLAY)){
+    private void handleSwitchPlayerTurnCheckGameStateNormalPlay() {
+        if (getCurrentGameState().equals(GameState.NORMALPLAY)) {
             handleVictoryPoints();
             if (getCurrentGameState().equals(GameState.END)) {
                 return;
@@ -277,47 +274,9 @@ public class GameHandler {
         return handleSwitchPlayerTurnCheckGameState();
     }
 
-    private void handleVictoryPointsLargestArmy(Player oldPlayer){
-        if(largestArmyPlayerIndex != INVALID_PLAYER_INDEX){
-            players.get(largestArmyPlayerIndex).changeVictoryPoints(-2);
-        }
-        largestArmyPlayerIndex = currentPlayerTurnIndex;
-        largestArmy = oldPlayer.getNumKnights();
-        oldPlayer.changeVictoryPoints(2);
-    }
-
-    private void handleVictoryPointsLongestRoad(Player oldPlayer){
-        if(longestRoadPlayerIndex != INVALID_PLAYER_INDEX){
-            players.get(longestRoadPlayerIndex).changeVictoryPoints(-2);
-        }
-        longestRoadPlayerIndex = currentPlayerTurnIndex;
-        longestRoad = oldPlayer.getLongestRoad();
-        oldPlayer.changeVictoryPoints(2);
-    }
-
-    private void handleVictoryPointsCheckEnd(Player oldPlayer){
-        if(oldPlayer.getVictoryPoints() >= 10){
-            this.gameState = GameState.END;
-        }
-    }
-
-    private void handleVictoryPointsCheckLargestArmy(Player oldPlayer){
-        if(oldPlayer.getNumKnights() > largestArmy){
-            handleVictoryPointsLargestArmy(oldPlayer);
-        }
-    }
-
-    private void handleVictoryPointsCheckLongestRoad(Player oldPlayer){
-        if(oldPlayer.getLongestRoad() > longestRoad){
-            handleVictoryPointsLongestRoad(oldPlayer);
-        }
-    }
-
-    public void handleVictoryPoints(){
-        Player oldPlayer = players.get(currentPlayerTurnIndex);
-        handleVictoryPointsCheckLongestRoad(oldPlayer);
-        handleVictoryPointsCheckLargestArmy(oldPlayer);
-        handleVictoryPointsCheckEnd(oldPlayer);
+    public void handleVictoryPoints() {
+        this.victoryPointManager.handleVictoryPoints(currentPlayerTurnIndex, this.players);
+        this.gameState = victoryPointManager.getGameState();
     }
 
     public Player playerByTurnIndex() {
@@ -346,7 +305,8 @@ public class GameHandler {
 
     public void switchTurnMovementDirection() {
         this.turnMovementDirection = (this.turnMovementDirection == TurnMovementDirection.FORWARD)
-                                        ? TurnMovementDirection.REVERSE : TurnMovementDirection.FORWARD;
+                ? TurnMovementDirection.REVERSE
+                : TurnMovementDirection.FORWARD;
     }
 
     public boolean canPlaceSettlement(Player p, VertexLocation loc) {
@@ -396,7 +356,7 @@ public class GameHandler {
     public void upgradeSettlement(Settlement s) {
         if (canUpgradeSettlement(s)) {
             actionHandler.upgradeSettlementAllowed(s);
-        }else {
+        } else {
             throw new IllegalArgumentException("Cannot upgrade settlement!");
         }
     }
@@ -437,7 +397,7 @@ public class GameHandler {
         discardResourcesSetTurnPhase();
     }
 
-    private void discardResourcesSetTurnPhase(){
+    private void discardResourcesSetTurnPhase() {
         currentDiscardPlayerIndex++;
         if (currentDiscardPlayerIndex >= players.size()) {
             currentDiscardPlayerIndex = 0;
@@ -451,7 +411,7 @@ public class GameHandler {
         robberManager = new RobberManager(robber, board);
     }
 
-    private HexLocation initRobberLoop(){
+    private HexLocation initRobberLoop() {
         for (Hexagon hex : board.getHexList()) {
             if (hex.isDesert) {
                 return hex.location;
@@ -486,7 +446,7 @@ public class GameHandler {
     }
 
     public void tradeBetweenPlayers(Player player1, Player player2, CountCollection<Resource> fromResources,
-                                    CountCollection<Resource> toResources) {
+            CountCollection<Resource> toResources) {
         player1.TradeResource(player2, fromResources, toResources);
     }
 

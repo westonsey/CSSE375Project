@@ -34,13 +34,6 @@ public class Player {
         unplayedDevCards = new CountCollection<DevCardType>();
         playedDevCards = new CountCollection<DevCardType>();
         victoryPoints = 0;
-
-
-        availableResources.add(Resource.ORE, 100);
-        availableResources.add(Resource.WHEAT, 100);
-        availableResources.add(Resource.SHEEP, 100);
-        availableResources.add(Resource.WOOD, 100);
-        availableResources.add(Resource.BRICK, 100);
     }
 
     public int getLongestRoad(){

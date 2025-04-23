@@ -1,8 +1,8 @@
 package game;
 
 import board.Board;
+import board.Building;
 import board.Hexagon;
-import board.PortType;
 import board.Road;
 import board.Settlement;
 import board.location.BorderLocation;
@@ -12,11 +12,9 @@ import util.CountCollection;
 import util.Tuple;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 public class GameHandler {
 
@@ -30,14 +28,13 @@ public class GameHandler {
     private ActionHandler actionHandler;
     private List<Player> players;
     private CardTracker cardTracker;
+    private VictoryPointManager victoryPointManager;
+    private PlayerTurnManager playerTurnManager;
+    private BuildingManager buildingManager;
+    private TradeManager tradeManager;
 
     private static final int ROBBER_ROLL = 7;
     private static final int INVALID_PLAYER_INDEX = -1;
-
-    private int largestArmy = 2;
-    private int largestArmyPlayerIndex = INVALID_PLAYER_INDEX;
-    private int longestRoad = 4;
-    private int longestRoadPlayerIndex = INVALID_PLAYER_INDEX;
 
     public int currentPlayerTurnIndex;
     private int currentDiscardPlayerIndex;
@@ -47,7 +44,8 @@ public class GameHandler {
                 new Board(), true);
     }
 
-    public GameHandler(GameState inputGameState, TurnPhase turnPhase, TurnMovementDirection inputTurnMovementDirection) {
+    public GameHandler(GameState inputGameState, TurnPhase turnPhase,
+            TurnMovementDirection inputTurnMovementDirection) {
         this(new Random(), new Random(), inputGameState, turnPhase, inputTurnMovementDirection, new Board(), true);
     }
 
@@ -56,7 +54,7 @@ public class GameHandler {
     }
 
     private GameHandler(Random randInt, Random boardRandom, GameState inputGameState, TurnPhase turnPhase,
-                        TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate) {
+            TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate) {
         this.board = board;
         this.currentPlayerTurnIndex = 0;
         this.gameState = inputGameState;
@@ -70,6 +68,16 @@ public class GameHandler {
         cardTracker = new CardTracker();
         initRobber();
         actionHandler = new ActionHandler(board, this, cardTracker);
+        playerTurnManager = new PlayerTurnManager(inputGameState, turnPhase, inputTurnMovementDirection, 
+                                                players, board, actionHandler, randInt, robberManager);
+        buildingManager = new BuildingManager(board, actionHandler, playerTurnManager);
+        tradeManager = new TradeManager(actionHandler, cardTracker);
+        setVictoryPointManager();
+    }
+
+    public void setVictoryPointManager() {
+        this.victoryPointManager = new VictoryPointManager(players);
+        playerTurnManager.setVictoryPointManager(victoryPointManager);
     }
 
     public void addPlayer(Player player) {
@@ -77,7 +85,7 @@ public class GameHandler {
     }
 
     public Player getCurrentDiscardingPlayer() {
-        return players.get(currentDiscardPlayerIndex);
+        return playerTurnManager.getCurrentDiscardingPlayer(players);
     }
 
     public void shufflePlayers(Random random) {
@@ -90,7 +98,7 @@ public class GameHandler {
     }
 
     public int rollDice() {
-        return randForDice.nextInt(6)+1;
+        return playerTurnManager.rollDice();
     }
 
     public Robber getRobber() {
@@ -98,23 +106,23 @@ public class GameHandler {
     }
 
     public void purchaseDevelopmentCard(Player player) {
-        if (turnPhase != TurnPhase.PLAYING_TURN) {
+        if (playerTurnManager.getTurnPhase() != TurnPhase.PLAYING_TURN) {
             throw new IllegalStateException("Cannot purchase development card in this phase!");
         }
         Random random = new Random();
         this.cardTracker.PurchaseDevCard(player, random);
     }
 
-    public void addDevelopmentCard(Player player, DevCardType card){
+    public void addDevelopmentCard(Player player, DevCardType card) {
         this.cardTracker.AddDevCard(player, card);
     }
 
-    public void playMonopolyCard(Player player, Resource resource){
+    public void playMonopolyCard(Player player, Resource resource) {
         player.playDevCard(DevCardType.MONOPOLY);
-        for(int i = 0; i < players.size(); i++){
-            if (players.get(i) != player){
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i) != player) {
                 int currentResourceCount = players.get(i).getResourceCount(resource);
-                if(currentResourceCount != 0){
+                if (currentResourceCount != 0) {
                     players.get(i).removeResource(resource, currentResourceCount);
                     player.addResource(resource, currentResourceCount);
                 }
@@ -122,202 +130,110 @@ public class GameHandler {
         }
     }
 
-    public void playYearOfPlentyCard(Player player, Resource resource1, Resource resource2){
+    public void playYearOfPlentyCard(Player player, Resource resource1, Resource resource2) {
         player.playDevCard(DevCardType.YEAR_OF_PLENTY);
         player.addResource(resource1, 1);
         player.addResource(resource2, 1);
     }
 
-    public void playRoadBuildingCard(Player player, BorderLocation loc1, BorderLocation loc2){
+    public void playRoadBuildingCard(Player player, BorderLocation loc1, BorderLocation loc2) {
         player.playDevCard(DevCardType.ROAD_BUILDING);
-        board.placeRoad(player, loc1, false);
-        board.placeRoad(player, loc2, false);
+        
+        // Check if the first road can be placed
+        if (!board.canPlaceRoad(player, loc1, false)) {
+            throw new IllegalArgumentException("Cannot place first road at (" + loc1.getRow() + ", " + loc1.getCol() + ")");
+        }
+        
+        // Place the first road
+        actionHandler.placeRoadAllowed(player, loc1, playerTurnManager.getTurnPhase());
+        
+        // For the second road, we need to check if it's connected to any existing road or settlement
+        // This includes the first road we just placed
+        boolean canPlaceSecondRoad = false;
+        
+        // Check if the second road is connected to any existing road
+        List<Road> playerRoads = board.getRoadsForPlayer(player);
+        for (Road road : playerRoads) {
+            List<BorderLocation> adjacentBorders = road.getLocation().getBorders();
+            if (adjacentBorders.contains(loc2)) {
+                canPlaceSecondRoad = true;
+                break;
+            }
+        }
+        
+        // If not connected to a road, check if it's connected to any settlement
+        if (!canPlaceSecondRoad) {
+            List<Building> playerBuildings = board.getBuildingsForPlayer(player);
+            for (Building building : playerBuildings) {
+                List<BorderLocation> adjacentBorders = building.getLocation().getBorders();
+                if (adjacentBorders.contains(loc2)) {
+                    canPlaceSecondRoad = true;
+                    break;
+                }
+            }
+        }
+        
+        // If still can't place, check if the location is valid and not occupied
+        if (!canPlaceSecondRoad && board.isBorderValid(loc2) && !board.isBorderOccupied(loc2)) {
+            // Check if the second road is connected to the first road we just placed
+            List<BorderLocation> firstRoadBorders = loc1.getBorders();
+            if (firstRoadBorders.contains(loc2)) {
+                canPlaceSecondRoad = true;
+            }
+        }
+        
+        if (!canPlaceSecondRoad) {
+            throw new IllegalArgumentException("Cannot place second road at (" + loc2.getRow() + ", " + loc2.getCol() + ")");
+        }
+        
+        // Place the second road
+        actionHandler.placeRoadAllowed(player, loc2, playerTurnManager.getTurnPhase());
+        
+        player.setLongestRoad(findLongestRoad(player));
     }
 
     public void playKnightCard(Player player) {
         player.playDevCard(DevCardType.KNIGHT);
-        this.turnPhase = TurnPhase.MOVING_ROBBER;
+        playerTurnManager.setTurnPhase(TurnPhase.MOVING_ROBBER);
+        this.turnPhase = TurnPhase.MOVING_ROBBER; // Keep local copy in sync
     }
 
-    public CardTracker getCardTracker(){
+    public CardTracker getCardTracker() {
         return this.cardTracker;
     }
 
-    public List<Player> getPlayers(){
+    public List<Player> getPlayers() {
         return this.players;
     }
 
-    public void setCardTracker(CardTracker cardTracker){
+    public void setCardTracker(CardTracker cardTracker) {
         this.cardTracker = cardTracker;
     }
 
     public void moveRobber(HexLocation loc) {
-        robberManager.moveRobber(loc, turnPhase);
-        turnPhase = TurnPhase.STEALING_RESOURCE;
-    }
-
-    private void checkTurnPhaseValidDoDiceRoll(){
-        if (turnPhase != TurnPhase.ROLLING_DICE) {
-            throw new IllegalStateException("Cannot roll dice in this phase!");
-        }
+        robberManager.moveRobber(loc, playerTurnManager.getTurnPhase());
+        playerTurnManager.setTurnPhase(TurnPhase.STEALING_RESOURCE);
+        this.turnPhase = TurnPhase.STEALING_RESOURCE; // Keep local copy in sync
     }
 
     public Tuple<Integer, Integer> doDiceRoll() {
-        checkTurnPhaseValidDoDiceRoll();
-        int roll1 = rollDice();
-        int roll2 = rollDice();
-        handleRoll(roll1 + roll2);
-        return new Tuple<>(roll1, roll2);
-    }
-
-    private void checkTurnPhaseHandleSwitchPlayerTurn(){
-        if (turnPhase != TurnPhase.END_TURN && turnPhase != TurnPhase.PLAYING_TURN) {
-            throw new IllegalStateException("Cannot change turn in this phase!");
-        }
-    }
-
-    private void handleSetUpHandleSwitchPlayerTurn(){
-        if(getTurnMovementDirection().equals(TurnMovementDirection.FORWARD)){
-            handleSetUpHandleSwitchPlayerTurnForward();
-        }else if(getTurnMovementDirection().equals(TurnMovementDirection.REVERSE)){
-            handleSetUpHandleSwitchPlayerTurnReverse();
-        }
-    }
-
-    private void handleSetUpHandleSwitchPlayerTurnReverse(){
-        if(this.currentPlayerTurnIndex > 0 ) {
-            handleSetUpHandleSwitchPlayerTurnReverseNotEnd();
-        }else{
-            handleSetUpHandleSwitchPlayerTurnReverseEnd();
-        }
-    }
-
-    private void handleSetUpHandleSwitchPlayerTurnReverseNotEnd(){
-        this.currentPlayerTurnIndex--;
-        this.turnMovementDirection = TurnMovementDirection.REVERSE;
-        this.gameState = GameState.SETUP;
-        this.turnPhase = TurnPhase.PLACING_BUILDING;
-    }
-
-    private void handleSetUpHandleSwitchPlayerTurnReverseEnd(){
-        this.currentPlayerTurnIndex = 0;
-        this.turnMovementDirection = TurnMovementDirection.FORWARD;
-        this.gameState = GameState.NORMALPLAY;
-        this.turnPhase = TurnPhase.ROLLING_DICE;
-    }
-
-    private void handleSetUpHandleSwitchPlayerTurnForward(){
-        if(this.currentPlayerTurnIndex < (players.size()-1) ) {
-            handleSetUpHandleSwitchPlayerTurnForwardNotEnd();
-        }else{
-            handleSetUpHandleSwitchPlayerTurnForwardEnd();
-        }
-    }
-
-    private void handleSetUpHandleSwitchPlayerTurnForwardNotEnd(){
-        this.currentPlayerTurnIndex++;
-        this.turnMovementDirection = TurnMovementDirection.FORWARD;
-        this.gameState = GameState.SETUP;
-        this.turnPhase = TurnPhase.PLACING_BUILDING;
-    }
-
-    private void handleSetUpHandleSwitchPlayerTurnForwardEnd(){
-        this.currentPlayerTurnIndex = players.size()-1;
-        this.turnMovementDirection = TurnMovementDirection.REVERSE;
-        this.gameState = GameState.SETUP;
-        this.turnPhase = TurnPhase.PLACING_BUILDING;
-    }
-
-    private void handleNormalPlayHandleSwitchPlayerTurn(){
-        if(this.currentPlayerTurnIndex < (players.size()-1)) {
-            handleNormalPlayHandleSwitchPlayerTurnNotEnd();
-        }else{
-            handleNormalPlayHandleSwitchPlayerTurnEnd();
-        }
-    }
-
-    private void handleNormalPlayHandleSwitchPlayerTurnUpdateStates(){
-        this.gameState = GameState.NORMALPLAY;
-        this.turnPhase = TurnPhase.ROLLING_DICE;
-    }
-
-    private void handleNormalPlayHandleSwitchPlayerTurnNotEnd(){
-        this.currentPlayerTurnIndex++;
-        this.turnMovementDirection = TurnMovementDirection.FORWARD;
-        handleNormalPlayHandleSwitchPlayerTurnUpdateStates();
-    }
-
-    private void handleNormalPlayHandleSwitchPlayerTurnEnd(){
-        this.currentPlayerTurnIndex = 0;
-        this.turnMovementDirection = TurnMovementDirection.FORWARD;
-        handleNormalPlayHandleSwitchPlayerTurnUpdateStates();
-    }
-
-    private int handleSwitchPlayerTurnCheckGameState(){
-        if(getCurrentGameState().equals(GameState.SETUP)){
-            handleSetUpHandleSwitchPlayerTurn();
-        }else {
-            handleSwitchPlayerTurnCheckGameStateNormalPlay();
-        }
-        return this.currentPlayerTurnIndex;
-    }
-
-    private void handleSwitchPlayerTurnCheckGameStateNormalPlay(){
-        if(getCurrentGameState().equals(GameState.NORMALPLAY)){
-            handleVictoryPoints();
-            if (getCurrentGameState().equals(GameState.END)) {
-                return;
-            }
-            handleNormalPlayHandleSwitchPlayerTurn();
-        }
+        return playerTurnManager.doDiceRoll();
     }
 
     public int handleSwitchPlayerTurn() {
-        checkTurnPhaseHandleSwitchPlayerTurn();
-        return handleSwitchPlayerTurnCheckGameState();
+        int newIndex = playerTurnManager.handleSwitchPlayerTurn();
+        this.gameState = playerTurnManager.getGameState();
+        this.turnPhase = playerTurnManager.getTurnPhase();
+        this.turnMovementDirection = playerTurnManager.getTurnMovementDirection();
+        this.currentPlayerTurnIndex = newIndex;
+        return newIndex;
     }
 
-    private void handleVictoryPointsLargestArmy(Player oldPlayer){
-        if(largestArmyPlayerIndex != INVALID_PLAYER_INDEX){
-            players.get(largestArmyPlayerIndex).changeVictoryPoints(-2);
-        }
-        largestArmyPlayerIndex = currentPlayerTurnIndex;
-        largestArmy = oldPlayer.getNumKnights();
-        oldPlayer.changeVictoryPoints(2);
-    }
-
-    private void handleVictoryPointsLongestRoad(Player oldPlayer){
-        if(longestRoadPlayerIndex != INVALID_PLAYER_INDEX){
-            players.get(longestRoadPlayerIndex).changeVictoryPoints(-2);
-        }
-        longestRoadPlayerIndex = currentPlayerTurnIndex;
-        longestRoad = oldPlayer.getLongestRoad();
-        oldPlayer.changeVictoryPoints(2);
-    }
-
-    private void handleVictoryPointsCheckEnd(Player oldPlayer){
-        if(oldPlayer.getVictoryPoints() >= 10){
-            this.gameState = GameState.END;
-        }
-    }
-
-    private void handleVictoryPointsCheckLargestArmy(Player oldPlayer){
-        if(oldPlayer.getNumKnights() > largestArmy){
-            handleVictoryPointsLargestArmy(oldPlayer);
-        }
-    }
-
-    private void handleVictoryPointsCheckLongestRoad(Player oldPlayer){
-        if(oldPlayer.getLongestRoad() > longestRoad){
-            handleVictoryPointsLongestRoad(oldPlayer);
-        }
-    }
-
-    public void handleVictoryPoints(){
-        Player oldPlayer = players.get(currentPlayerTurnIndex);
-        handleVictoryPointsCheckLongestRoad(oldPlayer);
-        handleVictoryPointsCheckLargestArmy(oldPlayer);
-        handleVictoryPointsCheckEnd(oldPlayer);
+    public void handleVictoryPoints() {
+        this.victoryPointManager.handleVictoryPoints(playerTurnManager.getCurrentPlayerTurnIndex(), this.players);
+        GameState newState = victoryPointManager.getGameState();
+        playerTurnManager.setGameState(newState);
+        this.gameState = newState;
     }
 
     public Player playerByTurnIndex() {
@@ -325,14 +241,15 @@ public class GameHandler {
     }
 
     public GameState getCurrentGameState() {
-        return this.gameState;
+        return playerTurnManager.getGameState();
     }
 
     public TurnPhase getTurnPhase() {
-        return this.turnPhase;
+        return playerTurnManager.getTurnPhase();
     }
 
     public void setTurnPhase(TurnPhase phase) {
+        playerTurnManager.setTurnPhase(phase);
         this.turnPhase = phase;
     }
 
@@ -341,108 +258,77 @@ public class GameHandler {
     }
 
     public TurnMovementDirection getTurnMovementDirection() {
-        return this.turnMovementDirection;
+        return playerTurnManager.getTurnMovementDirection();
     }
 
     public void switchTurnMovementDirection() {
-        this.turnMovementDirection = (this.turnMovementDirection == TurnMovementDirection.FORWARD)
-                                        ? TurnMovementDirection.REVERSE : TurnMovementDirection.FORWARD;
+        playerTurnManager.switchTurnMovementDirection();
+        this.turnMovementDirection = playerTurnManager.getTurnMovementDirection(); // Keep local copy in sync
     }
 
     public boolean canPlaceSettlement(Player p, VertexLocation loc) {
-        boolean force = gameState == GameState.SETUP;
-        boolean requiresResources = turnPhase == TurnPhase.PLAYING_TURN;
-        return actionHandler.canPlaceSettlementConditional(p, loc, force, requiresResources, turnPhase);
+        return buildingManager.canPlaceSettlement(p, loc);
     }
 
     public boolean canPlaceRoad(Player p, BorderLocation loc) {
-        boolean requiresResources = turnPhase == TurnPhase.PLAYING_TURN;
-        if (turnPhase == TurnPhase.PLACING_ROAD || turnPhase == TurnPhase.PLAYING_TURN) {
-            return actionHandler.canPlaceRoadRequiresResources(p, loc, requiresResources);
-        }
-        return false;
+        return buildingManager.canPlaceRoad(p, loc);
     }
 
     public boolean canUpgradeSettlement(Settlement s) {
-        Player owner = s.getOwner();
-        return board.canUpgradeSettlement(s) && turnPhase == TurnPhase.PLAYING_TURN &&
-                owner.getResourceCount(Resource.ORE) >= 3 && owner.getResourceCount(Resource.WHEAT) >= 2;
+        return buildingManager.canUpgradeSettlement(s);
     }
 
     public void placeSettlement(Player p, VertexLocation loc) {
-        if (canPlaceSettlement(p, loc)) {
-            board.placeSettlement(p, loc, gameState == GameState.SETUP);
-            actionHandler.placeSettlementAllowed(p, loc, turnPhase, turnMovementDirection);
-            if (turnPhase == TurnPhase.PLACING_BUILDING) {
-                turnPhase = TurnPhase.PLACING_ROAD;
-            }
-        } else {
-            actionHandler.placeSettlementThrowException(loc);
-        }
+        buildingManager.placeSettlement(p, loc);
+        this.turnPhase = playerTurnManager.getTurnPhase(); // Keep local copy in sync
     }
 
     public void placeRoad(Player p, BorderLocation loc) {
-        if (canPlaceRoad(p, loc)) {
-            actionHandler.placeRoadAllowed(p, loc, turnPhase);
-            if (turnPhase == TurnPhase.PLACING_ROAD) {
-                turnPhase = TurnPhase.END_TURN;
-            }
-            p.setLongestRoad(findLongestRoad(p));
-        } else {
-            actionHandler.placeRoadThrowException(loc);
-        }
+        buildingManager.placeRoad(p, loc);
+        this.turnPhase = playerTurnManager.getTurnPhase(); // Keep local copy in sync
     }
 
     public void upgradeSettlement(Settlement s) {
-        if (canUpgradeSettlement(s)) {
-            actionHandler.upgradeSettlementAllowed(s);
-        }else {
-            throw new IllegalArgumentException("Cannot upgrade settlement!");
-        }
+        buildingManager.upgradeSettlement(s);
     }
 
     public void stealResource(Player thief, Player victim, Random rand) {
-        actionHandler.stealResourceThrowException(victim, turnPhase);
+        actionHandler.stealResourceThrowException(victim, playerTurnManager.getTurnPhase());
         List<Resource> resources = new ArrayList<>(List.of(Resource.values()));
-        robberManager.stealResourceLoop(thief, victim, resources, rand, turnPhase);
-        turnPhase = TurnPhase.PLAYING_TURN;
+        robberManager.stealResourceLoop(thief, victim, resources, rand, playerTurnManager.getTurnPhase());
+        playerTurnManager.setTurnPhase(TurnPhase.PLAYING_TURN);
+        this.turnPhase = TurnPhase.PLAYING_TURN; // Keep local copy in sync
     }
 
     public void skipSteal() {
-        if (turnPhase != TurnPhase.STEALING_RESOURCE) {
+        if (playerTurnManager.getTurnPhase() != TurnPhase.STEALING_RESOURCE) {
             throw new IllegalStateException("Cannot steal in this phase");
         }
-        turnPhase = TurnPhase.PLAYING_TURN;
+        playerTurnManager.setTurnPhase(TurnPhase.PLAYING_TURN);
+        this.turnPhase = TurnPhase.PLAYING_TURN; // Keep local copy in sync
     }
 
     public List<Player> getPlayersToStealFrom(Player currentTurn) {
-        robberManager.getPlayersToStealFromThrowException(turnPhase);
+        robberManager.getPlayersToStealFromThrowException(playerTurnManager.getTurnPhase());
         List<Player> adjacent = board.getAdjacentPlayers(robber.loc);
         return robberManager.getPlayersToStealFromLoop(currentTurn, adjacent);
     }
 
     public int getRequiredDiscardAmount() {
-        actionHandler.getRequiredDiscardAmountException(turnPhase);
-        Player player = players.get(currentDiscardPlayerIndex);
+        actionHandler.getRequiredDiscardAmountException(playerTurnManager.getTurnPhase());
+        Player player = playerTurnManager.getCurrentDiscardingPlayer(players);
         return actionHandler.getRequiredDiscardAmountConditional(player);
     }
 
     public void discardResources(CountCollection<Resource> resources) {
         int required = getRequiredDiscardAmount();
         actionHandler.discardResourcesNotEnoughException(resources, required);
-        Player player = players.get(currentDiscardPlayerIndex);
+        Player player = playerTurnManager.getCurrentDiscardingPlayer(players);
         Iterator<Tuple<Resource, Integer>> resourceIterator = resources.iterator();
         actionHandler.discardResourcesIterator(player, resourceIterator);
         actionHandler.discardResourcesRemoveResource(player, resources, resourceIterator);
-        discardResourcesSetTurnPhase();
-    }
-
-    private void discardResourcesSetTurnPhase(){
-        currentDiscardPlayerIndex++;
-        if (currentDiscardPlayerIndex >= players.size()) {
-            currentDiscardPlayerIndex = 0;
-            turnPhase = TurnPhase.MOVING_ROBBER;
-        }
+        playerTurnManager.incrementDiscardPlayerIndex(players);
+        this.turnPhase = playerTurnManager.getTurnPhase();
     }
 
     private void initRobber() {
@@ -451,7 +337,7 @@ public class GameHandler {
         robberManager = new RobberManager(robber, board);
     }
 
-    private HexLocation initRobberLoop(){
+    private HexLocation initRobberLoop() {
         for (Hexagon hex : board.getHexList()) {
             if (hex.isDesert) {
                 return hex.location;
@@ -460,44 +346,21 @@ public class GameHandler {
         return null;
     }
 
-    private void handleRoll(int roll) {
-        if (roll == ROBBER_ROLL) {
-            handleRobberRoll();
-        } else {
-            handleNormalRoll(roll);
-        }
-    }
-
-    private void handleNormalRoll(int roll) {
-        List<Hexagon> hexes = board.getHexesAtNumber(roll, new ArrayList<>());
-        actionHandler.handleNormalRollLoop(hexes);
-        turnPhase = TurnPhase.PLAYING_TURN;
-    }
-
-    private void handleRobberRoll() {
-        turnPhase = TurnPhase.DISCARDING_RESOURCES;
-        currentDiscardPlayerIndex = 0;
-    }
-
     public int findLongestRoad(Player player) {
-        Set<Road> visitedRoads = new HashSet<>();
-        List<Road> playerRoads = board.getRoadsForPlayer(player);
-        return actionHandler.findLongestRoadLoop(visitedRoads, player, playerRoads);
+        return buildingManager.findLongestRoad(player);
     }
 
     public void tradeBetweenPlayers(Player player1, Player player2, CountCollection<Resource> fromResources,
-                                    CountCollection<Resource> toResources) {
-        player1.TradeResource(player2, fromResources, toResources);
+            CountCollection<Resource> toResources) {
+        tradeManager.tradeBetweenPlayers(player1, player2, fromResources, toResources);
     }
 
     public void tradeWithBank(Player player, Resource toTrade, Resource toReceive) {
-        int amount = getTradeAmount(player, toTrade);
-        cardTracker.TradeResourceWithBank(player, toTrade, amount, toReceive, actionHandler.getOwnedPorts(player));
+        tradeManager.tradeWithBank(player, toTrade, toReceive);
     }
 
     public int getTradeAmount(Player player, Resource resource) {
-        List<PortType> ports = actionHandler.getOwnedPorts(player);
-        return actionHandler.getTradeAmountHelper(player, resource, ports);
+        return tradeManager.getTradeAmount(player, resource);
     }
 
 }

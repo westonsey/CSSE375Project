@@ -30,7 +30,7 @@ public class RobberManager {
 	}
 
 	private void checkRobberMoveLocValid(HexLocation loc){
-		if (!loc.isValid() || loc.equals(robber.loc)) {
+		if (!loc.isValid() || loc.equals(robber.getLoc())) {
 			throw new IllegalArgumentException("Cannot move robber to (" + loc.getRow() + "," + loc.getCol() + ")");
 		}
 	}

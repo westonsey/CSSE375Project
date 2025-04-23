@@ -103,8 +103,12 @@ public class GameHandler {
         return randForDice.nextInt(6)+1;
     }
 
-    public Robber getRobber() {
-        return robber;
+    public HexLocation getRobberLoc() {
+        return robber.getLoc();
+    }
+
+    public void moveRobberWithoutChecks(HexLocation loc) {
+        robber.moveLocation(loc);
     }
 
     public void purchaseDevelopmentCard(Player player) {
@@ -431,7 +435,7 @@ public class GameHandler {
 
     public List<Player> getPlayersToStealFrom(Player currentTurn) {
         robberManager.getPlayersToStealFromThrowException(turnPhase);
-        List<Player> adjacent = board.getAdjacentPlayers(robber.loc);
+        List<Player> adjacent = board.getAdjacentPlayers(robber.getLoc());
         return robberManager.getPlayersToStealFromLoop(currentTurn, adjacent);
     }
 

@@ -246,7 +246,7 @@ public class ActionHandler {
 
 	void handleNormalRollLoop(List<Hexagon> hexes, int roll1, int roll2){
 		for (Hexagon h : hexes) {
-			boolean hasRobber = h.location.equals(gameStateManager.getRobber().loc);
+			boolean hasRobber = h.location.equals(gameStateManager.getRobberLoc());
 			ResourceGainContext context = new ResourceGainContext(h.resource, h.number, roll1, roll2, hasRobber);
 			board.addPlayerResourcesFromHex(h, context);
 		}

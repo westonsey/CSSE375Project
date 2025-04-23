@@ -654,7 +654,7 @@ public class GameHandlerTests {
                 TurnPhase.MOVING_ROBBER);
         game.moveRobber(new HexLocation(2, 3));
         assertEquals(TurnPhase.STEALING_RESOURCE, game.getTurnPhase());
-        assertEquals(game.getRobber().loc, new HexLocation(2, 3));
+        assertEquals(game.getRobberLoc(), new HexLocation(2, 3));
     }
 
     @Test
@@ -791,7 +791,7 @@ public class GameHandlerTests {
     public void getPlayersToStealFrom_WithEmptyBoard_ReturnsEmpty() {
         GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.STEALING_RESOURCE,
                 TurnMovementDirection.FORWARD);
-        game.getRobber().moveLocation(new HexLocation(3, 3)); // Bypass state checks
+        game.moveRobberWithoutChecks(new HexLocation(3, 3));
         Player player1 = new Player();
         List<Player> players = game.getPlayersToStealFrom(player1);
         assertEquals(0, players.size());
@@ -801,7 +801,7 @@ public class GameHandlerTests {
     public void getPlayersToStealFrom_WithOneNeighbor_ReturnsOnePlayer() {
         GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.STEALING_RESOURCE,
                 TurnMovementDirection.FORWARD);
-        game.getRobber().moveLocation(new HexLocation(3, 3)); // Bypass state checks
+        game.moveRobberWithoutChecks(new HexLocation(3, 3));
         Player player1 = new Player();
         Player player2 = new Player();
         player2.addResource(Resource.WOOD, 1);
@@ -815,7 +815,7 @@ public class GameHandlerTests {
     public void getPlayersToStealFrom_WithOneNeighborAndThief_ReturnsOnePlayer() {
         GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.STEALING_RESOURCE,
                 TurnMovementDirection.FORWARD);
-        game.getRobber().moveLocation(new HexLocation(3, 3)); // Bypass state checks
+        game.moveRobberWithoutChecks(new HexLocation(3, 3));
         Player player1 = new Player();
         Player player2 = new Player();
         player2.addResource(Resource.WOOD, 1);
@@ -830,7 +830,7 @@ public class GameHandlerTests {
     public void getPlayersToStealFrom_WithOneNeighborNoResource_ReturnsEmpty() {
         GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.STEALING_RESOURCE,
                 TurnMovementDirection.FORWARD);
-        game.getRobber().moveLocation(new HexLocation(3, 3)); // Bypass state checks
+        game.moveRobberWithoutChecks(new HexLocation(3, 3));
         Player player1 = new Player();
         Player player2 = new Player();
         game.getBoard().placeSettlement(player2, new VertexLocation(3, 7), true);
@@ -842,7 +842,7 @@ public class GameHandlerTests {
     public void getPlayersToStealFrom_WithThreeNeighbors_ReturnsThreePlayers() {
         GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.STEALING_RESOURCE,
                 TurnMovementDirection.FORWARD);
-        game.getRobber().moveLocation(new HexLocation(3, 3)); // Bypass state checks
+        game.moveRobberWithoutChecks(new HexLocation(3, 3));
         Player player1 = new Player();
         Player player2 = new Player();
         Player player3 = new Player();

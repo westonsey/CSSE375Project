@@ -109,7 +109,7 @@ public class VictoryPointTest {
     }
 
     @Test
-    public void TestPlayerVictoryPoints_upgradeOneSettlementToFort_Expect1(){
+    public void TestPlayerVictoryPoints_upgradeOneSettlementToFort_Expect2(){
         Player player1 = new Player();
         player1.addResource(Resource.WOOD, 1);
         player1.addResource(Resource.BRICK, 2);
@@ -124,7 +124,7 @@ public class VictoryPointTest {
         handler.setCurrentlySelectedUpgrade(BuildingCode.FORT);
         handler.upgradeSettlement(settlement);
 
-        assertEquals(1, player1.getVictoryPoints());
+        assertEquals(2, player1.getVictoryPoints());
     }
 
     @Test

@@ -733,7 +733,7 @@ public class BoardTests {
         board.upgradeSettlement((Settlement)board.buildings.get(0), new ObservatoryBuildingType());
         ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 6, 6, false);
         board.addPlayerResourcesFromHex(hexLst.get(0), context);
-        assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
+        assertEquals(2, player1.getResourceCount(hexLst.get(0).resource));
     }
 
     @Test

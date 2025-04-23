@@ -14,7 +14,7 @@ public class RobberTest {
     public void testMoveRobber_NewLoc_2_2_Update(){
         Robber r = new Robber(new HexLocation(1,0));
         r.moveLocation(new HexLocation(2,2));
-        assertEquals(r.loc, new HexLocation(2,2));
+        assertEquals(r.getLoc(), new HexLocation(2,2));
     }
 
     @Test

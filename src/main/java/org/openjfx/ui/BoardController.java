@@ -91,7 +91,7 @@ public class BoardController {
             rect.setStrokeWidth(2);
         }
 
-        HexLocation robberLoc = game.getRobber().loc;
+        HexLocation robberLoc = game.getRobberLoc();
         UIHex robberHex = uiHexMap.get(robberLoc);
         double robberX = robberHex.polygon.getLayoutX();
         double robberY = robberHex.polygon.getLayoutY();
@@ -184,7 +184,7 @@ public class BoardController {
     }
 
     private void moveRobber(HexLocation loc, Polygon polygon) {
-        if (game.getTurnPhase() == TurnPhase.MOVING_ROBBER && !loc.equals(game.getRobber().loc)) {
+        if (game.getTurnPhase() == TurnPhase.MOVING_ROBBER && !loc.equals(game.getRobberLoc())) {
             game.moveRobber(loc);
             robberCircle.setLayoutX(polygon.getLayoutX());
             robberCircle.setLayoutY(polygon.getLayoutY());

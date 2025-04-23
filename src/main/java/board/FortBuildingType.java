@@ -40,6 +40,6 @@ public class FortBuildingType implements BuildingType {
 
     @Override
     public int getVictoryPoints() {
-        return 1;
+        return 2;
     }
 }

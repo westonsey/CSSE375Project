@@ -15,7 +15,7 @@ public class ObservatoryBuildingType implements BuildingType {
         if (context.getTotalRoll() != 2 && context.getTotalRoll() != 12) {
             return 0;
         }
-        return 1;
+        return 2;
     }
 
     @Override

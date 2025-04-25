@@ -197,7 +197,7 @@ public class ActionHandler {
 		return longestRoad;
 	}
 
-	int getTradeAmountHelper(Player player, Resource resource, List<PortType> ports){
+	int getTradeAmountHelper(Resource resource, List<PortType> ports){
 		if (ports.contains(portTypeForResource(resource))) {
 			return 2;
 		} else if (ports.contains(PortType.THREE_FOR_ONE)) {

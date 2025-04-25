@@ -11,6 +11,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import org.openjfx.ui.Dice?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
     <children>
@@ -265,8 +266,8 @@
                                 <Font size="32.0" />
                             </font>
                         </Text>
-                        <Rectangle fx:id="dice1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="140.0" layoutX="845.0" layoutY="600.0" stroke="BLACK" strokeType="INSIDE" width="140.0" />
-                        <Rectangle fx:id="dice2" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="140.0" layoutX="1030.0" layoutY="600.0" stroke="BLACK" strokeType="INSIDE" width="140.0" />
+                        <Dice fx:id="dice1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="140.0" layoutX="845.0" layoutY="600.0" stroke="BLACK" strokeType="INSIDE" width="140.0" />
+                        <Dice fx:id="dice2" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="140.0" layoutX="1030.0" layoutY="600.0" stroke="BLACK" strokeType="INSIDE" width="140.0" />
                         <Button fx:id="rollDiceBtn" layoutX="845.0" layoutY="550.0" mnemonicParsing="false" text="Roll" />
                           <Button fx:id="endTurnBtn" layoutX="1105.0" layoutY="550.0" mnemonicParsing="false" text="End Turn" />
                           <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#b98a3f" height="60.0" layoutX="845.0" layoutY="231.0" stroke="BLACK" strokeType="INSIDE" width="170.0" />

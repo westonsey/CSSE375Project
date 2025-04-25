@@ -36,7 +36,6 @@ public class CardTrackerTest {
     @Test
     public void CheckTotalCountAfterTradeSimple(){
         Player[] players = this.GeneratePlayers(4);
-        CardTracker ct = new CardTracker();
         Player player1 = players[0];
         Player player2 = players[1];
         Player player3 = players[2];
@@ -47,12 +46,11 @@ public class CardTrackerTest {
         CountCollection<Resource> p3resources = new CountCollection<>();
         CountCollection<Resource> p4resources = new CountCollection<>();
 
-        //now they have resources to trade.
         player1.addResource(Resource.WOOD, 1);
         player2.addResource(Resource.ORE, 1);
         player3.addResource(Resource.SHEEP, 1);
         player4.addResource(Resource.BRICK, 1);
-        //Resource willing to trade
+
         p1resources.add(Resource.WOOD, 1);
         p2resources.add(Resource.ORE, 1);
 
@@ -71,7 +69,6 @@ public class CardTrackerTest {
     @Test
     public void CheckTotalCountAfterTradeComplex(){
         Player[] players = this.GeneratePlayers(4);
-        CardTracker ct = new CardTracker();
         Player player1 = players[0];
         Player player2 = players[1];
         Player player3 = players[2];
@@ -361,7 +358,6 @@ public class CardTrackerTest {
     @Test
     public void TestPlayerHandAfterTrade(){
         Player[] players = this.GeneratePlayers(4);
-        CardTracker ct = new CardTracker();
         Player player1 = players[0];
         Player player2 = players[1];
         Player player3 = players[2];
@@ -454,7 +450,7 @@ public class CardTrackerTest {
         int index = values.indexOf(DevCardType.ROAD_BUILDING);
 
         int deckSize = unPlayedPile.getValuesList().size();
-       
+
         EasyMock.expect(random.nextInt(deckSize)).andReturn(index);
         EasyMock.replay(random);
 
@@ -581,7 +577,6 @@ public class CardTrackerTest {
 
         List<Player> players = this.GenerateListOfPlayers(3);
         CardTracker ct = new CardTracker();
-       // Random random = EasyMock.createMock(Random.class);
         Random random = new Random();
 
         CountCollection<DevCardType> unPlayedPile = ct.getUnPlayedCards();

@@ -75,7 +75,6 @@ public class MainApp extends Application {
                 StartController controller = new StartController(bundle);
                 loader.setController(controller);
                 Parent root = loader.load();
-                // Change this to go to weather screen instead of game screen
                 controller.setStartHandler(() -> switchScene(WEATHER_SETUP_FXML));
                 players = controller.getPlayers();
                 return root;
@@ -84,7 +83,6 @@ public class MainApp extends Application {
                 WeatherSetupController controller = new WeatherSetupController(bundle);
                 loader.setController(controller);
                 Parent root = loader.load();
-                // Set handler for when user makes their choice
                 controller.setWeatherChoiceHandler(() -> {
                     switchScene(GAME_SCREEN_FXML);
                 });

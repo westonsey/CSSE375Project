@@ -224,18 +224,18 @@ public class ActionHandler {
 	List<PortType> getOwnedPorts(Player player) {
 		List<PortType> ports = new ArrayList<>();
 		List<Building> buildings = board.getBuildingsForPlayer(player);
-		getOwnedPortsLoop(player, buildings, ports);
+		getOwnedPortsLoop(buildings, ports);
 		return ports;
 	}
 
-	private void getOwnedPortsLoop(Player player, List<Building> buildings, List<PortType> ports){
+	private void getOwnedPortsLoop(List<Building> buildings, List<PortType> ports){
 		for (Building b : buildings) {
 			PortType p = board.getPort(b).getPortType();
-			checkValidPortgetOwnedPorts(p, ports);
+			checkValidPortGetOwnedPorts(p, ports);
 		}
 	}
 
-	private void checkValidPortgetOwnedPorts(PortType p, List<PortType> ports){
+	private void checkValidPortGetOwnedPorts(PortType p, List<PortType> ports){
 		if (p != null && !ports.contains(p)) {
 			ports.add(p);
 		}
@@ -244,7 +244,7 @@ public class ActionHandler {
 	void handleNormalRollLoop(List<Hexagon> hexes, int turn, boolean weather){
 		for (Hexagon h : hexes) {
 			if(!h.location.equals(gameStateManager.getRobber().loc)) {
-				if(turn % 3 != 1) {
+				if(turn % 3 == 1 && !weather) {
 					board.addPlayerResourcesFromHex(h);
 				}
 			}

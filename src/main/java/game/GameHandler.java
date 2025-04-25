@@ -138,20 +138,14 @@ public class GameHandler {
 
     public void playRoadBuildingCard(Player player, BorderLocation loc1, BorderLocation loc2) {
         player.playDevCard(DevCardType.ROAD_BUILDING);
-        
-        // Check if the first road can be placed
+
         if (!board.canPlaceRoad(player, loc1, false)) {
             throw new IllegalArgumentException("Cannot place first road at (" + loc1.getRow() + ", " + loc1.getCol() + ")");
         }
-        
-        // Place the first road
         actionHandler.placeRoadAllowed(player, loc1, playerTurnManager.getTurnPhase());
-        
-        // For the second road, we need to check if it's connected to any existing road or settlement
-        // This includes the first road we just placed
+
         boolean canPlaceSecondRoad = false;
-        
-        // Check if the second road is connected to any existing road
+
         List<Road> playerRoads = board.getRoadsForPlayer(player);
         for (Road road : playerRoads) {
             List<BorderLocation> adjacentBorders = road.getLocation().getBorders();
@@ -160,8 +154,7 @@ public class GameHandler {
                 break;
             }
         }
-        
-        // If not connected to a road, check if it's connected to any settlement
+
         if (!canPlaceSecondRoad) {
             List<Building> playerBuildings = board.getBuildingsForPlayer(player);
             for (Building building : playerBuildings) {
@@ -172,10 +165,8 @@ public class GameHandler {
                 }
             }
         }
-        
-        // If still can't place, check if the location is valid and not occupied
+
         if (!canPlaceSecondRoad && board.isBorderValid(loc2) && !board.isBorderOccupied(loc2)) {
-            // Check if the second road is connected to the first road we just placed
             List<BorderLocation> firstRoadBorders = loc1.getBorders();
             if (firstRoadBorders.contains(loc2)) {
                 canPlaceSecondRoad = true;
@@ -185,8 +176,7 @@ public class GameHandler {
         if (!canPlaceSecondRoad) {
             throw new IllegalArgumentException("Cannot place second road at (" + loc2.getRow() + ", " + loc2.getCol() + ")");
         }
-        
-        // Place the second road
+
         actionHandler.placeRoadAllowed(player, loc2, playerTurnManager.getTurnPhase());
         
         player.setLongestRoad(findLongestRoad(player));

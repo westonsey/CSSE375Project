@@ -23,6 +23,7 @@ public class GameHandler {
     private Random randForDice;
     private GameState gameState;
     private TurnPhase turnPhase;
+    private int turnNumber;
     private TurnMovementDirection turnMovementDirection;
     private Board board;
     private Robber robber;
@@ -41,27 +42,34 @@ public class GameHandler {
 
     public int currentPlayerTurnIndex;
     private int currentDiscardPlayerIndex;
+    private boolean weather;
 
     public GameHandler(Random randInt, Random boardRandom) {
         this(randInt, boardRandom, GameState.SETUP, TurnPhase.PLACING_BUILDING, TurnMovementDirection.FORWARD,
-                new Board(), true);
+                new Board(), true, false);
+    }
+
+    public GameHandler(Random randInt, Random boardRandom, boolean weather) {
+        this(randInt, boardRandom, GameState.SETUP, TurnPhase.PLACING_BUILDING, TurnMovementDirection.FORWARD,
+                new Board(), true, weather);
     }
 
     public GameHandler(GameState inputGameState, TurnPhase turnPhase, TurnMovementDirection inputTurnMovementDirection) {
-        this(new Random(), new Random(), inputGameState, turnPhase, inputTurnMovementDirection, new Board(), true);
+        this(new Random(), new Random(), inputGameState, turnPhase, inputTurnMovementDirection, new Board(), true, false);
     }
 
     public GameHandler(Board board, Random randInt, GameState gameState, TurnPhase turnPhase) {
-        this(randInt, new Random(), gameState, turnPhase, TurnMovementDirection.FORWARD, board, false);
+        this(randInt, new Random(), gameState, turnPhase, TurnMovementDirection.FORWARD, board, false, false);
     }
 
     private GameHandler(Random randInt, Random boardRandom, GameState inputGameState, TurnPhase turnPhase,
-                        TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate) {
+                        TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate, boolean weather) {
         this.board = board;
         this.currentPlayerTurnIndex = 0;
         this.gameState = inputGameState;
         this.turnPhase = turnPhase;
         this.randForDice = randInt;
+        this.weather = weather;
         this.turnMovementDirection = inputTurnMovementDirection;
         if (generate) {
             board.generate(boardRandom);
@@ -461,6 +469,9 @@ public class GameHandler {
     }
 
     private void handleRoll(int roll) {
+        if(currentPlayerTurnIndex == 0){
+            turnNumber++;
+        }
         if (roll == ROBBER_ROLL) {
             handleRobberRoll();
         } else {
@@ -470,7 +481,7 @@ public class GameHandler {
 
     private void handleNormalRoll(int roll) {
         List<Hexagon> hexes = board.getHexesAtNumber(roll, new ArrayList<>());
-        actionHandler.handleNormalRollLoop(hexes);
+        actionHandler.handleNormalRollLoop(hexes, turnNumber, weather);
         turnPhase = TurnPhase.PLAYING_TURN;
     }
 

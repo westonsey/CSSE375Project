@@ -20,13 +20,11 @@ import java.util.Set;
 public class ActionHandler {
 	private final Board board;
 	private final GameHandler gameStateManager;
-	private final CardTracker cardTracker;
 	private static final int DISCARD_RESOURCE_THRESHOLD = 7;
 
 	public ActionHandler(Board board, GameHandler gameStateManager, CardTracker cardTracker) {
 		this.board = board;
 		this.gameStateManager = gameStateManager;
-		this.cardTracker = cardTracker;
 	}
 
 	boolean canPlaceSettlementConditional(Player p, VertexLocation loc, Boolean force, Boolean requiresResources, TurnPhase turnPhase) {
@@ -243,10 +241,12 @@ public class ActionHandler {
 		}
 	}
 
-	void handleNormalRollLoop(List<Hexagon> hexes){
+	void handleNormalRollLoop(List<Hexagon> hexes, int turn, boolean weather){
 		for (Hexagon h : hexes) {
 			if(!h.location.equals(gameStateManager.getRobber().loc)) {
-				board.addPlayerResourcesFromHex(h);
+				if(turn % 3 != 1) {
+					board.addPlayerResourcesFromHex(h);
+				}
 			}
 		}
 	}

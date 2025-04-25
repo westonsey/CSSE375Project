@@ -17,9 +17,11 @@ public class MainApp extends Application {
     private ResourceBundle bundle;
 
     private Map<PlayerColors, Boolean> players;
+    private boolean weather;
 
     private static final String START_SCREEN_FXML = "start.fxml";
     private static final String GAME_SCREEN_FXML = "game.fxml";
+    private static final String WEATHER_SETUP_FXML = "weather_setup.fxml";
     private static final String LANGUAGE_SELECT_FXML = "language_select.fxml";
     private static final String END_SCREEN_FXML = "end.fxml";
 
@@ -73,12 +75,24 @@ public class MainApp extends Application {
                 StartController controller = new StartController(bundle);
                 loader.setController(controller);
                 Parent root = loader.load();
-                controller.setStartHandler(() -> switchScene(GAME_SCREEN_FXML));
+                // Change this to go to weather screen instead of game screen
+                controller.setStartHandler(() -> switchScene(WEATHER_SETUP_FXML));
                 players = controller.getPlayers();
                 return root;
             },
+            WEATHER_SETUP_FXML, loader -> {
+                WeatherSetupController controller = new WeatherSetupController(bundle);
+                loader.setController(controller);
+                Parent root = loader.load();
+                // Set handler for when user makes their choice
+                controller.setWeatherChoiceHandler(() -> {
+                    switchScene(GAME_SCREEN_FXML);
+                });
+                weather = controller.getWeather();
+                return root;
+            },
             GAME_SCREEN_FXML, loader -> {
-                GameController controller = new GameController(bundle, stage.getOwner(), players);
+                GameController controller = new GameController(bundle, stage.getOwner(), players, weather);
                 loader.setController(controller);
                 Parent root = loader.load();
                 controller.setGameEndHandler(() -> switchScene(END_SCREEN_FXML));

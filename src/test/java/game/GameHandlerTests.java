@@ -789,9 +789,7 @@ public class GameHandlerTests {
 
     @Test
     public void getPlayersToStealFrom_WithEmptyBoard_ReturnsEmpty() {
-        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.STEALING_RESOURCE,
-                TurnMovementDirection.FORWARD);
-        game.getRobber().moveLocation(new HexLocation(3, 3)); // Bypass state checks
+        GameHandler game = GameHandlerHelper.robberMove(TurnPhase.STEALING_RESOURCE);
         Player player1 = new Player();
         List<Player> players = game.getPlayersToStealFrom(player1);
         assertEquals(0, players.size());
@@ -799,9 +797,7 @@ public class GameHandlerTests {
 
     @Test
     public void getPlayersToStealFrom_WithOneNeighbor_ReturnsOnePlayer() {
-        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.STEALING_RESOURCE,
-                TurnMovementDirection.FORWARD);
-        game.getRobber().moveLocation(new HexLocation(3, 3)); // Bypass state checks
+        GameHandler game = GameHandlerHelper.robberMove(TurnPhase.STEALING_RESOURCE); // Bypass state checks
         Player player1 = new Player();
         Player player2 = new Player();
         player2.addResource(Resource.WOOD, 1);
@@ -813,9 +809,7 @@ public class GameHandlerTests {
 
     @Test
     public void getPlayersToStealFrom_WithOneNeighborAndThief_ReturnsOnePlayer() {
-        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.STEALING_RESOURCE,
-                TurnMovementDirection.FORWARD);
-        game.getRobber().moveLocation(new HexLocation(3, 3)); // Bypass state checks
+        GameHandler game = GameHandlerHelper.robberMove(TurnPhase.STEALING_RESOURCE); // Bypass state checks
         Player player1 = new Player();
         Player player2 = new Player();
         player2.addResource(Resource.WOOD, 1);
@@ -828,9 +822,7 @@ public class GameHandlerTests {
 
     @Test
     public void getPlayersToStealFrom_WithOneNeighborNoResource_ReturnsEmpty() {
-        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.STEALING_RESOURCE,
-                TurnMovementDirection.FORWARD);
-        game.getRobber().moveLocation(new HexLocation(3, 3)); // Bypass state checks
+        GameHandler game = GameHandlerHelper.robberMove(TurnPhase.STEALING_RESOURCE); // Bypass state checks
         Player player1 = new Player();
         Player player2 = new Player();
         game.getBoard().placeSettlement(player2, new VertexLocation(3, 7), true);
@@ -840,9 +832,7 @@ public class GameHandlerTests {
 
     @Test
     public void getPlayersToStealFrom_WithThreeNeighbors_ReturnsThreePlayers() {
-        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.STEALING_RESOURCE,
-                TurnMovementDirection.FORWARD);
-        game.getRobber().moveLocation(new HexLocation(3, 3)); // Bypass state checks
+        GameHandler game = GameHandlerHelper.robberMove(TurnPhase.STEALING_RESOURCE); // Bypass state checks
         Player player1 = new Player();
         Player player2 = new Player();
         Player player3 = new Player();
@@ -1128,8 +1118,7 @@ public class GameHandlerTests {
 
     @Test
     public void discardResources_WithLastPlayer_Success() {
-        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.DISCARDING_RESOURCES,
-                TurnMovementDirection.FORWARD);
+        GameHandler game = new GameHandler(GameState.NORMALPLAY, TurnPhase.DISCARDING_RESOURCES, TurnMovementDirection.FORWARD);
         Player player1 = new Player();
         Player player2 = new Player();
         Player player3 = new Player();
@@ -1139,15 +1128,15 @@ public class GameHandlerTests {
         game.addPlayer(player2);
         game.addPlayer(player3);
         game.addPlayer(player4);
+
+        for (int i = 0; i < 3; i++) {
+            game.discardResources(new CountCollection<>());
+        }
+
         CountCollection<Resource> toDiscard = new CountCollection<>();
         toDiscard.add(Resource.WOOD, 4);
-        CountCollection<Resource> empty = new CountCollection<>();
-        game.discardResources(empty);
-        game.discardResources(empty);
-        game.discardResources(empty);
         game.discardResources(toDiscard);
 
-        // Assert player has 4 wood
         assertEquals(4, player4.getResourceCount(Resource.WOOD));
         assertEquals(4, player4.getTotalNumberOfResources());
         assertEquals(TurnPhase.MOVING_ROBBER, game.getTurnPhase());

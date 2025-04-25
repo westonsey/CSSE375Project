@@ -18,6 +18,7 @@ public class MainApp extends Application {
 
     private Map<PlayerColors, Boolean> players;
     private boolean weather;
+    private WeatherSetupController weatherController;
 
     private static final String START_SCREEN_FXML = "start.fxml";
     private static final String GAME_SCREEN_FXML = "game.fxml";
@@ -80,16 +81,16 @@ public class MainApp extends Application {
                 return root;
             },
             WEATHER_SETUP_FXML, loader -> {
-                WeatherSetupController controller = new WeatherSetupController(bundle);
-                loader.setController(controller);
+                weatherController = new WeatherSetupController(bundle);
+                loader.setController(weatherController);
                 Parent root = loader.load();
-                controller.setWeatherChoiceHandler(() -> {
+                weatherController.setWeatherChoiceHandler(() -> {
                     switchScene(GAME_SCREEN_FXML);
                 });
-                weather = controller.getWeather();
                 return root;
             },
             GAME_SCREEN_FXML, loader -> {
+                weather = weatherController.getWeather();
                 GameController controller = new GameController(bundle, stage.getOwner(), players, weather);
                 loader.setController(controller);
                 Parent root = loader.load();

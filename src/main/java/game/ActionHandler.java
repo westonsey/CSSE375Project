@@ -244,7 +244,7 @@ public class ActionHandler {
 	void handleNormalRollLoop(List<Hexagon> hexes, int turn, boolean weather){
 		for (Hexagon h : hexes) {
 			if(!h.location.equals(gameStateManager.getRobber().loc)) {
-				if(turn % 3 == 2 && !weather) {
+				if(turn % 3 != 2 || !weather) {
 					board.addPlayerResourcesFromHex(h);
 				}
 			}

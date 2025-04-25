@@ -23,12 +23,12 @@ public class WeatherSetupController {
 
 	public void setWeatherChoiceHandler(Action handler) {
 		yesButton.setOnMouseClicked(e -> {
-			handler.act();
 			choice = true;
+			handler.act();
 		});
 		noButton.setOnMouseClicked(e -> {
-			handler.act();
 			choice = false;
+			handler.act();
 		});
 	}
 

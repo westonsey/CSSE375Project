@@ -53,7 +53,7 @@ public class GameHandler {
 
     public GameHandler(GameState inputGameState, TurnPhase turnPhase, TurnMovementDirection inputTurnMovementDirection) {
         this(new Random(), new Random(), inputGameState, turnPhase, inputTurnMovementDirection, new Board(), true, false);
-
+    }
     public GameHandler(Board board, Random randInt, GameState gameState, TurnPhase turnPhase) {
         this(randInt, new Random(), gameState, turnPhase, TurnMovementDirection.FORWARD, board, false, false);
     }

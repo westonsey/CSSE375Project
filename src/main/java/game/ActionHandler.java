@@ -6,6 +6,7 @@ import board.Settlement;
 import board.PortType;
 import board.Road;
 import board.Hexagon;
+import board.BuildingType;
 import board.location.BorderLocation;
 import board.location.VertexLocation;
 import util.CountCollection;
@@ -63,16 +64,16 @@ public class ActionHandler {
 				loc.getRow() + ", " + loc.getCol() + ")");
 	}
 
-	void upgradeSettlementAllowed(Settlement s){
+	void upgradeSettlementAllowed(Settlement s, BuildingType upgrade){
 		Player owner = s.getOwner();
-		board.upgradeSettlement(s);
-		upgradeSettlementAllowedResource(owner);
+		board.upgradeSettlement(s, upgrade);
+		upgradeSettlementAllowedResource(owner, upgrade);
 	}
 
-	private void upgradeSettlementAllowedResource(Player owner){
-		owner.changeVictoryPoints(1);
-		owner.removeResource(Resource.ORE, 3);
-		owner.removeResource(Resource.WHEAT, 2);
+	private void upgradeSettlementAllowedResource(Player owner, BuildingType upgrade){
+		// subtract off the one victory point that the initial settlement already gave
+		owner.changeVictoryPoints(upgrade.getVictoryPoints() - 1);
+		owner.removeResources(upgrade.getRequiredResources());
 	}
 
 	void stealResourceThrowException(Player victim, TurnPhase turnPhase) {
@@ -240,12 +241,14 @@ public class ActionHandler {
 			ports.add(p);
 		}
 	}
-
+  
 	void handleNormalRollLoop(List<Hexagon> hexes, int turn, boolean weather){
 		for (Hexagon h : hexes) {
 			if(!h.location.equals(gameStateManager.getRobber().loc)) {
-				if(turn % 3 != 2 || !weather) {
-					board.addPlayerResourcesFromHex(h);
+        boolean hasRobber = h.location.equals(gameStateManager.getRobberLoc());
+			  ResourceGainContext context = new ResourceGainContext(h.resource, h.number, roll1, roll2, hasRobber);
+				if(turn % 3 != 2 || !weather) {	
+			     board.addPlayerResourcesFromHex(h, context);
 				}
 			}
 		}

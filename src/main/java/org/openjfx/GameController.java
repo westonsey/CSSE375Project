@@ -19,8 +19,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Window;
-import org.openjfx.ui.BoardController;
-import org.openjfx.ui.SidePanelController;
+import org.openjfx.ui.*;
 import org.openjfx.ui.board_objects.UIHex;
 import org.openjfx.ui.board_objects.UIRoad;
 import org.openjfx.ui.board_objects.UIVertex;
@@ -470,6 +469,17 @@ public class GameController {
     @FXML
     private Circle robberCircle;
 
+    @FXML
+    private Text selectedBuildingLbl;
+    @FXML
+    private Button cityBtn;
+    @FXML
+    private Button fortBtn;
+    @FXML
+    private Button templeBtn;
+    @FXML
+    private Button observatoryBtn;
+
     // </editor-fold>
 
     // <editor-fold desc="Images">
@@ -500,6 +510,10 @@ public class GameController {
 
     private BoardController boardController;
     private SidePanelController sidePanelController;
+    private UiUpdates uiUpdates;
+
+    private ResourceController resourceController;
+    private DevelopmentCardController developmentCardController;
 
     public GameController(ResourceBundle bundle, Window window, Map<PlayerColors, Boolean> players) {
         this.bundle = bundle;
@@ -534,7 +548,9 @@ public class GameController {
 
         board = game.getBoard();
         boardController = new BoardController(game, board);
-        sidePanelController = new SidePanelController(game, boardController, bundle, window);
+        resourceController = new ResourceController(game);
+        developmentCardController = new DevelopmentCardController(game);
+        sidePanelController = new SidePanelController(game, bundle, window, resourceController, developmentCardController);
         portImages = new HashMap<>();
     }
 
@@ -591,24 +607,22 @@ public class GameController {
 
         boardController.initialize(generateUiHexMap(), generateUiRoadMap(), generateUiVertexMap(), generateUiPortMap(),
                 portImages, robberCircle);
+        uiUpdates = new UiUpdates(game,bundle, selectedBuildingLbl, resourceController, developmentCardController, playerText, phaseText);
         boardController.setOnRoadPlacedHandler(() -> {
             if (game.getCurrentGameState() == GameState.SETUP) {
                 // Player can end turn now
                 endTurnBtn.setDisable(false);
             }
-            sidePanelController.updateDisplay();
+            uiUpdates.updateDisplay();
         });
         boardController.setOnSettlementPlacedHandler(() -> {
-            sidePanelController.updateDisplay();
+            uiUpdates.updateDisplay();
         });
         boardController.setOnRobberMovedHandler(sidePanelController::onRobberMoved);
-        sidePanelController.initialize(
-                boardController,
-                resourceInfo,
-                devCardInfo,
-                playerText, phaseText, rollDiceBtn, endTurnBtn, tradeBtn, bankTradeBtn, purchaseDevCardBtn, playDevCardBtn, dice1, dice2
-        );
-        sidePanelController.updateDisplay();
+        Buttons buttons = new Buttons(bundle, cityBtn, fortBtn, templeBtn, observatoryBtn, rollDiceBtn, endTurnBtn, tradeBtn,
+                                        bankTradeBtn, purchaseDevCardBtn, playDevCardBtn);
+        sidePanelController.initialize(resourceInfo, dice1, dice2, buttons, devCardInfo, uiUpdates ,boardController);
+        uiUpdates.updateDisplay();
         sidePanelController.startTurn();
     }
 
@@ -618,7 +632,7 @@ public class GameController {
         PlayerListDialog dialog = new PlayerListDialog(window,
                 bundle.getString("playingOrder"), order, bundle);
         dialog.showDialog();
-        sidePanelController.updateDisplay();
+        uiUpdates.updateDisplay();
     }
 
     public void setGameEndHandler(Action handler) {

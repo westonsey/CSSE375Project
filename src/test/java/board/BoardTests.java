@@ -3,13 +3,12 @@ package board;
 import board.location.BorderLocation;
 import board.location.HexLocation;
 import board.location.VertexLocation;
+import game.ResourceGainContext;
 import org.easymock.EasyMock;
 import game.Player;
 import game.Resource;
 import org.junit.jupiter.api.Test;
 
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -595,224 +594,13 @@ public class BoardTests {
     }
 
     @Test
-    public void getHexesAtNumber_WithDiceRoll1_ReturnEmptyList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = EasyMock.createMock(List.class);
-        EasyMock.expect(mockHexList.size()).andReturn(0).anyTimes();
-        EasyMock.expect(mockHexList.isEmpty()).andReturn(true).anyTimes();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(1, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        //assert size equals 0
-        assertEquals(mockHexList.size(), actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll2_ReturnHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        //EasyMock.expect(mockHexList.size()).andReturn(0).anyTimes();
-        //EasyMock.expect(mockHexList.isEmpty()).andReturn(true).anyTimes();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(2, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(1, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll3_ReturnHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        //EasyMock.expect(mockHexList.size()).andReturn(0).anyTimes();
-        //EasyMock.expect(mockHexList.isEmpty()).andReturn(true).anyTimes();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(3, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(2, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll4_ReturnHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        //EasyMock.expect(mockHexList.size()).andReturn(0).anyTimes();
-        //EasyMock.expect(mockHexList.isEmpty()).andReturn(true).anyTimes();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(4, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(2, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll5_ReturnHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        //EasyMock.expect(mockHexList.size()).andReturn(0).anyTimes();
-        //EasyMock.expect(mockHexList.isEmpty()).andReturn(true).anyTimes();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(5, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(2, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll6_ReturnHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        //EasyMock.expect(mockHexList.size()).andReturn(0).anyTimes();
-        //EasyMock.expect(mockHexList.isEmpty()).andReturn(true).anyTimes();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(6, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(2, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll7_ReturnEmptyHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        //EasyMock.expect(mockHexList.size()).andReturn(0).anyTimes();
-        //EasyMock.expect(mockHexList.isEmpty()).andReturn(true).anyTimes();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(7, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(0, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll8_ReturnHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        //EasyMock.expect(mockHexList.size()).andReturn(0).anyTimes();
-        //EasyMock.expect(mockHexList.isEmpty()).andReturn(true).anyTimes();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(8, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(2, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll9_ReturnHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(9, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(2, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll10_ReturnHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(10, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(2, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll11_ReturnHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(11, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(2, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll12_ReturnHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(12, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(1, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
-    public void getHexesAtNumber_WithDiceRoll13_ReturnEmptyHexList() {
-        Board board = generateDefaultBoard();
-        List<Hexagon> mockHexList = EasyMock.createMock(List.class);
-        List<Hexagon> hexList = new ArrayList<>();
-        List<Hexagon> actualHexesAtVal = board.getHexesAtNumber(13, hexList);
-
-        EasyMock.replay(mockHexList);
-
-        assertEquals(0, actualHexesAtVal.size());
-
-        EasyMock.verify(mockHexList);
-
-    }
-
-    @Test
     public void addPlayerResourcesFromHex_With0BuildingsHex_AddNoResourceToPlayer() {
         Board board = generateDefaultBoard();
         List<Hexagon> hexLst = board.getHexList();
         Player mockPlayer = EasyMock.createMock(Player.class);
         EasyMock.expect(mockPlayer.getResourceCount(hexLst.get(0).resource)).andReturn(0);
-        board.addPlayerResourcesFromHex(hexLst.get(0));
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
         assertEquals(0, mockPlayer.getResourceCount(hexLst.get(0).resource));
     }
 
@@ -822,18 +610,42 @@ public class BoardTests {
         List<Hexagon> hexLst = board.getHexList();
         Player player1 = new Player();
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
-        board.addPlayerResourcesFromHex(hexLst.get(0));
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
         assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
     }
 
     @Test
-    public void addPlayerResourcesFromHex_With1CityHex_Add1ResourceToPlayer() {
+    public void addPlayerResourcesFromHex_With1BuildingsHex_AndRobber_AddNoResourceToPlayer() {
         Board board = generateDefaultBoard();
         List<Hexagon> hexLst = board.getHexList();
         Player player1 = new Player();
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
-        board.upgradeSettlement((Settlement)board.buildings.get(0));
-        board.addPlayerResourcesFromHex(hexLst.get(0));
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, true);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(0, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1BuildingsHex_AndWrongRoll_AddNoResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 1, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(0, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1CityHex_Add2ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new CityBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
         assertEquals(2, player1.getResourceCount(hexLst.get(0).resource));
     }
 
@@ -844,7 +656,8 @@ public class BoardTests {
         Player player1 = new Player();
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(2), true);
-        board.addPlayerResourcesFromHex(hexLst.get(0));
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
 
         assertEquals(2, player1.getResourceCount(hexLst.get(0).resource));
     }
@@ -857,9 +670,70 @@ public class BoardTests {
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(2), true);
         board.placeSettlement(player1, hexLst.get(0).getVertices().get(4), true);
-        board.addPlayerResourcesFromHex(hexLst.get(0));
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
 
         assertEquals(3, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1TempleHex_Add1ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new TempleBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1FortHex_Add1ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new FortBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1FortAndRobber_Add1ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new FortBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, true);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(1, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1ObservatoryHex_WithRollNotValid_Add0ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new ObservatoryBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 5, 3, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(0, player1.getResourceCount(hexLst.get(0).resource));
+    }
+
+    @Test
+    public void addPlayerResourcesFromHex_With1ObservatoryHex_WithRoll12_Add1ResourceToPlayer() {
+        Board board = generateDefaultBoard();
+        List<Hexagon> hexLst = board.getHexList();
+        Player player1 = new Player();
+        board.placeSettlement(player1, hexLst.get(0).getVertices().get(0), true);
+        board.upgradeSettlement((Settlement)board.buildings.get(0), new ObservatoryBuildingType());
+        ResourceGainContext context = new ResourceGainContext(hexLst.get(0).resource, 8, 6, 6, false);
+        board.addPlayerResourcesFromHex(hexLst.get(0), context);
+        assertEquals(2, player1.getResourceCount(hexLst.get(0).resource));
     }
 
     @Test
@@ -910,7 +784,7 @@ public class BoardTests {
         Player player1 = new Player();
         Settlement s = new Settlement(new VertexLocation(1, 1), player1);
         board.placeSettlement(player1, new VertexLocation(1, 1), true);
-        board.upgradeSettlement(s); // Upgrade once to get it to a city
+        board.upgradeSettlement(s, new CityBuildingType()); // Upgrade once to get it to a city
         boolean result = board.canUpgradeSettlement(s);
         assertFalse(result);
     }
@@ -921,7 +795,7 @@ public class BoardTests {
         Player player1 = new Player();
         Settlement s = new Settlement(new VertexLocation(1, 1), player1);
         board.placeSettlement(player1, new VertexLocation(1, 1), true);
-        board.upgradeSettlement(s);
+        board.upgradeSettlement(s, new CityBuildingType());
 
         List<Building> buildings = board.getBuildingsForPlayer(player1);
         assertEquals(1, buildings.size());
@@ -934,7 +808,7 @@ public class BoardTests {
         Board board = generateDefaultBoard();
         Player player1 = new Player();
         Settlement s = new Settlement(new VertexLocation(1, 1), player1);
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> board.upgradeSettlement(s));
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> board.upgradeSettlement(s, new CityBuildingType()));
         assertEquals("No settlement found at (1, 1) to upgrade", ex.getMessage());
     }
 

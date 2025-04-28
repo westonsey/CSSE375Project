@@ -5,6 +5,10 @@ import board.Building;
 import board.Hexagon;
 import board.Road;
 import board.Settlement;
+import board.BuildingTypeFactory;
+import board.BuildingType;
+import board.BuildingCode;
+import board.CityBuildingType;
 import board.location.BorderLocation;
 import board.location.HexLocation;
 import board.location.VertexLocation;
@@ -41,25 +45,28 @@ public class GameHandler {
     private int currentDiscardPlayerIndex;
     private boolean weather;
 
+    private BuildingTypeFactory buildingTypeFactory;
+    private BuildingType currentlySelectedUpgrade;
+
     public GameHandler(Random randInt, Random boardRandom) {
         this(randInt, boardRandom, GameState.SETUP, TurnPhase.PLACING_BUILDING, TurnMovementDirection.FORWARD,
-                new Board(), true, false);
+                new Board(), true, new BuildingTypeFactory, false);
     }
-
-    public GameHandler(Random randInt, Random boardRandom, boolean weather) {
-        this(randInt, boardRandom, GameState.SETUP, TurnPhase.PLACING_BUILDING, TurnMovementDirection.FORWARD,
-                new Board(), true, weather);
-    }
-
+    
     public GameHandler(GameState inputGameState, TurnPhase turnPhase, TurnMovementDirection inputTurnMovementDirection) {
         this(new Random(), new Random(), inputGameState, turnPhase, inputTurnMovementDirection, new Board(), true, false);
     }
     public GameHandler(Board board, Random randInt, GameState gameState, TurnPhase turnPhase) {
         this(randInt, new Random(), gameState, turnPhase, TurnMovementDirection.FORWARD, board, false, false);
     }
-
     private GameHandler(Random randInt, Random boardRandom, GameState inputGameState, TurnPhase turnPhase,
                         TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate, boolean weather) {
+        this(randInt, new Random(), gameState, turnPhase, TurnMovementDirection.FORWARD, board, false, new BuildingTypeFactory(), weather);
+    }
+
+    private GameHandler(Random randInt, Random boardRandom, GameState inputGameState, TurnPhase turnPhase,
+                        TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate,
+                        BuildingTypeFactory buildingTypeFactory, boolean weather) {
         this.board = board;
         this.currentPlayerTurnIndex = 0;
         this.gameState = inputGameState;
@@ -79,11 +86,14 @@ public class GameHandler {
         buildingManager = new BuildingManager(board, actionHandler, playerTurnManager);
         tradeManager = new TradeManager(actionHandler, cardTracker);
         setVictoryPointManager();
+      
+        this.buildingTypeFactory = buildingTypeFactory;
+        this.currentlySelectedUpgrade = new CityBuildingType();
     }
 
     public void setVictoryPointManager() {
         this.victoryPointManager = new VictoryPointManager(players);
-        playerTurnManager.setVictoryPointManager(victoryPointManager);
+
     }
 
     public void addPlayer(Player player) {
@@ -107,8 +117,12 @@ public class GameHandler {
         return playerTurnManager.rollDice();
     }
 
-    public Robber getRobber() {
-        return robber;
+    public HexLocation getRobberLoc() {
+        return robber.getLoc();
+    }
+
+    public void moveRobberWithoutChecks(HexLocation loc) {
+        robber.moveLocation(loc);
     }
 
     public void purchaseDevelopmentCard(Player player) {
@@ -151,6 +165,7 @@ public class GameHandler {
         actionHandler.placeRoadAllowed(player, loc1, playerTurnManager.getTurnPhase());
 
         boolean canPlaceSecondRoad = false;
+
 
         List<Road> playerRoads = board.getRoadsForPlayer(player);
         for (Road road : playerRoads) {
@@ -288,6 +303,10 @@ public class GameHandler {
         buildingManager.upgradeSettlement(s);
     }
 
+    public BuildingType getSelectedUpgrade() {
+        return currentlySelectedUpgrade;
+    }
+
     public void stealResource(Player thief, Player victim, Random rand) {
         actionHandler.stealResourceThrowException(victim, playerTurnManager.getTurnPhase());
         List<Resource> resources = new ArrayList<>(List.of(Resource.values()));
@@ -305,8 +324,8 @@ public class GameHandler {
     }
 
     public List<Player> getPlayersToStealFrom(Player currentTurn) {
-        robberManager.getPlayersToStealFromThrowException(playerTurnManager.getTurnPhase());
-        List<Player> adjacent = board.getAdjacentPlayers(robber.loc);
+        robberManager.getPlayersToStealFromThrowException(turnPhase);
+        List<Player> adjacent = board.getAdjacentPlayers(robber.getLoc());
         return robberManager.getPlayersToStealFromLoop(currentTurn, adjacent);
     }
 
@@ -340,6 +359,10 @@ public class GameHandler {
             }
         }
         return null;
+    }
+
+    public void setCurrentlySelectedUpgrade(BuildingCode code) {
+        currentlySelectedUpgrade = buildingTypeFactory.build(code);
     }
 
     public int findLongestRoad(Player player) {

@@ -626,7 +626,7 @@ public class GameHandlerTests {
                 TurnPhase.MOVING_ROBBER);
         game.moveRobber(new HexLocation(2, 3));
         assertEquals(TurnPhase.STEALING_RESOURCE, game.getTurnPhase());
-        assertEquals(game.getRobber().loc, new HexLocation(2, 3));
+        assertEquals(game.getRobberLoc(), new HexLocation(2, 3));
     }
 
     @Test
@@ -794,7 +794,7 @@ public class GameHandlerTests {
 
     @Test
     public void getPlayersToStealFrom_WithOneNeighborNoResource_ReturnsEmpty() {
-        GameHandler game = GameHandlerHelper.robberMove(TurnPhase.STEALING_RESOURCE); // Bypass state checks
+        GameHandler game = GameHandlerHelper.robberMove(TurnPhase.STEALING_RESOURCE); 
         Player player1 = new Player();
         Player player2 = new Player();
         game.getBoard().placeSettlement(player2, new VertexLocation(3, 7), true);
@@ -804,7 +804,7 @@ public class GameHandlerTests {
 
     @Test
     public void getPlayersToStealFrom_WithThreeNeighbors_ReturnsThreePlayers() {
-        GameHandler game = GameHandlerHelper.robberMove(TurnPhase.STEALING_RESOURCE); // Bypass state checks
+        GameHandler game = GameHandlerHelper.robberMove(TurnPhase.STEALING_RESOURCE); 
         Player player1 = new Player();
         Player player2 = new Player();
         Player player3 = new Player();

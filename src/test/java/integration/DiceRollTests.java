@@ -69,7 +69,7 @@ public class DiceRollTests {
     @Given("the robber is at {int} {int}")
     public void the_robber_is_at(Integer x, Integer y) {
         HexLocation hl = new HexLocation(x,y);
-        game.getRobber().moveLocation(hl);
+        game.moveRobberWithoutChecks(hl);
     }
 
     @When("a {int} and {int} are rolled")

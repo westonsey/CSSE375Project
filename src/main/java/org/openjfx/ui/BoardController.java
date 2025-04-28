@@ -1,12 +1,12 @@
 package org.openjfx.ui;
 
-import board.Board;
-import board.Building;
-import board.BuildingType;
-import board.Hexagon;
 import board.Port;
+import board.BuildingCode;
+import board.Board;
 import board.PortType;
+import board.Building;
 import board.Settlement;
+import board.Hexagon;
 import board.location.BorderLocation;
 import board.location.HexLocation;
 import board.location.VertexLocation;
@@ -15,6 +15,7 @@ import game.Player;
 import game.Resource;
 import game.TurnPhase;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -90,7 +91,7 @@ public class BoardController {
             rect.setStrokeWidth(2);
         }
 
-        HexLocation robberLoc = game.getRobber().loc;
+        HexLocation robberLoc = game.getRobberLoc();
         UIHex robberHex = uiHexMap.get(robberLoc);
         double robberX = robberHex.polygon.getLayoutX();
         double robberY = robberHex.polygon.getLayoutY();
@@ -113,6 +114,11 @@ public class BoardController {
     private Paint getPaintForCurrentPlayer() {
         Player player = game.playerByTurnIndex();
         return PlayerColorUtils.PLAYER_PAINTS.get(player.getColor());
+    }
+
+    private Color getColorForCurrentPlayer() {
+        Player player = game.playerByTurnIndex();
+        return PlayerColorUtils.PLAYER_COLORS.get(player.getColor());
     }
 
     public void initializeBorder(BorderLocation loc) {
@@ -138,7 +144,9 @@ public class BoardController {
                 this::getPaintForCurrentPlayer,
                 () -> onVertexClick(loc),
                 () -> game.canPlaceSettlement(game.playerByTurnIndex(), loc),
-                () -> canUpgrade(loc)
+                () -> canUpgrade(loc),
+                () -> game.getSelectedUpgrade(),
+                this::getColorForCurrentPlayer
         );
     }
 
@@ -176,7 +184,7 @@ public class BoardController {
     }
 
     private void moveRobber(HexLocation loc, Polygon polygon) {
-        if (game.getTurnPhase() == TurnPhase.MOVING_ROBBER && !loc.equals(game.getRobber().loc)) {
+        if (game.getTurnPhase() == TurnPhase.MOVING_ROBBER && !loc.equals(game.getRobberLoc())) {
             game.moveRobber(loc);
             robberCircle.setLayoutX(polygon.getLayoutX());
             robberCircle.setLayoutY(polygon.getLayoutY());
@@ -191,7 +199,7 @@ public class BoardController {
     private Settlement getSettlement(VertexLocation loc) {
         List<Building> buildings = board.getBuildingsForPlayer(game.playerByTurnIndex());
         for (int i = 0; i < buildings.size(); i++) {
-            if (buildings.get(i).getType() == BuildingType.SETTLEMENT &&
+            if (buildings.get(i).getCode() == BuildingCode.SETTLEMENT &&
                     buildings.get(i).getLocation().equals(loc)) {
                 return (Settlement) buildings.get(i);
             }

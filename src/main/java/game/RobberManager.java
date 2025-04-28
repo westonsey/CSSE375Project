@@ -29,11 +29,12 @@ public class RobberManager {
         }
     }
 
-    private void checkRobberMoveLocValid(HexLocation loc){
-        if (!loc.isValid() || loc.equals(robber.loc)) {
-            throw new IllegalArgumentException("Cannot move robber to (" + loc.getRow() + "," + loc.getCol() + ")");
-        }
-    }
+
+	private void checkRobberMoveLocValid(HexLocation loc){
+		if (!loc.isValid() || loc.equals(robber.getLoc())) {
+			throw new IllegalArgumentException("Cannot move robber to (" + loc.getRow() + "," + loc.getCol() + ")");
+		}
+	}
 
     void getPlayersToStealFromThrowException(TurnPhase turnPhase) {
         if (turnPhase != TurnPhase.STEALING_RESOURCE) {

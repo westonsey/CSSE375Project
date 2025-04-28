@@ -6,6 +6,6 @@ import game.Player;
 public class Settlement extends Building {
 
     public Settlement(VertexLocation loc, Player owner) {
-        super(loc, owner, BuildingType.SETTLEMENT);
+        super(loc, owner, new SettlementBuildingType());
     }
 }

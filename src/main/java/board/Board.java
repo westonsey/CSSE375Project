@@ -5,6 +5,8 @@ import board.location.HexLocation;
 import board.location.VertexLocation;
 import game.Player;
 import game.Resource;
+import game.ResourceGainContext;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -201,15 +203,14 @@ public class Board {
         }
     }
 
-    public void upgradeSettlement(Settlement s) {
+    public void upgradeSettlement(Settlement s, BuildingType upgrade) {
         if (canUpgradeSettlement(s)) {
-            Player p = s.getOwner();
             int index = getIndexOfBuilding(s);
             Building existing = buildings.get(index);
             buildings.remove(index);
-            City city = new City(new VertexLocation(existing.getLocation().getRow(), existing.getLocation().getCol()),
+            Building building = upgrade.createBuilding(new VertexLocation(existing.getLocation().getRow(), existing.getLocation().getCol()),
                     existing.getOwner());
-            buildings.add(city);
+            buildings.add(building);
         } else {
             throw new IllegalArgumentException("No settlement found at (" + s.getLocation().getRow() +
                     ", " + s.getLocation().getCol() + ") to upgrade");
@@ -220,7 +221,7 @@ public class Board {
         for (int i = 0; i < buildings.size(); i++) {
             Building bu = buildings.get(i);
             if (b.getOwner() == bu.getOwner() && b.getLocation().equals(bu.getLocation()) &&
-                    b.getType() == bu.getType()) {
+                    b.getCode() == bu.getCode()) {
                 return i;
             }
         }
@@ -378,28 +379,18 @@ public class Board {
         }
         return new Port(null, null, null);
     }
-  
-    public List<Hexagon> getHexesAtNumber(int number, List<Hexagon> hexLst){
-        for (Hexagon hex : this.hexagons){
-            if (hex.number == number) {
-                hexLst.add(hex);
-            }
-        }
-        return hexLst;
-    }
 
     public List<Hexagon> getHexList(){
         return this.hexagons;
     }
 
-    public void addPlayerResourcesFromHex(Hexagon hex) {
+    public void addPlayerResourcesFromHex(Hexagon hex, ResourceGainContext context) {
         List<VertexLocation> vertListForHex= hex.getVertices();
         List<Building> buildingLst = addPlayerResourcesFromHexGetBuildings(vertListForHex);
-        for(Building b : buildingLst){
-            if(b.getType() == BuildingType.CITY){
-                b.getOwner().addResource(hex.resource, 2);
-            }else {
-                b.getOwner().addResource(hex.resource, 1);
+        for(Building b : buildingLst) {
+            int resourceCountToGive = b.getType().determineResourceGain(context);
+            if (resourceCountToGive > 0) {
+                b.getOwner().addResource(hex.resource, resourceCountToGive);
             }
         }
     }

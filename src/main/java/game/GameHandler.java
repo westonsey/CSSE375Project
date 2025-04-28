@@ -50,14 +50,14 @@ public class GameHandler {
 
     public GameHandler(Random randInt, Random boardRandom) {
         this(randInt, boardRandom, GameState.SETUP, TurnPhase.PLACING_BUILDING, TurnMovementDirection.FORWARD,
-                new Board(), true, new BuildingTypeFactory, false);
+                new Board(), true, new BuildingTypeFactory(), false);
     }
     
     public GameHandler(GameState inputGameState, TurnPhase turnPhase, TurnMovementDirection inputTurnMovementDirection) {
-        this(new Random(), new Random(), inputGameState, turnPhase, inputTurnMovementDirection, new Board(), true, false);
+        this(new Random(), new Random(), inputGameState, turnPhase, inputTurnMovementDirection, new Board(), true, new BuildingTypeFactory(), false);
     }
     public GameHandler(Board board, Random randInt, GameState gameState, TurnPhase turnPhase) {
-        this(randInt, new Random(), gameState, turnPhase, TurnMovementDirection.FORWARD, board, false, false);
+        this(randInt, new Random(), gameState, turnPhase, TurnMovementDirection.FORWARD, board, false,  new BuildingTypeFactory(), false);
     }
     private GameHandler(Random randInt, Random boardRandom, GameState inputGameState, TurnPhase turnPhase,
                         TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate, boolean weather) {

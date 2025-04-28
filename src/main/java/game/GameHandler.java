@@ -249,7 +249,7 @@ public class GameHandler {
     }
 
     public Player playerByTurnIndex() {
-        return players.get(currentPlayerTurnIndex);
+        return playerTurnManager.getCurrentPlayer(players);
     }
 
     public GameState getCurrentGameState() {

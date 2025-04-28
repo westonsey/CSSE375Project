@@ -244,7 +244,7 @@ public class ActionHandler {
   
 	void handleNormalRollLoop(List<Hexagon> hexes, int turn, boolean weather){
 		for (Hexagon h : hexes) {
-			if(!h.location.equals(gameStateManager.getRobber().loc)) {
+			if(!h.location.equals(gameStateManager.getRobber().getloc())) {
         boolean hasRobber = h.location.equals(gameStateManager.getRobberLoc());
 			  ResourceGainContext context = new ResourceGainContext(h.resource, h.number, roll1, roll2, hasRobber);
 				if(turn % 3 != 2 || !weather) {	

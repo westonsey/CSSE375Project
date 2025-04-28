@@ -246,7 +246,6 @@ public class ActionHandler {
 		for (Hexagon h : hexes) {
 			boolean hasRobber = h.location.equals(gameStateManager.getRobberLoc());
 			ResourceGainContext context = new ResourceGainContext(h.resource, h.number, roll1, roll2, hasRobber);
-			board.addPlayerResourcesFromHex(h, context);
 			if(turn % 3 != 2 || !weather) {
 				board.addPlayerResourcesFromHex(h, context);
 			}

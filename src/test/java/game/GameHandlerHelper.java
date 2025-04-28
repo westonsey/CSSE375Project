@@ -6,7 +6,7 @@ public class GameHandlerHelper {
 
 	public static GameHandler robberMove(TurnPhase turn) {
 		GameHandler game = new GameHandler(GameState.NORMALPLAY, turn, TurnMovementDirection.FORWARD);
-		game.getRobber().moveLocation(new HexLocation(3, 3));
+		 game.moveRobberWithoutChecks(new HexLocation(3, 3));
 		return game;
 	}
 }

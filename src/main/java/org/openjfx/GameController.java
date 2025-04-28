@@ -19,7 +19,12 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Window;
-import org.openjfx.ui.*;
+import org.openjfx.ui.BoardController;
+import org.openjfx.ui.Buttons;
+import org.openjfx.ui.DevelopmentCardController;
+import org.openjfx.ui.ResourceController;
+import org.openjfx.ui.SidePanelController;
+import org.openjfx.ui.UiUpdates;
 import org.openjfx.ui.board_objects.UIHex;
 import org.openjfx.ui.board_objects.UIRoad;
 import org.openjfx.ui.board_objects.UIVertex;
@@ -506,6 +511,7 @@ public class GameController {
     private GameHandler game;
     private ResourceBundle bundle;
     private Window window;
+    private boolean weather;
 
     private BoardController boardController;
     private SidePanelController sidePanelController;
@@ -518,6 +524,25 @@ public class GameController {
         this.bundle = bundle;
         this.window = window;
         game = new GameHandler(new Random(), new Random());
+
+        players.forEach((color, readyValue) -> {
+            if(readyValue) {
+                game.addPlayer(new Player(color));
+            }
+        });
+
+        game.setVictoryPointManager();
+        board = game.getBoard();
+        boardController = new BoardController(game, board);
+        sidePanelController = new SidePanelController(game, bundle, window, resourceController, developmentCardController);
+        portImages = new HashMap<>();
+    }
+
+    public GameController(ResourceBundle bundle, Window window, Map<PlayerColors, Boolean> players, boolean weather) {
+        this.bundle = bundle;
+        this.window = window;
+        this.weather = weather;
+        game = new GameHandler(new Random(), new Random(), weather);
 
         players.forEach((color, readyValue) -> {
             if(readyValue) {
@@ -601,7 +626,7 @@ public class GameController {
         boardController.setOnRobberMovedHandler(sidePanelController::onRobberMoved);
         Buttons buttons = new Buttons(bundle, cityBtn, fortBtn, templeBtn, observatoryBtn, rollDiceBtn, endTurnBtn, tradeBtn,
                                         bankTradeBtn, purchaseDevCardBtn, playDevCardBtn);
-        sidePanelController.initialize(resourceInfo, dice1, dice2, buttons, devCardInfo, uiUpdates ,boardController);
+        sidePanelController.initialize(resourceInfo, dice1, dice2, buttons, devCardInfo, uiUpdates, boardController);
         uiUpdates.updateDisplay();
         sidePanelController.startTurn();
     }

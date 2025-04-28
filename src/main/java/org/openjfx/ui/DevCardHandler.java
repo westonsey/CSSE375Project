@@ -11,7 +11,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Window;
 import org.openjfx.ui.data.DevelopmentCardInfo;
 import org.openjfx.ui.data.ResourceInfo;
-import org.openjfx.ui.dialog.*;
+import org.openjfx.ui.dialog.DevCardDialog;
+import org.openjfx.ui.dialog.MonopolyDialog;
+import org.openjfx.ui.dialog.PlayDevelopmentCardDialog;
+import org.openjfx.ui.dialog.RoadBuildingDialog;
+import org.openjfx.ui.dialog.YearOfPlentyDialog;
 
 import java.util.ArrayList;
 import java.util.Optional;

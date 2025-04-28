@@ -5,7 +5,6 @@ import game.GameHandler;
 import game.GameState;
 import game.TurnPhase;
 import javafx.scene.control.Button;
-import org.openjfx.ui.SidePanelController;
 
 import java.util.ResourceBundle;
 

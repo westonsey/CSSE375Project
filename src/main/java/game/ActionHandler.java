@@ -21,13 +21,11 @@ import java.util.Set;
 public class ActionHandler {
 	private final Board board;
 	private final GameHandler gameStateManager;
-	private final CardTracker cardTracker;
 	private static final int DISCARD_RESOURCE_THRESHOLD = 7;
 
 	public ActionHandler(Board board, GameHandler gameStateManager, CardTracker cardTracker) {
 		this.board = board;
 		this.gameStateManager = gameStateManager;
-		this.cardTracker = cardTracker;
 	}
 
 	boolean canPlaceSettlementConditional(Player p, VertexLocation loc, Boolean force, Boolean requiresResources, TurnPhase turnPhase) {
@@ -200,7 +198,7 @@ public class ActionHandler {
 		return longestRoad;
 	}
 
-	int getTradeAmountHelper(Player player, Resource resource, List<PortType> ports){
+	int getTradeAmountHelper(Resource resource, List<PortType> ports){
 		if (ports.contains(portTypeForResource(resource))) {
 			return 2;
 		} else if (ports.contains(PortType.THREE_FOR_ONE)) {
@@ -227,28 +225,31 @@ public class ActionHandler {
 	List<PortType> getOwnedPorts(Player player) {
 		List<PortType> ports = new ArrayList<>();
 		List<Building> buildings = board.getBuildingsForPlayer(player);
-		getOwnedPortsLoop(player, buildings, ports);
+		getOwnedPortsLoop(buildings, ports);
 		return ports;
 	}
 
-	private void getOwnedPortsLoop(Player player, List<Building> buildings, List<PortType> ports){
+	private void getOwnedPortsLoop(List<Building> buildings, List<PortType> ports){
 		for (Building b : buildings) {
 			PortType p = board.getPort(b).getPortType();
-			checkValidPortgetOwnedPorts(p, ports);
+			checkValidPortGetOwnedPorts(p, ports);
 		}
 	}
 
-	private void checkValidPortgetOwnedPorts(PortType p, List<PortType> ports){
+	private void checkValidPortGetOwnedPorts(PortType p, List<PortType> ports){
 		if (p != null && !ports.contains(p)) {
 			ports.add(p);
 		}
 	}
 
-	void handleNormalRollLoop(List<Hexagon> hexes, int roll1, int roll2){
+	void handleNormalRollLoop(List<Hexagon> hexes, int turn, boolean weather, int roll1, int roll2){
 		for (Hexagon h : hexes) {
 			boolean hasRobber = h.location.equals(gameStateManager.getRobberLoc());
 			ResourceGainContext context = new ResourceGainContext(h.resource, h.number, roll1, roll2, hasRobber);
 			board.addPlayerResourcesFromHex(h, context);
+			if(turn % 3 != 2 || !weather) {
+				board.addPlayerResourcesFromHex(h, context);
+			}
 		}
 	}
 

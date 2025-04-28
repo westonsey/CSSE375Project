@@ -117,41 +117,61 @@ public class TestPlayer {
     }
 
     @Test
-    public void TestAddDevCardAtFull(){
+    public void testAddDevCardFailsWhenVictoryPointLimitReached() {
         Player p1 = new Player();
-        p1.addDevCard(DevCardType.VICTORY_POINT);
-        p1.addDevCard(DevCardType.VICTORY_POINT);
-        p1.addDevCard(DevCardType.VICTORY_POINT);
-        p1.addDevCard(DevCardType.VICTORY_POINT);
-        p1.addDevCard(DevCardType.VICTORY_POINT);
-        String expectedMessage = "Reached max number of development card " + DevCardType.VICTORY_POINT;
-        Exception exception = Assertions.assertThrows(IllegalArgumentException.class, ()->{
+        // Add max allowed VICTORY_POINT cards
+        for (int i = 0; i < 5; i++) {
             p1.addDevCard(DevCardType.VICTORY_POINT);
-        });
-        String actualMessage = exception.getMessage();
-        Assertions.assertEquals(expectedMessage, actualMessage);
-        
-        p1.addDevCard(DevCardType.ROAD_BUILDING);
-        p1.addDevCard(DevCardType.ROAD_BUILDING);
-        String expectedMessage2 = "Reached max number of development card " + DevCardType.ROAD_BUILDING;
-        Exception exception2 = Assertions.assertThrows(IllegalArgumentException.class, ()->{
-            p1.addDevCard(DevCardType.ROAD_BUILDING);
-        });
-        String actualMessage2 = exception2.getMessage();
-        Assertions.assertEquals(expectedMessage2, actualMessage2);
+        }
 
-        p1.addDevCard(DevCardType.KNIGHT);
-        Assertions.assertEquals(1, p1.getNumberOfUnplayedDevCards(DevCardType.KNIGHT)); 
-        for(int i = 0; i < 13; i++){
+        String expectedMessage = "Reached max number of development card " + DevCardType.VICTORY_POINT;
+        Exception exception = Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> p1.addDevCard(DevCardType.VICTORY_POINT)
+        );
+        Assertions.assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void testAddDevCardFailsWhenRoadBuildingLimitReached() {
+        Player p1 = new Player();
+        // Add max allowed ROAD_BUILDING cards
+        for (int i = 0; i < 2; i++) {
+            p1.addDevCard(DevCardType.ROAD_BUILDING);
+        }
+
+        String expectedMessage = "Reached max number of development card " + DevCardType.ROAD_BUILDING;
+        Exception exception = Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> p1.addDevCard(DevCardType.ROAD_BUILDING)
+        );
+        Assertions.assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void testAddDevCardFailsWhenKnightLimitReached() {
+        Player p1 = new Player();
+        // Add max allowed KNIGHT cards (14 total)
+        for (int i = 0; i < 14; i++) {
             p1.addDevCard(DevCardType.KNIGHT);
         }
-        String expectedMessage3 = "Reached max number of development card " + DevCardType.KNIGHT;
-        Exception exception3 = Assertions.assertThrows(IllegalArgumentException.class, ()->{
-            p1.addDevCard(DevCardType.KNIGHT);
-        });
-        String actualMessage3 = exception3.getMessage();
-        Assertions.assertEquals(expectedMessage3, actualMessage3);
 
+        String expectedMessage = "Reached max number of development card " + DevCardType.KNIGHT;
+        Exception exception = Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> p1.addDevCard(DevCardType.KNIGHT)
+        );
+        Assertions.assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void testAddDevCardSucceedsBeforeReachingLimit() {
+        Player p1 = new Player();
+        // Add just below the max limit for KNIGHT
+        for (int i = 0; i < 13; i++) {
+            p1.addDevCard(DevCardType.KNIGHT);
+        }
+        Assertions.assertEquals(13, p1.getNumberOfUnplayedDevCards(DevCardType.KNIGHT));
     }
 
     @Test

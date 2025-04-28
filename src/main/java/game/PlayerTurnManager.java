@@ -55,25 +55,25 @@ public class PlayerTurnManager {
         }
     }
 
-    public Tuple<Integer, Integer> doDiceRoll() {
+    public Tuple<Integer, Integer> doDiceRoll(int turnNumber, boolean weather) {
         checkTurnPhaseValidDoDiceRoll();
         int roll1 = rollDice();
         int roll2 = rollDice();
-        handleRoll(roll1 + roll2);
+        handleRoll(roll1 + roll2, turnNumber, weather);
         return new Tuple<>(roll1, roll2);
     }
     
-    private void handleRoll(int roll) {
+    private void handleRoll(int roll, int turnNumber, boolean weather) {
         if (roll == ROBBER_ROLL) {
             handleRobberRoll();
         } else {
-            handleNormalRoll(roll);
+            handleNormalRoll(roll, turnNumber, weather);
         }
     }
 
-    private void handleNormalRoll(int roll) {
+    private void handleNormalRoll(int roll, int turnNumber, boolean weather) {
         List<Hexagon> hexes = board.getHexesAtNumber(roll, new ArrayList<>());
-        actionHandler.handleNormalRollLoop(hexes);
+        actionHandler.handleNormalRollLoop(hexes, turnNumber, weather);
         turnPhase = TurnPhase.PLAYING_TURN;
     }
 

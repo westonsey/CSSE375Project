@@ -213,7 +213,7 @@ public class GameHandler {
     }
 
     public Tuple<Integer, Integer> doDiceRoll() {
-        return playerTurnManager.doDiceRoll();
+        return playerTurnManager.doDiceRoll(turnNumber, weather);
     }
 
     public int handleSwitchPlayerTurn() {

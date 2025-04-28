@@ -26,6 +26,6 @@ public class TradeManager {
 
     public int getTradeAmount(Player player, Resource resource) {
         List<PortType> ports = actionHandler.getOwnedPorts(player);
-        return actionHandler.getTradeAmountHelper(player, resource, ports);
+        return actionHandler.getTradeAmountHelper(resource, ports);
     }
 }

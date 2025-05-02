@@ -38,7 +38,7 @@ public class SidePanelController {
     private ResourceInfo resourceInfo;
     private ResourceBundle bundle;
 
-    private Dice[] dice = new Dice[6];
+    protected Dice[] dice = new Dice[6];
   
     private Action onGameEnd;
     private Window window;
@@ -78,7 +78,7 @@ public class SidePanelController {
         uiUpdates.updateDisplay();
     }
 
-    private void makeDice() {
+    protected void makeDice() {
         for (int k = 1; k < 7; k++) {
             Dice tempDice = new Dice();
             tempDice.startDice(k);

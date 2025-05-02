@@ -1,5 +1,8 @@
 package org.openjfx.ui;
 
+import javafx.application.Platform;
+import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class SidePanelControllerTests {
@@ -10,6 +13,10 @@ public class SidePanelControllerTests {
 
     @Test
     public void makeDiceTest() {
+        SidePanelController controller = generateController();
+        Platform.startup(() -> {});
+        controller.makeDice();
 
+        Assertions.assertTrue(controller.dice[1].getImage() != null);
     }
 }

@@ -42,8 +42,7 @@ public class DevCardHandler {
         this.boardController = boardController;
         this.uiUpdates = uiUpdates;
     }
-    public void doDevCardPurchase(){
-        Player player = game.playerByTurnIndex();
+    public void doDevCardPurchase(Player player){
         DevCardDialog dialog = new DevCardDialog(window, devCardInfo, "Purchase Development Card", player.availableResources);
         if(dialog.isCanceled()){
             return;
@@ -65,7 +64,7 @@ public class DevCardHandler {
         buttons.setDevCardDisable();
     }
 
-    private void playCard(Optional<DevCardType> card, Player player) {
+    protected void playCard(Optional<DevCardType> card, Player player) {
         switch(card.get()){
             case KNIGHT:
                 game.playKnightCard(player);

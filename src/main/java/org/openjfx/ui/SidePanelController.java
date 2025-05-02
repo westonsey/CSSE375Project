@@ -164,7 +164,7 @@ public class SidePanelController {
     }
 
     public void doDevCardPurchase() {
-        devCardHandler.doDevCardPurchase();
+        devCardHandler.doDevCardPurchase(game.playerByTurnIndex());
     }
 
     public void playDevCard() {

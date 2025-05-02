@@ -28,7 +28,7 @@ public class DevCardHandlerTests {
     }
 
     @Test
-    public void playDevCardTest(){
+    public void playDevCardTest1(){
         GameHandler game = EasyMock.niceMock(GameHandler.class);
         UiUpdates uiUpdates = EasyMock.createMock(UiUpdates.class);
         Player player = EasyMock.niceMock(Player.class);
@@ -37,6 +37,21 @@ public class DevCardHandlerTests {
 
         game.playKnightCard(player);
         EasyMock.expectLastCall();
+
+        EasyMock.replay(game);
+
+        handler.playCard(card, player);
+
+        EasyMock.verify(game);
+    }
+
+    @Test
+    public void playDevCardTest2(){
+        GameHandler game = EasyMock.niceMock(GameHandler.class);
+        UiUpdates uiUpdates = EasyMock.createMock(UiUpdates.class);
+        Player player = EasyMock.niceMock(Player.class);
+        DevCardHandler handler = generateHandler(game, uiUpdates, null);
+        Optional<DevCardType> card = Optional.of(DevCardType.VICTORY_POINT);
 
         EasyMock.replay(game);
 

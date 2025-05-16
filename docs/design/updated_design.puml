@@ -1,0 +1,577 @@
+@startuml
+
+package game {
+
++class GameHandler{
+-board: Board
+-players: List<Player>
+-robber: Robber
+-robberManager: RobberManager
+-actionHandler: ActionHandler
+-cardTracker: CardTracker
+-victoryPointManager: VictoryPointManager
+-playerTurnManager: PlayerTurnManager
+-buildingManager: BuildingManager
+-tradeManager: TradeManager
+-buildingTypeFactory: BuildingTypeFactory
+-currentlySelectedUpgrade: BuildingType
++currentPlayerTurnIndex: int
+-weather: boolean
++GameHandler(randInt: Random, boardRandom: Random)
++addPlayer(player: Player): void
++shufflePlayers(random: Random): void
++rollDice(): int
++getRobberLoc(): HexLocation
++moveRobberWithoutChecks(loc: HexLocation): void
++purchaseDevelopmentCard(player: Player): void
++addDevelopmentCard(player: Player, card: DevCardType): void
++playMonopolyCard(player: Player, resource: Resource): void
++playYearOfPlentyCard(player: Player, resource1: Resource, resource2: Resource): void
++playRoadBuildingCard(player: Player, loc1: BorderLocation, loc2: BorderLocation): void
++playKnightCard(player: Player): void
++moveRobber(loc: HexLocation): void
++doDiceRoll(): Tuple<Integer, Integer>
++handleSwitchPlayerTurn(): int
++handleVictoryPoints(): void
++playerByTurnIndex(): Player
++stealResource(thief: Player, victim: Player, rand: Random): void
++skipSteal(): void
++getPlayersToStealFrom(currentTurn: Player): List<Player>
++getRequiredDiscardAmount(): int
++discardResources(resources: CountCollection<Resource>): void
++findLongestRoad(player: Player): int
++tradeBetweenPlayers(player1: Player, player2: Player, fromResources: CountCollection<Resource>, toResources: CountCollection<Resource>): void
++tradeWithBank(player: Player, toTrade: Resource, toReceive: Resource): void
++getTradeAmount(player: Player, resource: Resource): int
+}
+
++class VictoryPointManager {
+-largestArmy: int
+-largestArmyPlayerIndex: int
+-longestRoad: int
+-longestRoadPlayerIndex: int
+-players: List<Player>
+-gameState: GameState
++VictoryPointManager(players: List<Player>)
++handleVictoryPoints(currentPlayerTurnIndex: int, players: List<Player>): void
++getGameState(): GameState
+}
+
++class PlayerTurnManager {
+-gameState: GameState
+-turnPhase: TurnPhase
+-turnMovementDirection: TurnMovementDirection
+-players: List<Player>
+-board: Board
+-actionHandler: ActionHandler
+-victoryPointManager: VictoryPointManager
+-randForDice: Random
++currentPlayerTurnIndex: int
+-currentDiscardPlayerIndex: int
+-turnNumber: int
++PlayerTurnManager(gameState: GameState, turnPhase: TurnPhase, turnMovementDirection: TurnMovementDirection, players: List<Player>, board: Board, actionHandler: ActionHandler, randForDice: Random, robberManager: RobberManager)
++setVictoryPointManager(victoryPointManager: VictoryPointManager): void
++rollDice(): int
++doDiceRoll(weather: boolean): Tuple<Integer, Integer>
++handleSwitchPlayerTurn(): int
++handleVictoryPoints(): void
++switchTurnMovementDirection(): void
++getCurrentPlayer(players: List<Player>): Player
++getCurrentDiscardingPlayer(players: List<Player>): Player
++incrementDiscardPlayerIndex(players: List<Player>): void
+}
+
++class BuildingManager {
+-board: Board
+-actionHandler: ActionHandler
+-playerTurnManager: PlayerTurnManager
++BuildingManager(board: Board, actionHandler: ActionHandler, playerTurnManager: PlayerTurnManager)
++canPlaceSettlement(p: Player, loc: VertexLocation): boolean
++canPlaceRoad(p: Player, loc: BorderLocation): boolean
++canUpgradeSettlement(s: Settlement, upgrade: BuildingType): boolean
++placeSettlement(p: Player, loc: VertexLocation): void
++placeRoad(p: Player, loc: BorderLocation): void
++upgradeSettlement(s: Settlement, upgrade: BuildingType): void
++findLongestRoad(player: Player): int
+}
+
++class TradeManager {
+-actionHandler: ActionHandler
+-cardTracker: CardTracker
++TradeManager(actionHandler: ActionHandler, cardTracker: CardTracker)
++tradeBetweenPlayers(player1: Player, player2: Player, fromResources: CountCollection<Resource>, toResources: CountCollection<Resource>): void
++tradeWithBank(player: Player, toTrade: Resource, toReceive: Resource): void
++getTradeAmount(player: Player, resource: Resource): int
+}
+
++class RobberManager {
+-robber: Robber
+-turnPhase: TurnPhase
++RobberManager(robber: Robber, board: Board)
++moveRobber(loc: HexLocation, turnPhase: TurnPhase): void
++getPlayersToStealFromLoop(currentTurn: Player, adjacent: List<Player>): List<Player>
++stealResourceLoop(thief: Player, victim: Player, resources: List<Resource>, rand: Random, turnPhase: TurnPhase): void
+}
+
++class ActionHandler {
+-board: Board
+-gameStateManager: GameHandler
++ActionHandler(board: Board, gameStateManager: GameHandler, cardTracker: CardTracker)
++canPlaceSettlementConditional(p: Player, loc: VertexLocation, force: Boolean, requiresResources: Boolean, turnPhase: TurnPhase): boolean
++canPlaceRoadRequiresResources(p: Player, loc: BorderLocation, requiresResources: Boolean): boolean
++placeSettlementRemoveResources(p: Player): void
++placeRoadThrowException(loc: BorderLocation): void
++upgradeSettlementAllowed(s: Settlement, upgrade: BuildingType): void
++stealResourceThrowException(victim: Player, turnPhase: TurnPhase): void
++getRequiredDiscardAmountException(turnPhase: TurnPhase): void
++getRequiredDiscardAmountConditional(player: Player): int
++placeSettlementThrowException(loc: VertexLocation): void
++placeSettlementAllowed(p: Player, loc: VertexLocation, turnPhase: TurnPhase, turnMovementDirection: TurnMovementDirection): void
++placeRoadAllowed(p: Player, loc: BorderLocation, turnPhase: TurnPhase): void
++discardResourcesIterator(player: Player, resourceIterator: Iterator<Tuple<Resource, Integer>>): void
++discardResourcesRemoveResource(player: Player, resources: CountCollection<Resource>, resourceIterator: Iterator<Tuple<Resource, Integer>>): void
++findLongestRoadLoop(visitedRoads: Set<Road>, player: Player, playerRoads: List<Road>): int
++getTradeAmountHelper(resource: Resource, ports: List<PortType>): int
++getOwnedPorts(player: Player): List<PortType>
++handleNormalRollLoop(hexes: List<Hexagon>, turn: int, weather: boolean, roll1: int, roll2: int): void
++discardResourcesNotEnoughException(resources: CountCollection<Resource>, required: int): void
+}
+
++class CardTracker {
+-unPlayedPile: CountCollection<DevCardType>
++CardTracker()
++getUnPlayedCards(): CountCollection<DevCardType>
++purchaseDevCard(player: Player, random: Random): void
++addDevCard(player: Player, devCard: DevCardType): void
++tradeResourceWithBank(player: Player, resource: Resource, numberOfResources: int, resourceFromBank: Resource, ownedPorts: List<PortType>): void
+}
+
++class Robber {
+-loc: HexLocation
++Robber(loc: HexLocation)
++moveLocation(hexLocation: HexLocation): void
++getLoc(): HexLocation
+}
+
++class Player{
++unplayedDevCards: CountCollection<DevCardType>
+-playedDevCards: CountCollection<DevCardType>
++availableResources: CountCollection<Resource>
+-victoryPoints: int
+-numKnights: int
+-longestRoad: int
+-color: PlayerColors
++Player()
++Player(color: PlayerColors)
++getLongestRoad(): int
++setLongestRoad(length: int): void
++getNumKnights(): int
++addNumKnights(addAmount: int): void
++getVictoryPoints(): int
++changeVictoryPoints(addAmount: int): void
++getColor(): PlayerColors
++getTotalNumberOfResources(): int
++addResource(resource: Resource, amount: int): void
++removeResource(resource: Resource, amount: int): void
++removeResources(resources: CountCollection<Resource>): void
++getResourceCount(resource: Resource): int
++hasResource(resource: Resource): boolean
++hasResources(resources: CountCollection<Resource>): boolean
++playDevCard(card: DevCardType): void
++addDevCard(card: DevCardType): void
++getTotalNumberOfUnplayedDevCards(): int
++getTotalNumberOfPlayedDevCards(): int
++getNumberOfUnplayedDevCards(card: DevCardType): int
++getNumberOfPlayedDevCards(card: DevCardType): int
++tradeResource(otherPlayer: Player, resources: CountCollection<Resource>, otherResources: CountCollection<Resource>): void
+}
+
+enum GameState{
+SETUP
+NORMALPLAY
+END
+}
+
+enum TurnPhase{
+PLACING_ROAD
+PLACING_BUILDING
+END_TURN
+ROLLING_DICE
+PLAYING_TURN
+MOVING_ROBBER
+STEALING_RESOURCE
+DISCARDING_RESOURCES
+}
+
+enum TurnMovementDirection{
+FORWARD
+REVERSE
+}
+
+enum DevCardType{
+KNIGHT
+ROAD_BUILDING
+YEAR_OF_PLENTY
+MONOPOLY
+VICTORY_POINT
+}
+
+enum Resource{
+WOOD
+WHEAT
+ORE
+SHEEP
+BRICK
+}
+
+enum PlayerColors{
+RED
+BLUE
+GREEN
+ORANGE
+}
+
+}
+
+package util {
+
++class CountCollection<T> {
+-amounts: HashMap<T, Integer>
++CountCollection()
++add(item: T, amount: int): void
++remove(item: T, amount: int): void
++getCount(t: T): int
++getTotalCount(): int
++includes(other: CountCollection<T>): boolean
++getValuesList(): List<T>
++iterator(): Iterator<Tuple<T, Integer>>
+}
+
++class Tuple<T, U> {
++first: T
++second: U
++Tuple(first: T, second: U)
+}
+
+}
+
+package board {
+
+package location {
+class HexLocation {
++row: int
++col: int
++HexLocation(row: int, col: int)
++getBorders(): List<BorderLocation>
++getVertices(): List<VertexLocation>
++isValid(): boolean
+}
+class VertexLocation {
++row: int
++col: int
++VertexLocation(row: int, col: int)
++getHexes(): List<HexLocation>
++getBorders(): List<BorderLocation>
+}
+class BorderLocation {
++row: int
++col: int
++BorderLocation(row: int, col: int)
++getVertices(): List<VertexLocation>
++getBorders(): List<BorderLocation>
+}
+}
+
+class Board{
+-hexagons: List<Hexagon>
+-roads: List<Road>
+-ports: List<Port>
+-buildings: List<Building>
++Board()
++generate(rand: Random): void
++getLongestRoadLength(p: Player): int
++getVPFromBuildings(p: Player): int
++placeRoad(p: Player, loc: BorderLocation, force: boolean): void
++placeSettlement(p: Player, loc: VertexLocation, force: boolean): void
++upgradeSettlement(settlement: Settlement, upgrade: BuildingType): void
++canPlaceRoad(p: Player, loc: BorderLocation, force: boolean): boolean
++canPlaceSettlement(p: Player, loc: VertexLocation, force: boolean): boolean
++canUpgradeSettlement(settlement: Settlement): boolean
++getHexAt(loc: HexLocation): Hexagon
++getBuildingsForPlayer(p: Player): List<Building>
++getRoadsForPlayer(p: Player): List<Road>
++getHexList(): List<Hexagon>
++getAdjacentPlayers(loc: HexLocation): List<Player>
++getPort(building: Building): Port
++addResourceForGameSetup(p: Player, loc: VertexLocation): void
++addPlayerResourcesFromHex(h: Hexagon, context: ResourceGainContext): void
++getAdjacentPlayerRoads(player: Player, road: Road): List<Road>
++isBorderValid(loc: BorderLocation): boolean
++isBorderOccupied(loc: BorderLocation): boolean
+}
+
+class Hexagon{
++location: HexLocation
++resource: Resource
++number: int
++isDesert: boolean
++Hexagon(loc: HexLocation, r: Resource, n: int, isDesert: boolean)
+}
+
+abstract Building{
+-resourceMultiplier: int
+-victoryPointValue: int
+-location: VertexLocation
+-buildCost: CountCollection<Resource>
+-player: Player
+-type: BuildingType
++Building(resourceMult: int, vpValue: int, location: VertexLocation, buildCost: CountCollection<Resource>, player: Player, type: BuildingType)
++getOwner(): Player
++getLocation(): VertexLocation
+}
+
+class Settlement extends Building{
++Settlement(location: VertexLocation, player: Player)
+}
+
+class City extends Building{
++City(location: VertexLocation, player: Player)
+}
+
+class Fort extends Building{
++Fort(location: VertexLocation, player: Player)
+}
+
+class Observatory extends Building{
++Observatory(location: VertexLocation, player: Player)
+}
+
+class Temple extends Building{
++Temple(location: VertexLocation, player: Player)
+}
+
+interface BuildingType{
++getVictoryPoints(): int
++getResourceMultiplier(): int
++getRequiredResources(): CountCollection<Resource>
+}
+
+class CityBuildingType implements BuildingType{
++getVictoryPoints(): int
++getResourceMultiplier(): int
++getRequiredResources(): CountCollection<Resource>
+}
+
+class FortBuildingType implements BuildingType{
++getVictoryPoints(): int
++getResourceMultiplier(): int
++getRequiredResources(): CountCollection<Resource>
+}
+
+class ObservatoryBuildingType implements BuildingType{
++getVictoryPoints(): int
++getResourceMultiplier(): int
++getRequiredResources(): CountCollection<Resource>
+}
+
+class SettlementBuildingType implements BuildingType{
++getVictoryPoints(): int
++getResourceMultiplier(): int
++getRequiredResources(): CountCollection<Resource>
+}
+
+class TempleBuildingType implements BuildingType{
++getVictoryPoints(): int
++getResourceMultiplier(): int
++getRequiredResources(): CountCollection<Resource>
+}
+
+class BuildingTypeFactory{
++build(code: BuildingCode): BuildingType
+}
+
+enum BuildingCode{
+CITY
+FORT
+OBSERVATORY
+SETTLEMENT
+TEMPLE
+}
+
+class Road{
+-location: BorderLocation
+-cost: CountCollection<Resource>
+-player: Player
++Road(location: BorderLocation, cost: CountCollection<Resource>, player: Player)
++getLocation(): BorderLocation
++getPlayer(): Player
+}
+
+class Port{
+-loc1: VertexLocation
+-loc2: VertexLocation
+-type: PortType
++Port(loc1: VertexLocation, loc2: VertexLocation, type: PortType)
++getPortType(): PortType
+}
+
+enum PortType{
+WOOD
+WHEAT
+ORE
+SHEEP
+BRICK
+THREE_FOR_ONE
+}
+
+}
+
+package org.openjfx {
+class MainApp {
+}
+
+class Main {
+}
+
+class GameController {
+}
+}
+
+' Relationships
+
+' GameHandler relationships
+GameHandler --> Board
+GameHandler --> "*" Player
+GameHandler --> Robber
+GameHandler --> RobberManager
+GameHandler --> ActionHandler
+GameHandler --> CardTracker
+GameHandler --> VictoryPointManager
+GameHandler --> PlayerTurnManager
+GameHandler --> BuildingManager
+GameHandler --> TradeManager
+GameHandler --> BuildingTypeFactory
+GameHandler --> BuildingType
+GameHandler ..> GameState
+GameHandler ..> TurnPhase
+GameHandler ..> TurnMovementDirection
+GameHandler ..> BorderLocation
+GameHandler ..> VertexLocation
+GameHandler ..> HexLocation
+GameHandler ..> CountCollection
+GameHandler ..> Resource
+GameHandler ..> DevCardType
+
+' VictoryPointManager relationships
+VictoryPointManager --> "*" Player
+VictoryPointManager --> GameState
+
+' PlayerTurnManager relationships
+PlayerTurnManager --> GameState
+PlayerTurnManager --> TurnPhase
+PlayerTurnManager --> TurnMovementDirection
+PlayerTurnManager --> "*" Player
+PlayerTurnManager --> Board
+PlayerTurnManager --> ActionHandler
+PlayerTurnManager --> VictoryPointManager
+PlayerTurnManager ..> Hexagon
+
+' BuildingManager relationships
+BuildingManager --> Board
+BuildingManager --> ActionHandler
+BuildingManager --> PlayerTurnManager
+BuildingManager ..> Player
+BuildingManager ..> VertexLocation
+BuildingManager ..> BorderLocation
+BuildingManager ..> Settlement
+BuildingManager ..> BuildingType
+BuildingManager ..> Road
+
+' TradeManager relationships
+TradeManager --> ActionHandler
+TradeManager --> CardTracker
+TradeManager ..> Player
+TradeManager ..> Resource
+TradeManager ..> CountCollection
+
+' RobberManager relationships
+RobberManager --> Robber
+RobberManager ..> TurnPhase
+RobberManager ..> HexLocation
+RobberManager ..> Player
+RobberManager ..> Resource
+
+' ActionHandler relationships
+ActionHandler --> Board
+ActionHandler --> GameHandler
+ActionHandler ..> Player
+ActionHandler ..> VertexLocation
+ActionHandler ..> BorderLocation
+ActionHandler ..> Settlement
+ActionHandler ..> BuildingType
+ActionHandler ..> Road
+ActionHandler ..> Resource
+ActionHandler ..> CountCollection
+ActionHandler ..> TurnPhase
+ActionHandler ..> TurnMovementDirection
+ActionHandler ..> PortType
+ActionHandler ..> Hexagon
+ActionHandler ..> Tuple
+
+' CardTracker relationships
+CardTracker --> CountCollection
+CardTracker ..> DevCardType
+CardTracker ..> Player
+CardTracker ..> Resource
+CardTracker ..> PortType
+
+' Robber relationships
+Robber --> HexLocation
+
+' Player relationships
+Player --> CountCollection
+Player --> "*" DevCardType
+Player --> "*" Resource
+Player --> PlayerColors
+
+' Board relationships
+Board --> "*" Hexagon
+Board --> "*" Road
+Board --> "*" Port
+Board --> "*" Building
+Board ..> Player
+Board ..> BorderLocation
+Board ..> Settlement
+Board ..> VertexLocation
+Board ..> HexLocation
+Board ..> BuildingType
+Board ..> ResourceGainContext
+
+' Building relationships
+Building --> VertexLocation
+Building --> CountCollection
+Building --> "*" Resource
+Building --> Player
+Building --> BuildingType
+
+' Road relationships
+Road --> BorderLocation
+Road --> CountCollection
+Road --> "*" Resource
+Road --> Player
+
+' Port relationships
+Port --> "2" VertexLocation
+Port --> PortType
+
+' Location relationships
+HexLocation ..> BorderLocation
+HexLocation ..> VertexLocation
+BorderLocation ..> VertexLocation
+VertexLocation ..> HexLocation
+VertexLocation ..> BorderLocation
+
+' UI relationships
+GameController --> GameHandler
+
+@enduml

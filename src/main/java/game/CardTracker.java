@@ -46,7 +46,7 @@ public class CardTracker{
         player.removeResource(Resource.SHEEP, REQUIRED_SHEEP);
     }
 
-    public void PurchaseDevCard(Player player, Random random){
+    public void purchaseDevCard(Player player, Random random){
         validatePlayerResources(player);
 
         DevCardType card = drawDevCard(random);

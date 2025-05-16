@@ -33,7 +33,7 @@ public class SidePanelController {
     private Dice dice1;
     private Dice dice2;
 
-    private BuildingCode selectedUpgrade = BuildingCode.CITY;
+    protected BuildingCode selectedUpgrade = BuildingCode.CITY;
 
     private ResourceInfo resourceInfo;
     private ResourceBundle bundle;

@@ -41,7 +41,7 @@ public class GameHandler {
     private static final int ROBBER_ROLL = 7;
     private static final int INVALID_PLAYER_INDEX = -1;
 
-    public int currentPlayerTurnIndex;
+    public int currentPlayerTurnIndex = 0;
     private int currentDiscardPlayerIndex;
     private boolean weather;
 
@@ -71,7 +71,6 @@ public class GameHandler {
                         TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate, boolean weather,
                         BuildingTypeFactory buildingTypeFactory) {
         this.board = board;
-        this.currentPlayerTurnIndex = 0;
         this.gameState = inputGameState;
         this.turnPhase = turnPhase;
         this.randForDice = randInt;
@@ -86,7 +85,7 @@ public class GameHandler {
         actionHandler = new ActionHandler(board, this, cardTracker);
         this.buildingTypeFactory = buildingTypeFactory;
         this.currentlySelectedUpgrade = new CityBuildingType();
-        playerTurnManager = new PlayerTurnManager(inputGameState, turnPhase, inputTurnMovementDirection, 
+        playerTurnManager = new PlayerTurnManager(inputGameState, turnPhase, inputTurnMovementDirection,
                                                 players, board, actionHandler, randInt, robberManager);
         buildingManager = new BuildingManager(board, actionHandler, playerTurnManager);
         tradeManager = new TradeManager(actionHandler, cardTracker);
@@ -132,7 +131,7 @@ public class GameHandler {
             throw new IllegalStateException("Cannot purchase development card in this phase!");
         }
         Random random = new Random();
-        this.cardTracker.PurchaseDevCard(player, random);
+        this.cardTracker.purchaseDevCard(player, random);
     }
 
     public void addDevelopmentCard(Player player, DevCardType card) {

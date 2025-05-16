@@ -429,7 +429,7 @@ public class CardTrackerTest {
         player.addResource(Resource.WHEAT, 1);
         player.addResource(Resource.SHEEP, 1);
 
-        ct.PurchaseDevCard(player, random);
+        ct.purchaseDevCard(player, random);
        
         assertEquals(1, player.getNumberOfUnplayedDevCards(DevCardType.KNIGHT));
         assertEquals(0, player.getTotalNumberOfResources());
@@ -459,7 +459,7 @@ public class CardTrackerTest {
         player.addResource(Resource.WHEAT, 1);
         player.addResource(Resource.SHEEP, 1);
 
-        ct.PurchaseDevCard(player, random);
+        ct.purchaseDevCard(player, random);
        
         assertEquals(1, player.getNumberOfUnplayedDevCards(DevCardType.ROAD_BUILDING));
         assertEquals(0, player.getTotalNumberOfResources());
@@ -489,7 +489,7 @@ public class CardTrackerTest {
         player.addResource(Resource.WHEAT, 1);
         player.addResource(Resource.SHEEP, 1);
 
-        ct.PurchaseDevCard(player, random);
+        ct.purchaseDevCard(player, random);
        
         assertEquals(1, player.getNumberOfUnplayedDevCards(DevCardType.YEAR_OF_PLENTY));
         assertEquals(0, player.getTotalNumberOfResources());
@@ -519,7 +519,7 @@ public class CardTrackerTest {
         player.addResource(Resource.WHEAT, 1);
         player.addResource(Resource.SHEEP, 1);
 
-        ct.PurchaseDevCard(player, random);
+        ct.purchaseDevCard(player, random);
        
         assertEquals(1, player.getNumberOfUnplayedDevCards(DevCardType.MONOPOLY));
         assertEquals(0, player.getTotalNumberOfResources());
@@ -549,7 +549,7 @@ public class CardTrackerTest {
         player.addResource(Resource.WHEAT, 1);
         player.addResource(Resource.SHEEP, 1);
 
-        ct.PurchaseDevCard(player, random);
+        ct.purchaseDevCard(player, random);
        
         assertEquals(1, player.getNumberOfUnplayedDevCards(DevCardType.VICTORY_POINT));
         assertEquals(0, player.getTotalNumberOfResources());
@@ -566,7 +566,7 @@ public class CardTrackerTest {
       
         String expectedMessage = "Could not purchase development card";
         Exception exception = Assertions.assertThrows(IllegalArgumentException.class, ()->{
-            ct.PurchaseDevCard(players.get(0), random);
+            ct.purchaseDevCard(players.get(0), random);
         });
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
@@ -589,14 +589,14 @@ public class CardTrackerTest {
         player.addResource(Resource.SHEEP, 26);
 
         for(int i = 0; i < 25; i++){
-           ct.PurchaseDevCard(player, random);
+           ct.purchaseDevCard(player, random);
         }
         deckSize = unPlayedPile.getValuesList().size();
         assertEquals(0, deckSize);
       
         String expectedMessage = "No more development cards left to buy";
         Exception exception = Assertions.assertThrows(IllegalArgumentException.class, ()->{
-            ct.PurchaseDevCard(player, random);
+            ct.purchaseDevCard(player, random);
         });
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);

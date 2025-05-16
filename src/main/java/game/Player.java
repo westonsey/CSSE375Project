@@ -129,7 +129,7 @@ public class Player {
         return playedDevCards.getCount(card);
     }
 
-    public void TradeResource(Player otherPlayer, CountCollection<Resource> resources,
+    public void tradeResource(Player otherPlayer, CountCollection<Resource> resources,
                               CountCollection<Resource> otherResources){
         Iterator<Tuple<Resource, Integer>> resourceIterator1 = resources.iterator();
         while (resourceIterator1.hasNext()) {

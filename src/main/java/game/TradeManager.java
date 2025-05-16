@@ -16,7 +16,7 @@ public class TradeManager {
 
     public void tradeBetweenPlayers(Player player1, Player player2, CountCollection<Resource> fromResources,
             CountCollection<Resource> toResources) {
-        player1.TradeResource(player2, fromResources, toResources);
+        player1.tradeResource(player2, fromResources, toResources);
     }
 
     public void tradeWithBank(Player player, Resource toTrade, Resource toReceive) {

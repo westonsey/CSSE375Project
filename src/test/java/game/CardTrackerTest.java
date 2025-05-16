@@ -54,14 +54,14 @@ public class CardTrackerTest {
         p1resources.add(Resource.WOOD, 1);
         p2resources.add(Resource.ORE, 1);
 
-        player1.TradeResource(player2, p1resources, p2resources);
+        player1.tradeResource(player2, p1resources, p2resources);
         assertEquals(1, player1.getResourceCount(Resource.ORE));
         assertEquals(1, player2.getResourceCount(Resource.WOOD));
 
         p3resources.add(Resource.SHEEP, 1);
         p4resources.add(Resource.BRICK, 1);
 
-        player3.TradeResource(player4, p3resources, p4resources);
+        player3.tradeResource(player4, p3resources, p4resources);
         assertEquals(1, player3.getResourceCount(Resource.BRICK));
         assertEquals(1, player4.getResourceCount(Resource.SHEEP));
     }
@@ -91,7 +91,7 @@ public class CardTrackerTest {
         p1resources.add(Resource.WHEAT, 2);
         p2resources.add(Resource.ORE, 2);
 
-        player1.TradeResource(player2, p1resources, p2resources);
+        player1.tradeResource(player2, p1resources, p2resources);
         assertEquals(2, player1.getResourceCount(Resource.ORE));
         assertEquals(2, player2.getResourceCount(Resource.WHEAT));
 
@@ -99,7 +99,7 @@ public class CardTrackerTest {
         p4resources.add(Resource.BRICK, 2);
         p4resources.add(Resource.ORE, 1);
 
-        player3.TradeResource(player4, p3resources, p4resources);
+        player3.tradeResource(player4, p3resources, p4resources);
         assertEquals(2, player3.getResourceCount(Resource.BRICK));
         assertEquals(1, player3.getResourceCount(Resource.ORE));
         assertEquals(3, player4.getResourceCount(Resource.SHEEP));
@@ -118,7 +118,7 @@ public class CardTrackerTest {
         p4resources.add(Resource.WOOD, 2);
         p4resources.add(Resource.ORE, 1);
 
-        player3.TradeResource(player4, p3resources, p4resources);
+        player3.tradeResource(player4, p3resources, p4resources);
         assertEquals(2, player3.getResourceCount(Resource.WOOD));
         assertEquals(2, player3.getResourceCount(Resource.ORE));
         assertEquals(3, player4.getResourceCount(Resource.WHEAT));
@@ -386,7 +386,7 @@ public class CardTrackerTest {
         p1resources.add(Resource.WHEAT, 2);
         p2resources.add(Resource.ORE, 2);
 
-        player1.TradeResource(player2, p1resources, p2resources);
+        player1.tradeResource(player2, p1resources, p2resources);
         assertEquals(2, player1.getResourceCount(Resource.ORE));
         assertEquals(2, player2.getResourceCount(Resource.WHEAT));
 
@@ -397,7 +397,7 @@ public class CardTrackerTest {
         p4resources.add(Resource.BRICK, 2);
         p4resources.add(Resource.ORE, 1);
 
-        player3.TradeResource(player4, p3resources, p4resources);
+        player3.tradeResource(player4, p3resources, p4resources);
         assertEquals(3, player4.getResourceCount(Resource.SHEEP));
         assertEquals(2, player3.getResourceCount(Resource.BRICK));
         assertEquals(1, player3.getResourceCount(Resource.ORE));

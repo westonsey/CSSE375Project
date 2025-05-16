@@ -81,6 +81,8 @@ public class BorderLocation {
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if(obj == null || getClass() != obj.getClass()) return false;
         BorderLocation b = (BorderLocation) obj;
         return b.row == row && b.col == col;
     }

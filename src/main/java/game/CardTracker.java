@@ -108,8 +108,8 @@ public class CardTracker{
         player.addResource(resourceFromBank, 1);
     }
 
-    public void TradeResourceWithBank(Player player, Resource resource, int numberOfResources,
-            Resource resourceFromBank, List<PortType> ownedPorts) {
+    public void tradeResourceWithBank(Player player, Resource resource, int numberOfResources,
+                                      Resource resourceFromBank, List<PortType> ownedPorts) {
         validateTradeAmount(numberOfResources, resource);
 
         int exchangeRate = getExchangeRate(resource, numberOfResources, ownedPorts);

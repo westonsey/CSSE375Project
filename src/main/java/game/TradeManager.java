@@ -21,7 +21,7 @@ public class TradeManager {
 
     public void tradeWithBank(Player player, Resource toTrade, Resource toReceive) {
         int amount = getTradeAmount(player, toTrade);
-        cardTracker.TradeResourceWithBank(player, toTrade, amount, toReceive, actionHandler.getOwnedPorts(player));
+        cardTracker.tradeResourceWithBank(player, toTrade, amount, toReceive, actionHandler.getOwnedPorts(player));
     }
 
     public int getTradeAmount(Player player, Resource resource) {

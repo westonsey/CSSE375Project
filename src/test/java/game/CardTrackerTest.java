@@ -132,19 +132,19 @@ public class CardTrackerTest {
 
         player1.addResource(Resource.WOOD, 4);
 
-        ct.TradeResourceWithBank(player1, Resource.WOOD, 4, Resource.ORE, null);
+        ct.tradeResourceWithBank(player1, Resource.WOOD, 4, Resource.ORE, null);
         
         Player player2 = players[1];
         player2.addResource(Resource.SHEEP, 4);
 
-        ct.TradeResourceWithBank(player2, Resource.SHEEP, 4, Resource.WHEAT, null);
+        ct.tradeResourceWithBank(player2, Resource.SHEEP, 4, Resource.WHEAT, null);
 
         Player player3 = players[2];
         player3.addResource(Resource.WHEAT, 1);
 
         String expectedMessage3 = "Cannot trade with 1 of Resource WHEAT";
         Exception exception = Assertions.assertThrows(IllegalArgumentException.class, ()->{
-            ct.TradeResourceWithBank(player3, Resource.WHEAT, 1, Resource.WOOD, null);
+            ct.tradeResourceWithBank(player3, Resource.WHEAT, 1, Resource.WOOD, null);
         });
         String actualMessage3 = exception.getMessage();
         Assertions.assertEquals(expectedMessage3, actualMessage3);
@@ -160,7 +160,7 @@ public class CardTrackerTest {
 
         player1.addResource(Resource.WHEAT, 3);
 
-        ct.TradeResourceWithBank(player1, Resource.WHEAT, 3, Resource.ORE, ports);
+        ct.tradeResourceWithBank(player1, Resource.WHEAT, 3, Resource.ORE, ports);
         assertEquals(1, player1.getResourceCount(Resource.ORE));
         assertEquals(0, player1.getResourceCount(Resource.WHEAT));
     }
@@ -175,7 +175,7 @@ public class CardTrackerTest {
 
         player1.addResource(Resource.WOOD, 3);
 
-        ct.TradeResourceWithBank(player1, Resource.WOOD, 3, Resource.BRICK, ports);
+        ct.tradeResourceWithBank(player1, Resource.WOOD, 3, Resource.BRICK, ports);
         assertEquals(1, player1.getResourceCount(Resource.BRICK));
         assertEquals(0, player1.getResourceCount(Resource.WOOD));
     }
@@ -190,7 +190,7 @@ public class CardTrackerTest {
 
         player1.addResource(Resource.ORE, 2);
 
-        ct.TradeResourceWithBank(player1, Resource.ORE, 2, Resource.WOOD, ports);
+        ct.tradeResourceWithBank(player1, Resource.ORE, 2, Resource.WOOD, ports);
         assertEquals(1, player1.getResourceCount(Resource.WOOD));
         assertEquals(0, player1.getResourceCount(Resource.ORE));
     }
@@ -205,7 +205,7 @@ public class CardTrackerTest {
 
         player1.addResource(Resource.WOOD, 2);
 
-        ct.TradeResourceWithBank(player1, Resource.WOOD, 2, Resource.ORE, ports);
+        ct.tradeResourceWithBank(player1, Resource.WOOD, 2, Resource.ORE, ports);
         assertEquals(1, player1.getResourceCount(Resource.ORE));
         assertEquals(0, player1.getResourceCount(Resource.WOOD));
     }
@@ -220,7 +220,7 @@ public class CardTrackerTest {
 
         player1.addResource(Resource.BRICK, 2);
 
-        ct.TradeResourceWithBank(player1, Resource.BRICK, 2, Resource.WOOD, ports);
+        ct.tradeResourceWithBank(player1, Resource.BRICK, 2, Resource.WOOD, ports);
         assertEquals(1, player1.getResourceCount(Resource.WOOD));
         assertEquals(0, player1.getResourceCount(Resource.BRICK));
     }
@@ -235,7 +235,7 @@ public class CardTrackerTest {
 
         player1.addResource(Resource.WHEAT, 2);
 
-        ct.TradeResourceWithBank(player1, Resource.WHEAT, 2, Resource.BRICK, ports);
+        ct.tradeResourceWithBank(player1, Resource.WHEAT, 2, Resource.BRICK, ports);
         assertEquals(1, player1.getResourceCount(Resource.BRICK));
         assertEquals(0, player1.getResourceCount(Resource.WHEAT));
     }
@@ -250,7 +250,7 @@ public class CardTrackerTest {
 
         player1.addResource(Resource.SHEEP, 2);
 
-        ct.TradeResourceWithBank(player1, Resource.SHEEP, 2, Resource.WHEAT, ports);
+        ct.tradeResourceWithBank(player1, Resource.SHEEP, 2, Resource.WHEAT, ports);
         assertEquals(1, player1.getResourceCount(Resource.WHEAT));
         assertEquals(0, player1.getResourceCount(Resource.SHEEP));
     }
@@ -267,11 +267,11 @@ public class CardTrackerTest {
         player1.addResource(Resource.SHEEP, 2);
         player1.addResource(Resource.WHEAT, 2);
 
-        ct.TradeResourceWithBank(player1, Resource.SHEEP, 2, Resource.WHEAT, ports);
+        ct.tradeResourceWithBank(player1, Resource.SHEEP, 2, Resource.WHEAT, ports);
         assertEquals(3, player1.getResourceCount(Resource.WHEAT));
         assertEquals(0, player1.getResourceCount(Resource.SHEEP));
         
-        ct.TradeResourceWithBank(player1, Resource.WHEAT, 2, Resource.SHEEP, ports);
+        ct.tradeResourceWithBank(player1, Resource.WHEAT, 2, Resource.SHEEP, ports);
         assertEquals(1, player1.getResourceCount(Resource.WHEAT));
         assertEquals(1, player1.getResourceCount(Resource.SHEEP));
     }
@@ -286,7 +286,7 @@ public class CardTrackerTest {
 
         String expectedMessage3 = "Cannot trade with 5 of Resource SHEEP";
         Exception exception = Assertions.assertThrows(IllegalArgumentException.class, ()->{
-            ct.TradeResourceWithBank(player1, Resource.SHEEP, 5, Resource.WOOD, null);
+            ct.tradeResourceWithBank(player1, Resource.SHEEP, 5, Resource.WOOD, null);
         });
         String actualMessage3 = exception.getMessage();
         assertEquals(expectedMessage3, actualMessage3);
@@ -302,7 +302,7 @@ public class CardTrackerTest {
 
         String expectedMessage3 = "Cannot trade with 1 of Resource SHEEP";
         Exception exception = Assertions.assertThrows(IllegalArgumentException.class, ()->{
-            ct.TradeResourceWithBank(player1, Resource.SHEEP, 1, Resource.WOOD, null);
+            ct.tradeResourceWithBank(player1, Resource.SHEEP, 1, Resource.WOOD, null);
         });
         String actualMessage3 = exception.getMessage();
         assertEquals(expectedMessage3, actualMessage3);
@@ -319,7 +319,7 @@ public class CardTrackerTest {
 
         String expectedMessage3 = "Cannot trade with 2 of Resource SHEEP";
         Exception exception = Assertions.assertThrows(IllegalArgumentException.class, ()->{
-            ct.TradeResourceWithBank(player1, Resource.SHEEP, 2, Resource.WOOD, ports);
+            ct.tradeResourceWithBank(player1, Resource.SHEEP, 2, Resource.WOOD, ports);
         });
         String actualMessage3 = exception.getMessage();
         assertEquals(expectedMessage3, actualMessage3);
@@ -334,8 +334,8 @@ public class CardTrackerTest {
         player1.addResource(Resource.SHEEP, 4);
         player1.addResource(Resource.WHEAT, 4);
 
-        ct.TradeResourceWithBank(player1, Resource.SHEEP, 4, Resource.ORE, null);
-        ct.TradeResourceWithBank(player1, Resource.WHEAT, 4, Resource.BRICK, null);
+        ct.tradeResourceWithBank(player1, Resource.SHEEP, 4, Resource.ORE, null);
+        ct.tradeResourceWithBank(player1, Resource.WHEAT, 4, Resource.BRICK, null);
         assertEquals(1, player1.getResourceCount(Resource.ORE));
         assertEquals(1, player1.getResourceCount(Resource.BRICK));
         assertEquals(0, player1.getResourceCount(Resource.SHEEP));
@@ -346,8 +346,8 @@ public class CardTrackerTest {
         player2.addResource(Resource.ORE, 4);
         player2.addResource(Resource.BRICK, 4);
 
-        ct.TradeResourceWithBank(player2, Resource.ORE, 4, Resource.SHEEP, null);
-        ct.TradeResourceWithBank(player2, Resource.BRICK, 4, Resource.WOOD, null);
+        ct.tradeResourceWithBank(player2, Resource.ORE, 4, Resource.SHEEP, null);
+        ct.tradeResourceWithBank(player2, Resource.BRICK, 4, Resource.WOOD, null);
         assertEquals(1, player2.getResourceCount(Resource.SHEEP));
         assertEquals(1, player2.getResourceCount(Resource.WOOD));
         assertEquals(0, player2.getResourceCount(Resource.ORE));

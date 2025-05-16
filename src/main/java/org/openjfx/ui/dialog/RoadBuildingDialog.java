@@ -19,9 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.openjfx.ui.data.DevelopmentCardInfo;
-import org.openjfx.ui.data.ResourceInfo;
-
 import board.Road;
 import board.location.BorderLocation;
 

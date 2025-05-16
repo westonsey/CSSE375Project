@@ -19,6 +19,8 @@ public class PlayerTurnManager {
     
     public int currentPlayerTurnIndex;
     private int currentDiscardPlayerIndex;
+
+    private int turnNumber = 0;
     
     private static final int ROBBER_ROLL = 7;
     
@@ -52,24 +54,28 @@ public class PlayerTurnManager {
         }
     }
 
-    public Tuple<Integer, Integer> doDiceRoll(int turnNumber, boolean weather) {
+    public Tuple<Integer, Integer> doDiceRoll(boolean weather) {
         checkTurnPhaseValidDoDiceRoll();
         int roll1 = rollDice();
         int roll2 = rollDice();
-        handleRoll(roll1, roll2, turnNumber, weather);
+        handleRoll(roll1, roll2, weather);
         return new Tuple<>(roll1, roll2);
     }
     
-    private void handleRoll(int roll1, int roll2, int turnNumber, boolean weather) {
+    private void handleRoll(int roll1, int roll2, boolean weather) {
+        if(currentPlayerTurnIndex == 0) {
+            turnNumber++;
+        }
         if (roll1 + roll2 == ROBBER_ROLL) {
             handleRobberRoll();
         } else {
-            handleNormalRoll(roll1, roll2, turnNumber, weather);
+            handleNormalRoll(roll1, roll2, weather);
         }
     }
 
-    private void handleNormalRoll(int roll1, int roll2, int turnNumber, boolean weather) {
+    private void handleNormalRoll(int roll1, int roll2, boolean weather) {
         List<Hexagon> hexes = board.getHexList();
+        System.out.println(turnNumber);
         actionHandler.handleNormalRollLoop(hexes, turnNumber, weather, roll1, roll2);
         turnPhase = TurnPhase.PLAYING_TURN;
     }

@@ -3,16 +3,12 @@ package org.openjfx.ui;
 import game.DevCardType;
 import game.GameHandler;
 import game.Player;
-import game.Resource;
-import io.cucumber.java.an.E;
 import javafx.stage.Window;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.openjfx.ui.data.DevelopmentCardInfo;
 import org.openjfx.ui.data.ResourceInfo;
-import util.CountCollection;
 
-import java.awt.*;
 import java.util.Optional;
 import java.util.ResourceBundle;
 

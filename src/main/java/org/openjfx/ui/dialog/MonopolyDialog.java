@@ -16,7 +16,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-import org.openjfx.ui.data.DevelopmentCardInfo;
 import org.openjfx.ui.data.ResourceInfo;
 
 import java.util.ResourceBundle;

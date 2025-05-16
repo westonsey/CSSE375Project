@@ -1,12 +1,8 @@
 package org.openjfx.ui;
 
-import board.BuildingCode;
 import game.GameHandler;
 import javafx.application.Platform;
 import org.easymock.EasyMock;
-import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 public class SidePanelControllerTests {
 

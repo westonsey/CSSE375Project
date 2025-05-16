@@ -19,7 +19,6 @@ import javafx.stage.Window;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import org.openjfx.ui.data.DevelopmentCardInfo;
 import org.openjfx.ui.data.ResourceInfo;
 
 public class YearOfPlentyDialog {

@@ -217,7 +217,8 @@ public class GameHandler {
     }
 
     public Tuple<Integer, Integer> doDiceRoll() {
-        return playerTurnManager.doDiceRoll(turnNumber, weather);
+        System.out.println(turnNumber);
+        return playerTurnManager.doDiceRoll(weather);
     }
 
     public int handleSwitchPlayerTurn() {
@@ -341,14 +342,6 @@ public class GameHandler {
 
     public void setCurrentlySelectedUpgrade(BuildingCode code) {
         currentlySelectedUpgrade = buildingTypeFactory.build(code);
-    }
-
-    private void handleRoll(int roll1, int roll2) {
-        if (roll1 + roll2 == ROBBER_ROLL) {
-            handleRobberRoll();
-        } else {
-            handleNormalRoll(roll1, roll2);
-        }
     }
 
     private void handleNormalRoll(int roll1, int roll2) {

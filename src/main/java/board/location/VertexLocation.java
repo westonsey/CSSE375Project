@@ -122,6 +122,8 @@ public class VertexLocation {
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if(obj == null || getClass() != obj.getClass()) return false;
         VertexLocation v = (VertexLocation) obj;
         return v.row == row && v.col == col;
     }

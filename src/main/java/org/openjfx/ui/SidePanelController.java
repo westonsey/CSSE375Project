@@ -33,8 +33,6 @@ public class SidePanelController {
     private Dice dice1;
     private Dice dice2;
 
-    protected BuildingCode selectedUpgrade = BuildingCode.CITY;
-
     private ResourceInfo resourceInfo;
     private ResourceBundle bundle;
 
@@ -107,8 +105,8 @@ public class SidePanelController {
     }
 
     public void setSelectedUpgrade(BuildingCode building) {
-        selectedUpgrade = building;
         game.setCurrentlySelectedUpgrade(building);
+        uiUpdates.setSelectedUpgrade(building);
         uiUpdates.updateDisplay();
     }
 

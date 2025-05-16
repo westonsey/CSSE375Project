@@ -36,6 +36,10 @@ public class UiUpdates {
         updateStatusLabels();
     }
 
+    public void setSelectedUpgrade(BuildingCode building) {
+        selectedUpgrade = building;
+    }
+
     public void updateStatusLabels() {
         String name = PlayerColorUtils.PLAYER_NAMES.get(game.playerByTurnIndex().getColor());
         playerText.setText(bundle.getString(name.toLowerCase(Locale.ROOT) + "Player"));

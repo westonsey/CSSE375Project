@@ -16,7 +16,6 @@ public class PlayerTurnManager {
     private ActionHandler actionHandler;
     private VictoryPointManager victoryPointManager;
     private Random randForDice;
-    private RobberManager robberManager;
     
     public int currentPlayerTurnIndex;
     private int currentDiscardPlayerIndex;
@@ -35,7 +34,6 @@ public class PlayerTurnManager {
         this.board = board;
         this.actionHandler = actionHandler;
         this.randForDice = randForDice;
-        this.robberManager = robberManager;
         this.currentPlayerTurnIndex = 0;
         this.currentDiscardPlayerIndex = 0;
     }

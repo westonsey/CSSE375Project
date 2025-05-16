@@ -30,9 +30,7 @@ public class RoadBuildingDialog {
     private Stage stage;
     private boolean isCanceled;
     private Road selected = null;
-    private DevelopmentCardInfo devCardInfo;
     private Button submitButton;
-    private ResourceInfo resourceInfo;
     private Player player;
     private GameHandler game;
     private static final int IMG_SIZE = 50;

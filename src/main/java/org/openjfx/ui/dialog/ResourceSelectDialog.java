@@ -22,7 +22,6 @@ public class ResourceSelectDialog {
     private final Stage stage;
     private ResourceSelectSubcomponent ownResourceSelect;
     private ResourceSelectSubcomponent requestResourceSelect;
-    private ResourceBundle bundle;
 
     private int requiredTotal;
     private boolean canceled = false;
@@ -35,7 +34,6 @@ public class ResourceSelectDialog {
                                  boolean hasOtherPlayer, Tuple<String, String> subtitles,
                                  boolean hasCancelButton, ResourceBundle bundle) {
         this.requiredTotal = requiredTotal;
-        this.bundle = bundle;
 
         HBox hbox = new HBox();
         hbox.setStyle("-fx-padding: 12px; -fx-spacing: 5px;");

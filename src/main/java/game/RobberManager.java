@@ -8,12 +8,10 @@ import java.util.Random;
 
 public class RobberManager {
     private Robber robber;
-    private Board board;
     private TurnPhase turnPhase;
 
     public RobberManager(Robber robber, Board board) {
         this.robber = robber;
-        this.board = board;
     }
 
     public void moveRobber(HexLocation loc, TurnPhase turnPhase) {

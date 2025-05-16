@@ -24,7 +24,6 @@ public class TradeOfferDialog {
     private Stage stage;
     private ResourceInfo resourceInfo;
     private boolean status;
-    private ResourceBundle bundle;
 
     private static final int IMG_SIZE = 50;
 
@@ -35,7 +34,6 @@ public class TradeOfferDialog {
                             CountCollection<Resource> availableResources,
                             ResourceBundle bundle) {
         this.resourceInfo = resourceInfo;
-        this.bundle = bundle;
 
         VBox superParent = new VBox();
         superParent.setStyle("-fx-padding: 12px; -fx-spacing: 5px;");

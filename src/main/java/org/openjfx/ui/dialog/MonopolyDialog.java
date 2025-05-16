@@ -26,7 +26,6 @@ public class MonopolyDialog {
     private Stage stage;
     private boolean isCanceled;
     private Resource selected = null;
-    private DevelopmentCardInfo devCardInfo;
     private Button submitButton;
     private ResourceInfo resourceInfo;
     private static final int IMG_SIZE = 50;

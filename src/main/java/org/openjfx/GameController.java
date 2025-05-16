@@ -511,7 +511,6 @@ public class GameController {
     private GameHandler game;
     private ResourceBundle bundle;
     private Window window;
-    private boolean weather;
 
     private BoardController boardController;
     private SidePanelController sidePanelController;
@@ -541,7 +540,6 @@ public class GameController {
     public GameController(ResourceBundle bundle, Window window, Map<PlayerColors, Boolean> players, boolean weather) {
         this.bundle = bundle;
         this.window = window;
-        this.weather = weather;
         game = new GameHandler(new Random(), new Random(), weather);
 
         players.forEach((color, readyValue) -> {

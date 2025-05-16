@@ -20,14 +20,11 @@ public class DevCardDialog {
     private Stage stage;
     private boolean isCanceled;
     private boolean invalidResources;
-    private Resource toTrade = null;
-    private DevelopmentCardInfo devCardInfo;
     private Button submitButton;
     private static final int IMG_SIZE = 50;
 
     public DevCardDialog(Window parent, DevelopmentCardInfo developmentCardInfo, String title,
                            CountCollection<Resource> playerResources) {
-        this.devCardInfo = developmentCardInfo;
 
         if(playerResources.getCount(Resource.SHEEP) == 0 ||
            playerResources.getCount(Resource.WHEAT) == 0 ||

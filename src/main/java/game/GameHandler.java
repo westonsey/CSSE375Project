@@ -22,11 +22,7 @@ import java.util.Random;
 
 public class GameHandler {
 
-    private Random randForDice;
-    private GameState gameState;
-    private TurnPhase turnPhase;
     private int turnNumber;
-    private TurnMovementDirection turnMovementDirection;
     private Board board;
     private Robber robber;
     private RobberManager robberManager;
@@ -42,7 +38,6 @@ public class GameHandler {
     private static final int INVALID_PLAYER_INDEX = -1;
 
     public int currentPlayerTurnIndex = 0;
-    private int currentDiscardPlayerIndex;
     private boolean weather;
 
     private BuildingTypeFactory buildingTypeFactory;
@@ -71,11 +66,7 @@ public class GameHandler {
                         TurnMovementDirection inputTurnMovementDirection, Board board, boolean generate, boolean weather,
                         BuildingTypeFactory buildingTypeFactory) {
         this.board = board;
-        this.gameState = inputGameState;
-        this.turnPhase = turnPhase;
-        this.randForDice = randInt;
         this.weather = weather;
-        this.turnMovementDirection = inputTurnMovementDirection;
         if (generate) {
             board.generate(boardRandom);
         }
@@ -206,7 +197,6 @@ public class GameHandler {
     public void playKnightCard(Player player) {
         player.playDevCard(DevCardType.KNIGHT);
         playerTurnManager.setTurnPhase(TurnPhase.MOVING_ROBBER);
-        this.turnPhase = TurnPhase.MOVING_ROBBER; // Keep local copy in sync
     }
 
     public CardTracker getCardTracker() {
@@ -224,7 +214,6 @@ public class GameHandler {
     public void moveRobber(HexLocation loc) {
         robberManager.moveRobber(loc, playerTurnManager.getTurnPhase());
         playerTurnManager.setTurnPhase(TurnPhase.STEALING_RESOURCE);
-        this.turnPhase = TurnPhase.STEALING_RESOURCE; // Keep local copy in sync
     }
 
     public Tuple<Integer, Integer> doDiceRoll() {
@@ -233,9 +222,6 @@ public class GameHandler {
 
     public int handleSwitchPlayerTurn() {
         int newIndex = playerTurnManager.handleSwitchPlayerTurn();
-        this.gameState = playerTurnManager.getGameState();
-        this.turnPhase = playerTurnManager.getTurnPhase();
-        this.turnMovementDirection = playerTurnManager.getTurnMovementDirection();
         this.currentPlayerTurnIndex = newIndex;
         return newIndex;
     }
@@ -244,7 +230,6 @@ public class GameHandler {
         this.victoryPointManager.handleVictoryPoints(playerTurnManager.getCurrentPlayerTurnIndex(), this.players);
         GameState newState = victoryPointManager.getGameState();
         playerTurnManager.setGameState(newState);
-        this.gameState = newState;
     }
 
     public Player playerByTurnIndex() {
@@ -261,7 +246,6 @@ public class GameHandler {
 
     public void setTurnPhase(TurnPhase phase) {
         playerTurnManager.setTurnPhase(phase);
-        this.turnPhase = phase;
     }
 
     public Board getBoard() {
@@ -274,7 +258,6 @@ public class GameHandler {
 
     public void switchTurnMovementDirection() {
         playerTurnManager.switchTurnMovementDirection();
-        this.turnMovementDirection = playerTurnManager.getTurnMovementDirection(); // Keep local copy in sync
     }
 
     public boolean canPlaceSettlement(Player p, VertexLocation loc) {
@@ -291,12 +274,10 @@ public class GameHandler {
 
     public void placeSettlement(Player p, VertexLocation loc) {
         buildingManager.placeSettlement(p, loc);
-        this.turnPhase = playerTurnManager.getTurnPhase(); // Keep local copy in sync
     }
 
     public void placeRoad(Player p, BorderLocation loc) {
-        buildingManager.placeRoad(p, loc);
-        this.turnPhase = playerTurnManager.getTurnPhase(); // Keep local copy in sync
+        buildingManager.placeRoad(p, loc);// Keep local copy in sync
     }
 
     public void upgradeSettlement(Settlement s) {
@@ -312,7 +293,6 @@ public class GameHandler {
         List<Resource> resources = new ArrayList<>(List.of(Resource.values()));
         robberManager.stealResourceLoop(thief, victim, resources, rand, playerTurnManager.getTurnPhase());
         playerTurnManager.setTurnPhase(TurnPhase.PLAYING_TURN);
-        this.turnPhase = TurnPhase.PLAYING_TURN; // Keep local copy in sync
     }
 
     public void skipSteal() {
@@ -320,7 +300,6 @@ public class GameHandler {
             throw new IllegalStateException("Cannot steal in this phase");
         }
         playerTurnManager.setTurnPhase(TurnPhase.PLAYING_TURN);
-        this.turnPhase = TurnPhase.PLAYING_TURN; // Keep local copy in sync
     }
 
     public List<Player> getPlayersToStealFrom(Player currentTurn) {
@@ -343,7 +322,6 @@ public class GameHandler {
         actionHandler.discardResourcesIterator(player, resourceIterator);
         actionHandler.discardResourcesRemoveResource(player, resources, resourceIterator);
         playerTurnManager.incrementDiscardPlayerIndex(players);
-        this.turnPhase = playerTurnManager.getTurnPhase();
     }
 
     private void initRobber() {
@@ -376,12 +354,9 @@ public class GameHandler {
     private void handleNormalRoll(int roll1, int roll2) {
         List<Hexagon> hexes = board.getHexList();
         actionHandler.handleNormalRollLoop(hexes, turnNumber, weather, roll1, roll2);
-        turnPhase = TurnPhase.PLAYING_TURN;
     }
 
     private void handleRobberRoll() {
-        turnPhase = TurnPhase.DISCARDING_RESOURCES;
-        currentDiscardPlayerIndex = 0;
     }
 
     public int findLongestRoad(Player player) {

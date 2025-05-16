@@ -135,7 +135,7 @@ public class GameHandler {
     }
 
     public void addDevelopmentCard(Player player, DevCardType card) {
-        this.cardTracker.AddDevCard(player, card);
+        this.cardTracker.addDevCard(player, card);
     }
 
     public void playMonopolyCard(Player player, Resource resource) {

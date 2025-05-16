@@ -63,14 +63,14 @@ public class CardTracker{
         }
     }
 
-    public void AddDevCard(Player player, DevCardType devCard) {
+    public void addDevCard(Player player, DevCardType devCard) {
         unPlayedPile.remove(devCard, 1);
         player.addDevCard(devCard);
     }
 
     private void processDevCardPurchase(Player player, DevCardType card) {
         removeRequiredResources(player);
-        AddDevCard(player, card);
+        addDevCard(player, card);
     }
 
     private void validateTradeAmount(int numberOfResources, Resource resource) {
